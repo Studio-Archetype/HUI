@@ -1,0 +1,185 @@
+plugins {
+    id 'java'
+    id "io.freefair.lombok" version "6.3.0"
+    id "de.undercouch.download" version "5.0.1"
+    id "com.github.johnrengelman.shadow" version "7.1.2"
+}
+
+group 'studio.archetype.hologui2'
+version project.version
+
+file(jar.archiveFile.get().getAsFile().getParentFile().getParentFile().getParentFile().getAbsolutePath() + '/build/resources/main/plugin.yml').delete()
+
+shadowJar {
+    append("plugin.yml")
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+    mavenLocal {
+        content {
+            includeGroup("org.bukkit")
+            includeGroup("org.spigotmc")
+        }
+    }
+    maven { url "https://dl.cloudsmith.io/public/arcane/archive/maven/" }
+}
+
+dependencies {
+    compileOnly "org.projectlombok:lombok:${project.lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${project.lombokVersion}"
+    compileOnly "org.spigotmc:spigot-api:${project.spigotJarVersion}"
+    compileOnly "org.bukkit:craftbukkit:${project.spigotJarVersion}:remapped-mojang"
+}
+
+processResources {
+    filesMatching('**/plugin.yml') {
+        expand(
+                'name': project.name,
+                'version': project.version,
+                'main': project.main,
+                'apiVersion': project.apiVersion
+        )
+    }
+}
+
+def buildToolsJar = new File(buildDir, "buildTools/BuildTools.jar")
+def specialSourceJar = new File(buildDir, "specialSource/SpecialSource.jar")
+def buildToolsHint = new File(buildDir, "buildTools/craftbukkit-" + project.nmsVersion + ".jar")
+def outputShadeJar = new File(buildDir, "libs/HoloGUI2-" + version + "-all.jar")
+def specialSourceFolder = new File(buildDir, "specialSource")
+def m2s = new File(System.properties['user.home'] + "/.m2/repository").getAbsolutePath()
+def ssiJar = new File(buildDir, "specialSource/HoloGUI2-" + version + "-all.jar")
+def ssobfJar = new File(buildDir, "specialSource/HoloGUI2-" + version + "-rmo.jar")
+def ssJar = new File(buildDir, "specialSource/HoloGUI2-" + version + "-rma.jar")
+
+task downloadBuildtools(type: Download) {
+    group 'remapping'
+    src 'https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar'
+    dest buildToolsJar
+    onlyIf { !buildToolsJar.exists() }
+}
+
+task downloadSpecialSource(type: Download) {
+    group "remapping"
+    src 'https://repo.maven.apache.org/maven2/net/md-5/SpecialSource/1.10.0/SpecialSource-1.10.0-shaded.jar'
+    dest specialSourceJar
+    onlyIf {
+        !specialSourceJar.exists()
+    }
+}
+
+task executeBuildTools(dependsOn: downloadBuildtools, type: JavaExec) {
+    group "remapping"
+    classpath = files(buildToolsJar)
+    workingDir = new File(buildDir, "buildTools")
+    args = [ "--rev", project.nmsVersion, "--compile", "craftbukkit", "--remap" ]
+    onlyIf { !buildToolsHint.exists() }
+}
+
+task copyBuildToSpecialSource(type: Copy) {
+    group "remapping"
+    from outputShadeJar
+    into specialSourceFolder
+    dependsOn(downloadSpecialSource, shadowJar)
+}
+
+task specialSourceRemapObfuscate(type: JavaExec) {
+    group "remapping"
+    dependsOn(copyBuildToSpecialSource, downloadSpecialSource, shadowJar)
+    workingDir = specialSourceFolder
+    classpath = files(specialSourceJar, new File(m2s + "/org/spigotmc/spigot/" + project.spigotJarVersion + "/spigot-" + project.spigotJarVersion + "-remapped-mojang.jar"))
+    mainClass = "net.md_5.specialsource.SpecialSource"
+    args = [
+            "--live",
+            "-i",
+            ssiJar.getName(),
+            "-o",
+            ssobfJar.getName(),
+            "-m",
+            m2s + "/org/spigotmc/minecraft-server/" + project.spigotJarVersion + "/minecraft-server-" + project.spigotJarVersion + "-maps-mojang.txt",
+            "--reverse",
+    ]
+}
+
+task specialSourceRemap(type: JavaExec) {
+    group "remapping"
+    dependsOn(specialSourceRemapObfuscate)
+    workingDir = specialSourceFolder
+    classpath = files(specialSourceJar, new File(m2s + "/org/spigotmc/spigot/" + project.spigotJarVersion + "/spigot-" + project.spigotJarVersion + "-remapped-obf.jar"))
+    mainClass = "net.md_5.specialsource.SpecialSource"
+    args = [
+            "--live",
+            "-i",
+            ssobfJar.getName(),
+            "-o",
+            ssJar.getName(),
+            "-m",
+            m2s + "/org/spigotmc/minecraft-server/" + project.spigotJarVersion + "/minecraft-server-" + project.spigotJarVersion + "-maps-spigot.csrg"
+    ]
+}
+
+tasks.compileJava.dependsOn(executeBuildTools)
+
+task specialSource(type: Copy) {
+    group 'remapping'
+    from ssJar
+    into buildDir
+    rename { String name -> name.replace('HoloGUI2-' + version + "-rma.jar", "HoloGUI2-" + version + ".jar") }
+    dependsOn specialSourceRemap
+}
+
+// IDE Server stuff
+
+def spigotBuildTools = new File(buildDir, "buildTools/spigot-${project.nmsVersion}.jar")
+def serverDir = new File(rootDir, "server/${project.nmsVersion}")
+def spigotServer = new File(serverDir, "spigot.jar")
+def pluginDir = new File(serverDir, "plugins")
+
+task executeBuildToolsSpigot(dependsOn: downloadBuildtools, type: JavaExec) {
+    group "server"
+    classpath = files(buildToolsJar)
+    workingDir = new File(buildDir, "buildTools")
+    args = [ "--rev", project.nmsVersion, "--remap" ]
+    onlyIf { !spigotServer.exists() }
+}
+
+task createServer(type: Copy) {
+    group "server"
+    dependsOn (executeBuildToolsSpigot)
+    from spigotBuildTools
+    into serverDir
+    rename { String name -> name.replace("spigot-${project.nmsVersion}.jar", "spigot.jar") }
+    onlyIf { !spigotServer.exists() }
+}
+
+task downloadBile(dependsOn: createServer, type: Download) {
+    group "server"
+    src 'https://github.com/VolmitSoftware/BileTools/releases/download/2/BileTools-2.jar'
+    dest pluginDir
+    onlyIf { !new File(pluginDir, "BileTools-2.jar").exists() }
+}
+
+task copyPlugin(dependsOn: specialSource, type: Copy) {
+    group "server"
+    from new File(buildDir, "HoloGUI2-${project.version}.jar")
+    into pluginDir
+}
+
+task setup {
+    group 'build setup'
+    dependsOn(clean, executeBuildTools, createServer, downloadBile)
+}
+
+// Final Tasks
+
+task buildPlugin {
+    group "dev"
+    dependsOn(specialSource)
+}
+
+task reloadPlugin {
+    group "dev"
+    dependsOn(copyPlugin)
+}
