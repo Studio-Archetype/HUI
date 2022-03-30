@@ -31,6 +31,11 @@ public final class ArmorStandBuilder {
         return this;
     }
 
+    public ArmorStandBuilder marker(boolean marker) {
+        armorStand.setMarker(marker);
+        return this;
+    }
+
     public ArmorStandBuilder invisible(boolean invisible) {
         armorStand.setInvisible(invisible);
         return this;

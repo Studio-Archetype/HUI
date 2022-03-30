@@ -120,7 +120,8 @@ task specialSourceRemap(type: JavaExec) {
     ]
 }
 
-tasks.compileJava.dependsOn(executeBuildTools)
+compileJava.options.encoding("UTF-8")
+compileJava.dependsOn(executeBuildTools)
 
 task specialSource(type: Copy) {
     group 'remapping'

@@ -12,29 +12,25 @@ package studio.archetype.hologui2.config;
             settings.json
  */
 
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import com.google.gson.stream.JsonReader;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.bukkit.Bukkit;
 import studio.archetype.hologui2.HoloGUI;
 import studio.archetype.hologui2.utils.SchedulerUtils;
 import studio.archetype.hologui2.utils.file.ReloadableFile;
 import studio.archetype.hologui2.utils.file.ReloadableFolder;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -42,14 +38,16 @@ import java.util.logging.Level;
 
 public final class ConfigManager {
 
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-
     private final Map<String, MenuDefinitionData> menuRegistry = Maps.newHashMap();
 
+    private final File imageDir;
     private final ReloadableFolder menuDefinitionFolder;
     private final ReloadableFile settings;
 
     public ConfigManager(File configDir) {
+        this.imageDir = new File(configDir, "images");
+        if(!imageDir.exists())
+            imageDir.mkdirs();
 
         menuDefinitionFolder = new ReloadableFolder(new File(configDir, "menus"), false, onCreated, onChanged, onDeleted);
         settings = new ReloadableFile(new File(configDir, "settings.json"), onSettingsChange);
@@ -61,9 +59,6 @@ public final class ConfigManager {
     }
 
     public Set<String> keys() {
-        menuDefinitionFolder.getAllChildren().forEach(f -> {
-            System.out.println(f.getName());
-        });
         return menuRegistry.keySet();
     }
 
@@ -73,6 +68,13 @@ public final class ConfigManager {
 
     public boolean exists(String key) {
         return menuRegistry.containsKey(key);
+    }
+
+    public BufferedImage hasImage(String relative) throws IOException {
+        File f = new File(imageDir, relative.endsWith(".png") ? relative : relative + ".png");
+        if(!f.exists() || f.isDirectory())
+            throw new FileNotFoundException();
+        return ImageIO.read(f);
     }
 
     private void loadConfigs() {
