@@ -1,7 +1,16 @@
 package studio.archetype.hologui2.menu;
 
+import com.mojang.datafixers.util.Pair;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.Vector;
+import studio.archetype.hologui2.HoloGUI;
 import studio.archetype.hologui2.config.MenuDefinitionData;
+import studio.archetype.hologui2.utils.SchedulerUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +20,23 @@ import java.util.stream.Collectors;
 public final class MenuSessionManager {
 
     private final List<MenuSession> sessions = new ArrayList<>();
+
+    private BukkitTask debugRunnable;
+
+    public MenuSessionManager() {
+        debugRunnable = SchedulerUtils.scheduleSyncTask(HoloGUI.INSTANCE, 2L, () -> {
+            sessions.forEach(s -> {
+                s.getOptions().forEach(o -> {
+                    o.rotateToFace(s.getPlayer().getEyeLocation());
+                    o.highlightHitbox(s.getPlayer().getWorld());
+                    boolean result = o.checkRaycast(s.getPlayer().getEyeLocation());
+                    TextComponent component = new TextComponent(result ? "Hit!" : "Miss...");
+                    component.setColor(result ? ChatColor.GREEN : ChatColor.RED);
+                    s.getPlayer().spigot().sendMessage(ChatMessageType.ACTION_BAR, component);
+                });
+            });
+        }, false);
+    }
 
     public void createNewSession(Player p, MenuDefinitionData menu) {
         MenuSession session = new MenuSession(menu, p);

@@ -2,11 +2,16 @@ package studio.archetype.hologui2.menu.icon;
 
 import com.google.common.collect.Lists;
 import net.minecraft.network.chat.*;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.AABB;
 import org.bukkit.Location;
+import org.bukkit.util.BoundingBox;
 import studio.archetype.hologui2.HoloGUI;
 import studio.archetype.hologui2.config.icon.TextImageIconData;
 import studio.archetype.hologui2.menu.ArmorStandManager;
+import studio.archetype.hologui2.utils.ArmorStandBuilder;
 import studio.archetype.hologui2.utils.TextUtils;
+import studio.archetype.hologui2.utils.math.CollisionPlane;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -18,8 +23,8 @@ public class TextImageMenuIcon extends MenuIcon<TextImageIconData> {
 
     private final List<Component> components;
 
-    public TextImageMenuIcon(String translationKey, TextImageIconData data) {
-        super(translationKey, data);
+    public TextImageMenuIcon(TextImageIconData data) {
+        super(data);
         components = createComponents();
     }
 
@@ -27,9 +32,19 @@ public class TextImageMenuIcon extends MenuIcon<TextImageIconData> {
     protected List<UUID> createArmorStands(Location loc) {
         List<UUID> uuids = Lists.newArrayList();
         loc.add(0, components.size() / 2F  * NAMETAG_SIZE, 0);
-        uuids.add(ArmorStandManager.add(nametagArmorStand(name, loc.clone().add(0, NAMETAG_SIZE, 0))));
-        components.forEach(c -> uuids.add(ArmorStandManager.add(nametagArmorStand(c, loc.subtract(0, NAMETAG_SIZE, 0)))));
+        components.forEach(c -> {
+            uuids.add(ArmorStandManager.add(ArmorStandBuilder.nametagArmorStand(c, loc)));
+            loc.subtract(0, NAMETAG_SIZE, 0);
+        });
         return uuids;
+    }
+
+    @Override
+    protected CollisionPlane createBoundingBox(Location loc) {
+        float width = 0;
+        for(Component component : components)
+            width = Math.max(width, component.getString().length() * NAMETAG_SIZE / 2);
+        return new CollisionPlane(loc.toVector(), width, components.size() * NAMETAG_SIZE);
     }
 
     private List<Component> createComponents() {

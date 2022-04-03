@@ -14,6 +14,7 @@ package studio.archetype.hologui2.config;
 
 import com.google.common.collect.Maps;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.DataResult;
@@ -107,7 +108,7 @@ public final class ConfigManager {
                     return Optional.of(data);
                 }
             }
-        } catch(IOException ex) {
+        } catch(IOException | JsonParseException ex) {
             HoloGUI.log(Level.WARNING, "A %s occurred while parsing menu config \"%s.json\":\n\t", ex.getClass().getSimpleName(), menuName, ex.getMessage());
         }
         return Optional.empty();

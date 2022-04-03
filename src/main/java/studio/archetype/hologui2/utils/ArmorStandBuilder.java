@@ -124,4 +124,12 @@ public final class ArmorStandBuilder {
     public ArmorStand build() {
         return armorStand;
     }
+
+    public static ArmorStand nametagArmorStand(Component component, Location loc) {
+        return new ArmorStandBuilder(loc.getWorld())
+                .marker(true).gravity(false)
+                .invisible(true).basePlate(false).zeroPose()
+                .name(component, true).pos(loc)
+                .build();
+    }
 }
