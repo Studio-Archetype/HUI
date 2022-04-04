@@ -11,6 +11,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_18_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
+import org.bukkit.util.Vector;
 
 public final class NMSUtils {
 
@@ -27,7 +28,15 @@ public final class NMSUtils {
         return Component.Serializer.fromJson(json);
     }
 
+    public static Vector vector(Vec3 vec) {
+        return new Vector(vec.x(), vec.y(), vec.z());
+    }
+
     public static Vec3 vec3(Location loc) {
-        return new Vec3(loc.getX(), loc.getY(), loc.getZ());
+        return vec3(loc.toVector());
+    }
+
+    public static Vec3 vec3(Vector vec) {
+        return new Vec3(vec.getX(), vec.getY(), vec.getZ());
     }
 }

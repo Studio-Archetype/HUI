@@ -22,6 +22,8 @@ public class MenuOption {
     private final Location position;
 
     private CollisionPlane plane;
+    private boolean highlighted;
+    private Vector highlightOffset;
 
     public MenuOption(Location centerPosition, Player p, MenuOptionData data) {
         this.data = data;
@@ -34,8 +36,9 @@ public class MenuOption {
         return data.id();
     }
 
-    public void show(Player p) {
-        plane = icon.spawn(p, position);
+    public void show() {
+        plane = icon.spawn(player, position);
+        rotateToFace(player.getEyeLocation());
     }
 
     public void remove() {
@@ -48,8 +51,16 @@ public class MenuOption {
     }
 
     public void rotateToFace(Location loc) {
-        double yaw = Math.atan2(loc.getY(), loc.getX()) - Math.atan2(plane.getCenter().getY(), plane.getCenter().getZ());
-        plane.rotate(0, (float)Math.toDegrees(yaw));
+        Vector rotation = MathHelper.getRotationFromDirection(MathHelper.unit(plane.getCenter(), loc.toVector()));
+        plane.rotate((float)rotation.getX() + 180, (float)-rotation.getY());
+    }
+
+    public void setHighlight(boolean highlight) {
+        this.highlighted = highlight;
+        if(highlight)
+            icon.move(plane.getNormal().clone().multiply(1));
+        else
+            icon.move(plane.getNormal().clone().multiply(-1));
     }
 
     public void highlightHitbox(World w) {
@@ -70,6 +81,13 @@ public class MenuOption {
         playParticle(w, downLeft, Color.BLUE);
         playParticle(w, upRight, Color.BLUE);
         playParticle(w, upLeft, Color.BLUE);
+    }
+
+    public void tick() {
+        rotateToFace(player.getEyeLocation());
+        if(highlighted) {
+            this.highlightOffset = plane.getNormal().clone().multiply(1);
+        }
     }
 
     private void playParticle(World w, Vector v, Color c) {

@@ -1,8 +1,11 @@
 package studio.archetype.hologui2.utils.math;
 
+import net.minecraft.world.phys.Vec3;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.util.NumberConversions;
 import org.bukkit.util.Vector;
+import studio.archetype.hologui2.utils.NMSUtils;
 import studio.archetype.hologui2.utils.math.Matrix4;
 import studio.archetype.hologui2.utils.math.Quaternion;
 
@@ -21,7 +24,34 @@ public final class MathHelper {
         return b.clone().subtract(a);
     }
 
+    public static Vector unit(Vec3 a, Vector b) {
+        return b.clone().subtract(NMSUtils.vector(a));
+    }
+
     public static Vector interpolate(Vector start, Vector end, float delta) {
         return start.clone().add(end.clone().subtract(start).multiply(delta));
+    }
+
+    public static Vector getRotationFromDirection(Vector dir) {
+        double _2PI = 2 * Math.PI;
+        double x = dir.getX();
+        double z = dir.getZ();
+        System.out.println(dir);
+        Vector rot = new Vector();
+
+        if (x == 0 && z == 0) {
+            rot.setX(dir.getY() > 0 ? -90 : 90);
+            return rot;
+        }
+
+        double theta = Math.atan2(-x, z);
+        rot.setY(Math.toDegrees((theta + _2PI) % _2PI));
+
+        double x2 = Math.pow(x, 2);
+        double z2 = Math.pow(z, 2);
+        double xz = Math.sqrt(x2 + z2);
+        rot.setX(Math.toDegrees(Math.atan(-dir.getY() / xz)));
+        System.out.println(rot);
+        return rot;
     }
 }

@@ -38,8 +38,8 @@ public class CollisionPlane {
         if(pitch != this.pitch || yaw != this.yaw) {
             this.pitch = pitch;
             this.yaw = yaw;
-            this.up = UP.clone().rotateAroundX(pitch).rotateAroundY(yaw);
-            this.right = RIGHT.clone().rotateAroundX(pitch).rotateAroundY(yaw);
+            this.up = UP.clone().rotateAroundX(Math.toRadians(pitch)).rotateAroundY(Math.toRadians(yaw));
+            this.right = RIGHT.clone().rotateAroundX(Math.toRadians(pitch)).rotateAroundY(Math.toRadians(yaw));
             calcNormal();
         }
     }

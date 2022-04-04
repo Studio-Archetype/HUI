@@ -21,12 +21,13 @@ public final class MenuSessionManager {
 
     private final List<MenuSession> sessions = new ArrayList<>();
 
+    private BukkitTask hitDetectionRunnable;
     private BukkitTask debugRunnable;
 
     public MenuSessionManager() {
         debugRunnable = SchedulerUtils.scheduleSyncTask(HoloGUI.INSTANCE, 2L, () -> {
             sessions.forEach(s -> {
-                s.getOptions().forEach(o -> {
+                s.getOptions().forEach((k, o) -> {
                     o.rotateToFace(s.getPlayer().getEyeLocation());
                     o.highlightHitbox(s.getPlayer().getWorld());
                     boolean result = o.checkRaycast(s.getPlayer().getEyeLocation());
@@ -36,6 +37,8 @@ public final class MenuSessionManager {
                 });
             });
         }, false);
+
+        hitDetectionRunnable = SchedulerUtils.scheduleSyncTask(HoloGUI.INSTANCE, 1L, () -> sessions.forEach(MenuSession::updateSelection), false);
     }
 
     public void createNewSession(Player p, MenuDefinitionData menu) {

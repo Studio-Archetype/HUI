@@ -2,22 +2,22 @@ package studio.archetype.hologui2.menu;
 
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket;
-import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
-import net.minecraft.network.protocol.game.ClientboundSetEquipmentPacket;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.network.protocol.game.*;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.item.ItemStack;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 import studio.archetype.hologui2.utils.ItemUtils;
+import studio.archetype.hologui2.utils.NMSUtils;
 import studio.archetype.hologui2.utils.PacketUtils;
+import studio.archetype.hologui2.utils.math.MathHelper;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class ArmorStandManager {
 
@@ -55,6 +55,22 @@ public class ArmorStandManager {
         armorStands.get(uuid).remove(Entity.RemovalReason.DISCARDED);
         armorStands.remove(uuid);
         playerVisibility.remove(uuid);
+    }
+
+    public static void goTo(UUID uuid, Location loc) {
+        if(!armorStands.containsKey(uuid))
+            return;
+        ArmorStand stand = armorStands.get(uuid);
+        stand.setPos(NMSUtils.vec3(loc.toVector()));
+        PacketUtils.send(playerVisibility.get(uuid), new ClientboundTeleportEntityPacket(stand));
+    }
+
+    public static void move(UUID uuid, Vector offset) {
+        if(!armorStands.containsKey(uuid))
+            return;
+        ArmorStand stand = armorStands.get(uuid);
+        stand.setPos(stand.getPosition(1).add(NMSUtils.vec3(offset)));
+        PacketUtils.send(playerVisibility.get(uuid), new ClientboundTeleportEntityPacket(stand));
     }
 
     private static void sendSpawnPackets(Player p, ArmorStand stand) {
