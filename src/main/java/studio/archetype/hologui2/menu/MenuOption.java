@@ -1,13 +1,10 @@
 package studio.archetype.hologui2.menu;
 
 import com.google.common.collect.Lists;
-import com.mojang.datafixers.util.Pair;
 import org.bukkit.*;
-import org.bukkit.entity.Player;
-import org.bukkit.util.BoundingBox;
-import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 import studio.archetype.hologui2.config.MenuOptionData;
+import studio.archetype.hologui2.menu.action.MenuAction;
 import studio.archetype.hologui2.menu.icon.MenuIcon;
 import studio.archetype.hologui2.utils.math.CollisionPlane;
 import studio.archetype.hologui2.utils.math.MathHelper;
@@ -16,29 +13,28 @@ import java.util.List;
 
 public class MenuOption {
 
-    private final MenuOptionData data;
-    private final MenuIcon<?> icon;
-    private final Player player;
+    private final MenuSession session;
+
     private final Location position;
+    private final MenuIcon<?> icon;
+    private final List<MenuAction<?>> actions;
 
     private CollisionPlane plane;
-    private boolean highlighted;
-    private Vector highlightOffset;
 
-    public MenuOption(Location centerPosition, Player p, MenuOptionData data) {
-        this.data = data;
-        this.player = p;
-        this.position = MathHelper.rotateAroundPoint(centerPosition.add(data.offset()), p.getEyeLocation(), 0, p.getLocation().getYaw());
+    public MenuOption(MenuSession session, MenuOptionData data) {
+        this.session = session;
+        this.position = MathHelper.rotateAroundPoint(
+                session.getCenterPoint().clone().add(data.offset()),
+                session.getPlayer().getEyeLocation(),
+                0, session.getPlayer().getLocation().getYaw());
         this.icon = MenuIcon.createIcon(data.icon());
-    }
-
-    public String getId() {
-        return data.id();
+        this.actions = Lists.newArrayList();
+        data.actions().forEach(d -> actions.add(MenuAction.get(d)));
     }
 
     public void show() {
-        plane = icon.spawn(player, position);
-        rotateToFace(player.getEyeLocation());
+        plane = icon.spawn(session.getPlayer(), position);
+        rotateToFace(session.getPlayer().getEyeLocation());
     }
 
     public void remove() {
@@ -55,12 +51,17 @@ public class MenuOption {
         plane.rotate((float)rotation.getX() + 180, (float)-rotation.getY());
     }
 
+    public void execute() {
+        actions.forEach(a -> {
+            a.execute(session);
+        });
+    }
+
     public void setHighlight(boolean highlight) {
-        this.highlighted = highlight;
         if(highlight)
-            icon.move(plane.getNormal().clone().multiply(1));
+            icon.offset(plane.getNormal().clone().multiply(1));
         else
-            icon.move(plane.getNormal().clone().multiply(-1));
+            icon.offset(plane.getNormal().clone().multiply(-1));
     }
 
     public void highlightHitbox(World w) {
@@ -81,13 +82,6 @@ public class MenuOption {
         playParticle(w, downLeft, Color.BLUE);
         playParticle(w, upRight, Color.BLUE);
         playParticle(w, upLeft, Color.BLUE);
-    }
-
-    public void tick() {
-        rotateToFace(player.getEyeLocation());
-        if(highlighted) {
-            this.highlightOffset = plane.getNormal().clone().multiply(1);
-        }
     }
 
     private void playParticle(World w, Vector v, Color c) {

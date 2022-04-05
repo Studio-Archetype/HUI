@@ -1,12 +1,8 @@
 package studio.archetype.hologui2.menu.icon;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import net.minecraft.network.chat.*;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.phys.AABB;
 import org.bukkit.Location;
-import org.bukkit.util.BoundingBox;
 import studio.archetype.hologui2.HoloGUI;
 import studio.archetype.hologui2.config.icon.TextImageIconData;
 import studio.archetype.hologui2.menu.ArmorStandManager;
@@ -17,7 +13,6 @@ import studio.archetype.hologui2.utils.math.CollisionPlane;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -31,11 +26,11 @@ public class TextImageMenuIcon extends MenuIcon<TextImageIconData> {
     }
 
     @Override
-    protected Map<UUID, Location> createArmorStands(Location loc) {
-        Map<UUID, Location> uuids = Maps.newHashMap();
+    protected List<UUID> createArmorStands(Location loc) {
+        List<UUID> uuids = Lists.newArrayList();
         loc.add(0, components.size() / 2F  * NAMETAG_SIZE, 0);
         components.forEach(c -> {
-            uuids.put(ArmorStandManager.add(ArmorStandBuilder.nametagArmorStand(c, loc)), loc.clone());
+            uuids.add(ArmorStandManager.add(ArmorStandBuilder.nametagArmorStand(c, loc)));
             loc.subtract(0, NAMETAG_SIZE, 0);
         });
         return uuids;

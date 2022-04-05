@@ -36,7 +36,6 @@ public final class MathHelper {
         double _2PI = 2 * Math.PI;
         double x = dir.getX();
         double z = dir.getZ();
-        System.out.println(dir);
         Vector rot = new Vector();
 
         if (x == 0 && z == 0) {
@@ -51,7 +50,6 @@ public final class MathHelper {
         double z2 = Math.pow(z, 2);
         double xz = Math.sqrt(x2 + z2);
         rot.setX(Math.toDegrees(Math.atan(-dir.getY() / xz)));
-        System.out.println(rot);
         return rot;
     }
 }
