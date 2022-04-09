@@ -19,15 +19,15 @@ public class ItemMenuIcon extends MenuIcon<ItemIconData> {
 
     private final ItemStack item;
 
-    public ItemMenuIcon(ItemIconData data) {
-        super(data);
+    public ItemMenuIcon(Location loc, ItemIconData data) {
+        super(loc, data);
         this.item = new ItemUtils.Builder(data.materialType())
                 .modelData(data.customModelValue())
                 .get();
     }
 
     @Override
-    protected CollisionPlane createBoundingBox(Location loc) {
+    public CollisionPlane createBoundingBox() {
         return null;
     }
 

@@ -16,8 +16,8 @@ public class TextMenuIcon extends MenuIcon<TextIconData> {
 
     private final List<Component> components;
 
-    public TextMenuIcon(TextIconData data) {
-        super(data);
+    public TextMenuIcon(Location loc, TextIconData data) {
+        super(loc, data);
         components = Lists.newArrayList();
         for(String s : data.text().split("\n"))
             components.add(new TextComponent(s));
@@ -35,10 +35,10 @@ public class TextMenuIcon extends MenuIcon<TextIconData> {
     }
 
     @Override
-    protected CollisionPlane createBoundingBox(Location loc) {
+    public CollisionPlane createBoundingBox() {
         float width = 0;
         for(Component component : components)
             width = Math.max(width, component.getContents().length() * NAMETAG_SIZE * 0.8F);
-        return new CollisionPlane(loc.toVector(), width / 2, components.size() * NAMETAG_SIZE / 2);
+        return new CollisionPlane(position.toVector(), width / 2, components.size() * NAMETAG_SIZE / 2);
     }
 }

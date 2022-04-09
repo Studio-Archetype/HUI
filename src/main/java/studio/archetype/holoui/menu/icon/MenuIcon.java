@@ -20,25 +20,19 @@ public abstract class MenuIcon<D extends MenuIconData> {
     protected final D data;
 
     protected List<UUID> armorStands;
+    protected Location position;
 
-    private Location position;
-
-    public MenuIcon(D data) {
+    public MenuIcon(Location loc, D data) {
+        this.position = loc.clone();
         this.data = data;
     }
 
     protected abstract List<UUID> createArmorStands(Location loc);
-    protected abstract CollisionPlane createBoundingBox(Location loc);
+    public abstract CollisionPlane createBoundingBox();
 
-    public CollisionPlane spawn(Player p, Location loc) {
-        this.position = loc;
-        armorStands = createArmorStands(loc.clone().subtract(0, NAMETAG_SIZE, 0));
+    public void spawn(Player p) {
+        armorStands = createArmorStands(position.clone().subtract(0, NAMETAG_SIZE, 0));
         armorStands.forEach(a -> ArmorStandManager.spawn(a, p));
-        CollisionPlane b = createBoundingBox(loc.clone().add(0, NAMETAG_SIZE, 0));
-        Location player = p.getEyeLocation();
-        double pitch = Math.atan2(player.getY(), player.getX()) - Math.atan2(b.getCenter().getY(), b.getCenter().getZ());
-        b.rotate((float)pitch, 0);
-        return b;
     }
 
     public void remove() {
@@ -58,13 +52,13 @@ public abstract class MenuIcon<D extends MenuIconData> {
         move(offset);
     }
 
-    public static MenuIcon<?> createIcon(MenuIconData data) {
+    public static MenuIcon<?> createIcon(Location loc, MenuIconData data) {
         if(data instanceof ItemIconData d)
-            return new ItemMenuIcon(d);
+            return new ItemMenuIcon(loc, d);
         else if(data instanceof TextImageIconData d)
-            return new TextImageMenuIcon(d);
+            return new TextImageMenuIcon(loc, d);
         else if(data instanceof TextIconData d)
-            return new TextMenuIcon(d);
+            return new TextMenuIcon(loc, d);
         return null;
     }
 }

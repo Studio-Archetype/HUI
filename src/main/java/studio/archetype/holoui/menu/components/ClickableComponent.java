@@ -1,0 +1,101 @@
+package studio.archetype.holoui.menu.components;
+
+import org.bukkit.Color;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.World;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.util.Vector;
+import studio.archetype.holoui.config.MenuComponentData;
+import studio.archetype.holoui.config.components.ComponentData;
+import studio.archetype.holoui.menu.MenuSession;
+import studio.archetype.holoui.utils.Events;
+import studio.archetype.holoui.utils.math.CollisionPlane;
+import studio.archetype.holoui.utils.math.MathHelper;
+
+public abstract class ClickableComponent<T extends ComponentData> extends MenuComponent<T> {
+
+    protected CollisionPlane plane;
+    protected boolean selected;
+
+    private Events click;
+
+    public ClickableComponent(MenuSession session, MenuComponentData data) {
+        super(session, data);
+        this.plane = currentIcon.createBoundingBox();
+    }
+
+    public abstract void onClick();
+
+    @Override
+    public void onOpen() {
+        click = Events.listen(PlayerInteractEvent.class, EventPriority.MONITOR, e -> {
+            if(session.getPlayer().equals(e.getPlayer()) && selected) {
+                if(e.getAction() == Action.LEFT_CLICK_AIR || e.getAction() == Action.LEFT_CLICK_BLOCK) {
+                    onClick();
+                    e.setCancelled(true);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void tick() {
+        Location playerPos = session.getPlayer().getEyeLocation().clone();
+        rotateToFace(playerPos);
+        boolean isLookingAt = plane.isLookingAt(playerPos.toVector(), playerPos.getDirection());
+        if(isLookingAt && !selected) {
+            this.selected = true;
+            currentIcon.move(plane.getNormal().clone());
+        } else if(!isLookingAt && selected) {
+            this.selected = false;
+            currentIcon.teleport(location);
+        }
+    }
+
+    @Override
+    public void onClose() {
+        click.unregister();
+    }
+
+    @Override
+    public void move(Location loc) {
+        super.move(loc);
+        this.plane.move(location);
+    }
+
+    public void highlightHitbox(World w) {
+        if(plane == null)
+            return;
+        Vector downRight = plane.getCenter().clone().subtract(plane.getUp().clone().multiply(plane.getHeight() / 2)).add(plane.getRight().clone().multiply(plane.getWidth() / 2));
+        Vector downLeft = plane.getCenter().clone().subtract(plane.getUp().clone().multiply(plane.getHeight() / 2)).subtract(plane.getRight().clone().multiply(plane.getWidth() / 2));
+        Vector upRight = plane.getCenter().clone().add(plane.getUp().clone().multiply(plane.getHeight() / 2)).add(plane.getRight().clone().multiply(plane.getWidth() / 2));
+        Vector upLeft = plane.getCenter().clone().add(plane.getUp().clone().multiply(plane.getHeight() / 2)).subtract(plane.getRight().clone().multiply(plane.getWidth() / 2));
+        for(float d = .1F; d <= 1; d += .1F) {
+            playParticle(w, MathHelper.interpolate(downRight, upRight, d), Color.BLUE);
+            playParticle(w, MathHelper.interpolate(downLeft, upLeft, d), Color.BLUE);
+            playParticle(w, MathHelper.interpolate(downLeft, downRight, d), Color.BLUE);
+            playParticle(w, MathHelper.interpolate(upLeft, upRight, d), Color.BLUE);
+            playParticle(w, MathHelper.interpolate(plane.getCenter(), plane.getCenter().clone().add(plane.getNormal().clone().multiply(2)), d), Color.RED);
+        }
+        playParticle(w, downRight, Color.BLUE);
+        playParticle(w, downLeft, Color.BLUE);
+        playParticle(w, upRight, Color.BLUE);
+        playParticle(w, upLeft, Color.BLUE);
+    }
+
+    private void rotateToFace(Location loc) {
+        Vector rotation = MathHelper.getRotationFromDirection(MathHelper.unit(plane.getCenter(), loc.toVector()));
+        plane.rotate((float)rotation.getX(), (float)-rotation.getY());
+        if(selected)
+            currentIcon.teleport(location.clone().add(plane.getNormal()));
+    }
+
+
+    private void playParticle(World w, Vector v, Color c) {
+        w.spawnParticle(Particle.REDSTONE, v.getX(), v.getY(), v.getZ(), 5, new Particle.DustOptions(c, 1));
+    }
+
+}

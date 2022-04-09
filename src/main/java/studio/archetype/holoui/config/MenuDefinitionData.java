@@ -17,8 +17,7 @@ public class MenuDefinitionData {
     private final String translationKey;
     private final Vector offset;
     private final boolean lockPosition;
-    private final List<ElementData> elements;
-    private final List<MenuOptionData> options;
+    private final List<MenuComponentData> componentData;
 
     @Setter private String id;
 
@@ -26,7 +25,6 @@ public class MenuDefinitionData {
             Codec.STRING.fieldOf("translationKey").forGetter(MenuDefinitionData::getTranslationKey),
             Codecs.VECTOR.fieldOf("offset").forGetter(MenuDefinitionData::getOffset),
             Codec.BOOL.optionalFieldOf("lockPosition", true).forGetter(MenuDefinitionData::isLockPosition),
-            ElementData.CODEC.listOf().fieldOf("elements").forGetter(MenuDefinitionData::getElements),
-            MenuOptionData.CODEC.listOf().fieldOf("options").forGetter(MenuDefinitionData::getOptions)
+            MenuComponentData.CODEC.listOf().fieldOf("components").forGetter(MenuDefinitionData::getComponentData)
     ).apply(i, MenuDefinitionData::new));
 }

@@ -1,7 +1,10 @@
 package studio.archetype.holoui.menu.icon;
 
 import com.google.common.collect.Lists;
-import net.minecraft.network.chat.*;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
 import org.bukkit.Location;
 import studio.archetype.holoui.HoloUI;
 import studio.archetype.holoui.config.icon.TextImageIconData;
@@ -20,15 +23,15 @@ public class TextImageMenuIcon extends MenuIcon<TextImageIconData> {
 
     private final List<Component> components;
 
-    public TextImageMenuIcon(TextImageIconData data) {
-        super(data);
+    public TextImageMenuIcon(Location loc, TextImageIconData data) {
+        super(loc, data);
         components = createComponents();
     }
 
     @Override
     protected List<UUID> createArmorStands(Location loc) {
         List<UUID> uuids = Lists.newArrayList();
-        loc.add(0, components.size() / 2F  * NAMETAG_SIZE, 0);
+        loc.add(0, (components.size() - 1) / 2F  * NAMETAG_SIZE, 0);
         components.forEach(c -> {
             uuids.add(ArmorStandManager.add(ArmorStandBuilder.nametagArmorStand(c, loc)));
             loc.subtract(0, NAMETAG_SIZE, 0);
@@ -37,11 +40,12 @@ public class TextImageMenuIcon extends MenuIcon<TextImageIconData> {
     }
 
     @Override
-    protected CollisionPlane createBoundingBox(Location loc) {
+    public CollisionPlane createBoundingBox() {
         float width = 0;
         for(Component component : components)
             width = Math.max(width, component.getString().length() * NAMETAG_SIZE / 2);
-        return new CollisionPlane(loc.toVector(), width, components.size() * NAMETAG_SIZE);
+
+        return new CollisionPlane(position.toVector(), width, components.size() * NAMETAG_SIZE);
     }
 
     private List<Component> createComponents() {
@@ -70,20 +74,12 @@ public class TextImageMenuIcon extends MenuIcon<TextImageIconData> {
     }
 
     private static final List<Component> MISSING = Lists.newArrayList(
-            TextUtils.textColor("████████", "#000000").append(TextUtils.textColor("████████", "#f800f8")),
-            TextUtils.textColor("████████", "#000000").append(TextUtils.textColor("████████", "#f800f8")),
-            TextUtils.textColor("████████", "#000000").append(TextUtils.textColor("████████", "#f800f8")),
-            TextUtils.textColor("████████", "#000000").append(TextUtils.textColor("████████", "#f800f8")),
-            TextUtils.textColor("████████", "#000000").append(TextUtils.textColor("████████", "#f800f8")),
-            TextUtils.textColor("████████", "#000000").append(TextUtils.textColor("████████", "#f800f8")),
-            TextUtils.textColor("████████", "#000000").append(TextUtils.textColor("████████", "#f800f8")),
-            TextUtils.textColor("████████", "#000000").append(TextUtils.textColor("████████", "#f800f8")),
-            TextUtils.textColor("████████", "#f800f8").append(TextUtils.textColor("████████", "#000000")),
-            TextUtils.textColor("████████", "#f800f8").append(TextUtils.textColor("████████", "#000000")),
-            TextUtils.textColor("████████", "#f800f8").append(TextUtils.textColor("████████", "#000000")),
-            TextUtils.textColor("████████", "#f800f8").append(TextUtils.textColor("████████", "#000000")),
-            TextUtils.textColor("████████", "#f800f8").append(TextUtils.textColor("████████", "#000000")),
-            TextUtils.textColor("████████", "#f800f8").append(TextUtils.textColor("████████", "#000000")),
-            TextUtils.textColor("████████", "#f800f8").append(TextUtils.textColor("████████", "#000000")),
-            TextUtils.textColor("████████", "#f800f8").append(TextUtils.textColor("████████", "#000000")));
+            TextUtils.textColor("████", "#000000").append(TextUtils.textColor("████", "#f800f8")),
+            TextUtils.textColor("████", "#000000").append(TextUtils.textColor("████", "#f800f8")),
+            TextUtils.textColor("████", "#000000").append(TextUtils.textColor("████", "#f800f8")),
+            TextUtils.textColor("████", "#000000").append(TextUtils.textColor("████", "#f800f8")),
+            TextUtils.textColor("████", "#f800f8").append(TextUtils.textColor("████", "#000000")),
+            TextUtils.textColor("████", "#f800f8").append(TextUtils.textColor("████", "#000000")),
+            TextUtils.textColor("████", "#f800f8").append(TextUtils.textColor("████", "#000000")),
+            TextUtils.textColor("████", "#f800f8").append(TextUtils.textColor("████", "#000000")));
 }

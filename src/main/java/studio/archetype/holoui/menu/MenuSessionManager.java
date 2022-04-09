@@ -1,18 +1,19 @@
 package studio.archetype.holoui.menu;
 
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.Vector;
 import studio.archetype.holoui.HoloUI;
 import studio.archetype.holoui.config.HuiSettings;
 import studio.archetype.holoui.config.MenuDefinitionData;
+import studio.archetype.holoui.menu.components.ClickableComponent;
+import studio.archetype.holoui.menu.components.MenuComponent;
 import studio.archetype.holoui.utils.Events;
 import studio.archetype.holoui.utils.SchedulerUtils;
 
@@ -29,8 +30,19 @@ public final class MenuSessionManager {
     public MenuSessionManager() {
         if(HuiSettings.DEBUG.getValue())
             controlDebugTask(true);
-        SchedulerUtils.scheduleSyncTask(HoloUI.INSTANCE, 1L, () -> sessions.forEach(MenuSession::updateSelection), false);
-        registerEvents();
+        SchedulerUtils.scheduleSyncTask(HoloUI.INSTANCE, 1L, () -> sessions.forEach(s -> s.getComponents().forEach(MenuComponent::tick)), false);
+        Events.listen(PlayerMoveEvent.class, EventPriority.MONITOR, e -> sessions.forEach(s -> {
+            if(e.getPlayer().equals(s.getPlayer())) {
+                if(s.isFreezePlayer()) {
+                    Location to = e.getFrom();
+                    to.setDirection(e.getTo().getDirection());
+                    e.setTo(to);
+                    e.setCancelled(true);
+                } else {
+                    s.move(e.getTo().clone());
+                }
+            }
+        }));
     }
 
     public void createNewSession(Player p, MenuDefinitionData menu) {
@@ -72,46 +84,19 @@ public final class MenuSessionManager {
         return sessions.stream().filter(s -> s.getPlayer().equals(p)).findFirst();
     }
 
-    private void registerEvents() {
-        Events.listen(PlayerMoveEvent.class, EventPriority.MONITOR, e -> {
-            sessions.forEach(s -> {
-                if(e.getPlayer().equals(s.getPlayer())) {
-                    if(s.isFreezePlayer()) {
-                        Location to = e.getFrom();
-                        to.setDirection(e.getTo().getDirection());
-                        e.setTo(to);
-                        e.setCancelled(true);
-                    } else {
-                        s.move(e.getTo().clone());
-                    }
-                }
-            });
-        });
-
-        Events.listen(PlayerInteractEvent.class, EventPriority.MONITOR, e -> {
-           sessions.forEach(s -> {
-               if(s.getPlayer().equals(e.getPlayer()) && s.getSelection() != null) {
-                   if(e.getAction() == Action.LEFT_CLICK_AIR || e.getAction() == Action.LEFT_CLICK_BLOCK)
-                       s.getSelection().execute();
-               }
-           });
-        });
-    }
-
     public void controlDebugTask(boolean enable) {
         if(enable && (debug == null || debug.isCancelled())) {
             debug = SchedulerUtils.scheduleSyncTask(HoloUI.INSTANCE, 2L, () -> {
-                sessions.forEach(s -> {
-                    s.getOptions().forEach((k, o) -> {
+                sessions.forEach(s -> s.getComponents().forEach(c -> {
+                    if(c instanceof ClickableComponent<?> o)
                         o.highlightHitbox(s.getPlayer().getWorld());
-                        boolean result = o.checkRaycast(s.getPlayer().getEyeLocation());
-                        TextComponent component = new TextComponent(result ? "Hit!" : "Miss...");
-                        component.setColor(result ? ChatColor.GREEN : ChatColor.RED);
-                        s.getPlayer().spigot().sendMessage(ChatMessageType.ACTION_BAR, component);
-                    });
-                });
+                }));
             }, false);
         } else if(!enable && (debug != null && !debug.isCancelled()))
             debug.cancel();
+    }
+
+    private void playParticle(World w, Vector v, Color c) {
+        w.spawnParticle(Particle.REDSTONE, v.getX(), v.getY(), v.getZ(), 5, new Particle.DustOptions(c, 1));
     }
 }
