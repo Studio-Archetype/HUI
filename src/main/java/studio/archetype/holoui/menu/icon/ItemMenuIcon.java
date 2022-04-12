@@ -2,6 +2,7 @@ package studio.archetype.holoui.menu.icon;
 
 import com.google.common.collect.Lists;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import studio.archetype.holoui.config.icon.ItemIconData;
 import studio.archetype.holoui.menu.ArmorStandManager;
@@ -19,8 +20,8 @@ public class ItemMenuIcon extends MenuIcon<ItemIconData> {
 
     private final ItemStack item;
 
-    public ItemMenuIcon(Location loc, ItemIconData data) {
-        super(loc, data);
+    public ItemMenuIcon(Player p, Location loc, ItemIconData data) {
+        super(p, loc, data);
         this.item = new ItemUtils.Builder(data.materialType())
                 .modelData(data.customModelValue())
                 .get();

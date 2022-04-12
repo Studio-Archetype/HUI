@@ -1,7 +1,6 @@
 package studio.archetype.holoui.utils.file;
 
 import java.io.File;
-import java.io.IOException;
 
 public class FileWatcher {
 
@@ -11,15 +10,6 @@ public class FileWatcher {
 
     public FileWatcher(File file) {
         this.file = file;
-        if(!file.exists()) {
-            if(file.isDirectory())
-                file.mkdirs();
-            else {
-                try { file.createNewFile(); }
-                catch(IOException ignored) { }
-            }
-
-        }
         readProperties();
     }
 

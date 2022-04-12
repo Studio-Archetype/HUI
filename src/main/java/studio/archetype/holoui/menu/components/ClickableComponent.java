@@ -17,13 +17,16 @@ import studio.archetype.holoui.utils.math.MathHelper;
 
 public abstract class ClickableComponent<T extends ComponentData> extends MenuComponent<T> {
 
+    private final float highlightMod;
+
     protected CollisionPlane plane;
     protected boolean selected;
 
     private Events click;
 
-    public ClickableComponent(MenuSession session, MenuComponentData data) {
+    public ClickableComponent(MenuSession session, MenuComponentData data, float highlightMod) {
         super(session, data);
+        this.highlightMod = highlightMod;
         this.plane = currentIcon.createBoundingBox();
     }
 
@@ -48,7 +51,7 @@ public abstract class ClickableComponent<T extends ComponentData> extends MenuCo
         boolean isLookingAt = plane.isLookingAt(playerPos.toVector(), playerPos.getDirection());
         if(isLookingAt && !selected) {
             this.selected = true;
-            currentIcon.move(plane.getNormal().clone());
+            currentIcon.move(plane.getNormal().clone().multiply(highlightMod));
         } else if(!isLookingAt && selected) {
             this.selected = false;
             currentIcon.teleport(location);
@@ -87,12 +90,11 @@ public abstract class ClickableComponent<T extends ComponentData> extends MenuCo
     }
 
     private void rotateToFace(Location loc) {
-        Vector rotation = MathHelper.getRotationFromDirection(MathHelper.unit(plane.getCenter(), loc.toVector()));
+        Vector rotation = MathHelper.getRotationFromDirection(MathHelper.unit(loc.toVector(), plane.getCenter()));
         plane.rotate((float)rotation.getX(), (float)-rotation.getY());
         if(selected)
             currentIcon.teleport(location.clone().add(plane.getNormal()));
     }
-
 
     private void playParticle(World w, Vector v, Color c) {
         w.spawnParticle(Particle.REDSTONE, v.getX(), v.getY(), v.getZ(), 5, new Particle.DustOptions(c, 1));

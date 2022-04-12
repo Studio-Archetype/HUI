@@ -1,17 +1,15 @@
 package studio.archetype.holoui.utils.settings;
 
 import com.google.common.collect.Maps;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonParser;
-import lombok.Getter;
+import com.google.gson.*;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.io.FileUtils;
 import studio.archetype.holoui.HoloUI;
 import studio.archetype.holoui.utils.file.FileWatcher;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -19,23 +17,46 @@ import java.util.logging.Level;
 
 public abstract class Settings {
 
-    private final Map<String, Entry<?>> fields;
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+
+    private final Map<String, Entry<?>> fields = Maps.newHashMap();
 
     private final File file;
     private final FileWatcher fileWatcher;
 
     public Settings(File file) {
         this.file = file;
-        this.fileWatcher = new FileWatcher(file);
-        this.fields = Maps.newHashMap();
-
         registerFields();
-        doReload(false);
+
+        if(!file.exists() || file.isDirectory()) {
+            try {
+                HoloUI.log(Level.INFO, "Settings file missing, generating new default file.");
+                if(file.isDirectory())
+                    FileUtils.deleteQuietly(file);
+                else
+                    file.getParentFile().mkdirs();
+                file.createNewFile();
+                writeJson();
+            } catch(IOException e) {
+                HoloUI.log(Level.WARNING, "An error occurred while writing the settings default settings file:");
+                if(e.getMessage() != null)
+                    HoloUI.log(Level.WARNING, "\t%s: %s", e.getClass().getSimpleName(), e.getMessage());
+                else
+                    HoloUI.log(Level.WARNING, "\t%s", e.getClass().getSimpleName());
+            }
+        } else
+            doReload(false);
+
+        this.fileWatcher = new FileWatcher(file);
     }
 
     public void update() {
         if(fileWatcher.checkModified())
             doReload(true);
+    }
+
+    public void write() {
+        writeJson();
     }
 
     protected abstract void registerFields();
@@ -56,7 +77,20 @@ public abstract class Settings {
             else
                 HoloUI.log(Level.WARNING, "\t%s", e.getClass().getSimpleName());
         }
+    }
 
+    private void writeJson() {
+        try(FileWriter writer = new FileWriter(file)) {
+            JsonObject obj = new JsonObject();
+            fields.forEach((name, field) -> field.serialize(name, obj));
+            GSON.toJson(obj, writer);
+        } catch(IOException e) {
+            HoloUI.log(Level.WARNING, "An error occurred while writing the settings file:");
+            if(e.getMessage() != null)
+                HoloUI.log(Level.WARNING, "\t%s: %s", e.getClass().getSimpleName(), e.getMessage());
+            else
+                HoloUI.log(Level.WARNING, "\t%s", e.getClass().getSimpleName());
+        }
     }
 
     @RequiredArgsConstructor
@@ -66,8 +100,15 @@ public abstract class Settings {
         private final V defaultValue;
         private final Consumer<V> onChange;
 
-        @Getter
         private V value;
+
+        public V value() {
+            return value == null ? (value = defaultValue) : value;
+        }
+
+        private void serialize(String key, JsonObject json) {
+            this.type.serialize(key, value, json);
+        }
 
         private void update(String key, JsonObject obj, boolean triggerListener) {
             if(!obj.has(key))

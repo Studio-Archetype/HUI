@@ -8,10 +8,7 @@ import java.io.File;
 
 public class HuiSettings extends Settings {
 
-    public static final Entry<Boolean> DEBUG = new Entry<>(EntryType.BOOLEAN, false, (b) -> {
-        System.out.println("Meme: " + b);
-        HoloUI.INSTANCE.getSessionManager().controlDebugTask(b);
-    });
+    public static final Entry<Boolean> DEBUG = new Entry<>(EntryType.BOOLEAN, false, (b) -> HoloUI.INSTANCE.getSessionManager().controlDebugTask(b));
 
     public HuiSettings(File configDir) {
         super(new File(configDir, "settings.json"));

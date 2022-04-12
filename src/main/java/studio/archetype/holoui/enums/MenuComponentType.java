@@ -4,12 +4,14 @@ import com.mojang.serialization.Codec;
 import lombok.AllArgsConstructor;
 import studio.archetype.holoui.config.components.ButtonComponentData;
 import studio.archetype.holoui.config.components.ComponentData;
+import studio.archetype.holoui.config.components.DecoComponentData;
 import studio.archetype.holoui.utils.codec.CodecDispatcherEnum;
 import studio.archetype.holoui.utils.codec.EnumCodec;
 
 @AllArgsConstructor
 public enum MenuComponentType implements EnumCodec.Values, CodecDispatcherEnum<ComponentData> {
     BUTTON("button", ButtonComponentData.CODEC),
+    DECO("decoration", DecoComponentData.CODEC),
     TOGGLE("toggle", null);
 
     public static final Codec<MenuComponentType> CODEC = new EnumCodec<>(MenuComponentType.class);

@@ -33,7 +33,7 @@ public final class ConfigManager {
 
     private final Map<String, MenuDefinitionData> menuRegistry = Maps.newHashMap();
 
-    private final File imageDir;
+    private final File menuDir, imageDir;
     private final FolderWatcher menuDefinitionFolder;
 
     @Getter
@@ -43,8 +43,11 @@ public final class ConfigManager {
         this.imageDir = new File(configDir, "images");
         if(!imageDir.exists())
             imageDir.mkdirs();
+        this.menuDir = new File(configDir, "menus");
+        if(!menuDir.exists())
+            menuDir.mkdirs();
 
-        menuDefinitionFolder = new FolderWatcher(new File(configDir, "menus"));
+        menuDefinitionFolder = new FolderWatcher(menuDir);
         settings = new HuiSettings(configDir);
 
         loadConfigs();
@@ -88,6 +91,10 @@ public final class ConfigManager {
                 });
             }
         }, true);
+    }
+
+    public void shutdown() {
+        settings.write();
     }
 
     public Set<String> keys() {

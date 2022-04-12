@@ -5,6 +5,7 @@ import org.bukkit.util.Vector;
 import studio.archetype.holoui.config.MenuComponentData;
 import studio.archetype.holoui.config.components.ButtonComponentData;
 import studio.archetype.holoui.config.components.ComponentData;
+import studio.archetype.holoui.config.components.DecoComponentData;
 import studio.archetype.holoui.menu.MenuSession;
 import studio.archetype.holoui.menu.icon.MenuIcon;
 import studio.archetype.holoui.utils.math.MathHelper;
@@ -40,7 +41,7 @@ public abstract class MenuComponent<T extends ComponentData> {
     protected abstract void onClose();
 
     public void open() {
-        this.currentIcon.spawn(session.getPlayer());
+        this.currentIcon.spawn();
         onOpen();
     }
 
@@ -57,6 +58,8 @@ public abstract class MenuComponent<T extends ComponentData> {
     public static MenuComponent<?> getComponent(MenuSession session, MenuComponentData data) {
         if(data.data() instanceof ButtonComponentData)
             return new ButtonComponent(session, data);
+        else if(data.data() instanceof DecoComponentData)
+            return new DecoComponent(session, data);
         else
             return null;
     }

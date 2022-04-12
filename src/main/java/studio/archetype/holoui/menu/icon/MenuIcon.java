@@ -17,12 +17,14 @@ public abstract class MenuIcon<D extends MenuIconData> {
 
     protected static final float NAMETAG_SIZE = 1 / 16F * 3.5F;
 
+    protected final Player player;
     protected final D data;
 
     protected List<UUID> armorStands;
     protected Location position;
 
-    public MenuIcon(Location loc, D data) {
+    public MenuIcon(Player p, Location loc, D data) {
+        this.player = p;
         this.position = loc.clone();
         this.data = data;
     }
@@ -30,9 +32,9 @@ public abstract class MenuIcon<D extends MenuIconData> {
     protected abstract List<UUID> createArmorStands(Location loc);
     public abstract CollisionPlane createBoundingBox();
 
-    public void spawn(Player p) {
+    public void spawn() {
         armorStands = createArmorStands(position.clone().subtract(0, NAMETAG_SIZE, 0));
-        armorStands.forEach(a -> ArmorStandManager.spawn(a, p));
+        armorStands.forEach(a -> ArmorStandManager.spawn(a, player));
     }
 
     public void remove() {
@@ -52,13 +54,13 @@ public abstract class MenuIcon<D extends MenuIconData> {
         move(offset);
     }
 
-    public static MenuIcon<?> createIcon(Location loc, MenuIconData data) {
+    public static MenuIcon<?> createIcon(Player p, Location loc, MenuIconData data) {
         if(data instanceof ItemIconData d)
-            return new ItemMenuIcon(loc, d);
+            return new ItemMenuIcon(p, loc, d);
         else if(data instanceof TextImageIconData d)
-            return new TextImageMenuIcon(loc, d);
+            return new TextImageMenuIcon(p, loc, d);
         else if(data instanceof TextIconData d)
-            return new TextMenuIcon(loc, d);
+            return new TextMenuIcon(p, loc, d);
         return null;
     }
 }

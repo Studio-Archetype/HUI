@@ -1,14 +1,11 @@
 package studio.archetype.holoui.menu;
 
-import org.bukkit.Color;
 import org.bukkit.Location;
-import org.bukkit.Particle;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitTask;
-import org.bukkit.util.Vector;
 import studio.archetype.holoui.HoloUI;
 import studio.archetype.holoui.config.HuiSettings;
 import studio.archetype.holoui.config.MenuDefinitionData;
@@ -28,7 +25,7 @@ public final class MenuSessionManager {
     private BukkitTask debug;
 
     public MenuSessionManager() {
-        if(HuiSettings.DEBUG.getValue())
+        if(HuiSettings.DEBUG.value())
             controlDebugTask(true);
         SchedulerUtils.scheduleSyncTask(HoloUI.INSTANCE, 1L, () -> sessions.forEach(s -> s.getComponents().forEach(MenuComponent::tick)), false);
         Events.listen(PlayerMoveEvent.class, EventPriority.MONITOR, e -> sessions.forEach(s -> {
@@ -43,9 +40,11 @@ public final class MenuSessionManager {
                 }
             }
         }));
+        Events.listen(PlayerQuitEvent.class, e -> destroySession(e.getPlayer()));
     }
 
     public void createNewSession(Player p, MenuDefinitionData menu) {
+        destroySession(p);
         MenuSession session = new MenuSession(menu, p);
         sessions.add(session);
         session.open();
@@ -86,17 +85,11 @@ public final class MenuSessionManager {
 
     public void controlDebugTask(boolean enable) {
         if(enable && (debug == null || debug.isCancelled())) {
-            debug = SchedulerUtils.scheduleSyncTask(HoloUI.INSTANCE, 2L, () -> {
-                sessions.forEach(s -> s.getComponents().forEach(c -> {
-                    if(c instanceof ClickableComponent<?> o)
-                        o.highlightHitbox(s.getPlayer().getWorld());
-                }));
-            }, false);
+            debug = SchedulerUtils.scheduleSyncTask(HoloUI.INSTANCE, 2L, () -> sessions.forEach(s -> s.getComponents().forEach(c -> {
+                if(c instanceof ClickableComponent<?> o)
+                    o.highlightHitbox(s.getPlayer().getWorld());
+            })), false);
         } else if(!enable && (debug != null && !debug.isCancelled()))
             debug.cancel();
-    }
-
-    private void playParticle(World w, Vector v, Color c) {
-        w.spawnParticle(Particle.REDSTONE, v.getX(), v.getY(), v.getZ(), 5, new Particle.DustOptions(c, 1));
     }
 }

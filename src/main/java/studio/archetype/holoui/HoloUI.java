@@ -28,6 +28,7 @@ public final class HoloUI extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        configManager.shutdown();
         sessionManager.destroyAll();
     }
 

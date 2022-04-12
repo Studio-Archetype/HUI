@@ -24,6 +24,7 @@ repositories {
         }
     }
     maven { url "https://dl.cloudsmith.io/public/arcane/archive/maven/" }
+    maven { url "https://repo.extendedclip.com/content/repositories/placeholderapi/"}
 }
 
 dependencies {
@@ -31,6 +32,7 @@ dependencies {
     annotationProcessor "org.projectlombok:lombok:${project.lombokVersion}"
     compileOnly "org.spigotmc:spigot-api:${project.spigotJarVersion}"
     compileOnly "org.bukkit:craftbukkit:${project.spigotJarVersion}:remapped-mojang"
+    compileOnly "me.clip:placeholderapi:${project.placeholderVersion}"
 }
 
 processResources {
@@ -47,12 +49,12 @@ processResources {
 def buildToolsJar = new File(buildDir, "buildTools/BuildTools.jar")
 def specialSourceJar = new File(buildDir, "specialSource/SpecialSource.jar")
 def buildToolsHint = new File(buildDir, "buildTools/craftbukkit-" + project.nmsVersion + ".jar")
-def outputShadeJar = new File(buildDir, "libs/HoloGUI2-" + version + "-all.jar")
+def outputShadeJar = new File(buildDir, "libs/HoloUI-" + version + "-all.jar")
 def specialSourceFolder = new File(buildDir, "specialSource")
 def m2s = new File(System.properties['user.home'] + "/.m2/repository").getAbsolutePath()
-def ssiJar = new File(buildDir, "specialSource/HoloGUI2-" + version + "-all.jar")
-def ssobfJar = new File(buildDir, "specialSource/HoloGUI2-" + version + "-rmo.jar")
-def ssJar = new File(buildDir, "specialSource/HoloGUI2-" + version + "-rma.jar")
+def ssiJar = new File(buildDir, "specialSource/HoloUI-" + version + "-all.jar")
+def ssobfJar = new File(buildDir, "specialSource/HoloUI-" + version + "-rmo.jar")
+def ssJar = new File(buildDir, "specialSource/HoloUI-" + version + "-rma.jar")
 
 task downloadBuildtools(type: Download) {
     group 'remapping'
@@ -127,7 +129,7 @@ task specialSource(type: Copy) {
     group 'remapping'
     from ssJar
     into buildDir
-    rename { String name -> name.replace('HoloGUI2-' + version + "-rma.jar", "HoloGUI2-" + version + ".jar") }
+    rename { String name -> name.replace('HoloUI-' + version + "-rma.jar", "HoloUI-" + version + ".jar") }
     dependsOn specialSourceRemap
 }
 
@@ -164,7 +166,7 @@ task downloadBile(dependsOn: createServer, type: Download) {
 
 task copyPlugin(dependsOn: specialSource, type: Copy) {
     group "server"
-    from new File(buildDir, "HoloGUI2-${project.version}.jar")
+    from new File(buildDir, "HoloUI-${project.version}.jar")
     into pluginDir
 }
 

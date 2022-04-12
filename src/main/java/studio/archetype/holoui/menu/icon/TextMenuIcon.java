@@ -1,9 +1,11 @@
 package studio.archetype.holoui.menu.icon;
 
 import com.google.common.collect.Lists;
+import me.clip.placeholderapi.PlaceholderAPI;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import studio.archetype.holoui.config.icon.TextIconData;
 import studio.archetype.holoui.menu.ArmorStandManager;
 import studio.archetype.holoui.utils.ArmorStandBuilder;
@@ -16,11 +18,11 @@ public class TextMenuIcon extends MenuIcon<TextIconData> {
 
     private final List<Component> components;
 
-    public TextMenuIcon(Location loc, TextIconData data) {
-        super(loc, data);
+    public TextMenuIcon(Player p, Location loc, TextIconData data) {
+        super(p, loc, data);
         components = Lists.newArrayList();
         for(String s : data.text().split("\n"))
-            components.add(new TextComponent(s));
+            components.add(new TextComponent(PlaceholderAPI.setPlaceholders(p, s)));
     }
 
     @Override

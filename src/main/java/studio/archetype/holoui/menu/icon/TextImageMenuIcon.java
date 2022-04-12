@@ -6,6 +6,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextComponent;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import studio.archetype.holoui.HoloUI;
 import studio.archetype.holoui.config.icon.TextImageIconData;
 import studio.archetype.holoui.menu.ArmorStandManager;
@@ -23,8 +24,8 @@ public class TextImageMenuIcon extends MenuIcon<TextImageIconData> {
 
     private final List<Component> components;
 
-    public TextImageMenuIcon(Location loc, TextImageIconData data) {
-        super(loc, data);
+    public TextImageMenuIcon(Player p, Location loc, TextImageIconData data) {
+        super(p, loc, data);
         components = createComponents();
     }
 
