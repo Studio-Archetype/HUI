@@ -20,12 +20,14 @@ public class MenuSession {
     private final List<MenuComponent<?>> components;
 
     private Location centerPoint;
+    private float initialY;
 
     public MenuSession(MenuDefinitionData data, Player p) {
         this.id = data.getId();
         this.player = p;
         this.freezePlayer = data.isLockPosition();
-        this.offset = data.getOffset();
+        this.offset = data.getOffset().clone().multiply(new Vector(-1, 1, 1));
+
         this.centerPoint = p.getLocation().clone().add(offset);
         this.components = Lists.newArrayList();
         data.getComponentData().forEach(a -> components.add(MenuComponent.getComponent(this, a)));
@@ -37,6 +39,7 @@ public class MenuSession {
     }
 
     public void open() {
+        this.initialY = -player.getEyeLocation().getYaw();
         components.forEach(MenuComponent::open);
     }
 

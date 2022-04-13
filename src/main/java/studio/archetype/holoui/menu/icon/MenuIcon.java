@@ -43,10 +43,9 @@ public abstract class MenuIcon<D extends MenuIconData> {
     }
 
     public void move(Vector offset) {
-        if(armorStands != null && !armorStands.isEmpty()) {
+        if(armorStands != null && !armorStands.isEmpty())
             armorStands.forEach(a -> ArmorStandManager.move(a, offset));
-            this.position.add(offset);
-        }
+        this.position.add(offset);
     }
 
     public void teleport(Location loc) {

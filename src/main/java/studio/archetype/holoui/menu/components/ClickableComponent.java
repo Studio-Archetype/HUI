@@ -2,7 +2,6 @@ package studio.archetype.holoui.menu.components;
 
 import org.bukkit.Color;
 import org.bukkit.Location;
-import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
@@ -12,6 +11,7 @@ import studio.archetype.holoui.config.MenuComponentData;
 import studio.archetype.holoui.config.components.ComponentData;
 import studio.archetype.holoui.menu.MenuSession;
 import studio.archetype.holoui.utils.Events;
+import studio.archetype.holoui.utils.ParticleUtils;
 import studio.archetype.holoui.utils.math.CollisionPlane;
 import studio.archetype.holoui.utils.math.MathHelper;
 
@@ -77,16 +77,16 @@ public abstract class ClickableComponent<T extends ComponentData> extends MenuCo
         Vector upRight = plane.getCenter().clone().add(plane.getUp().clone().multiply(plane.getHeight() / 2)).add(plane.getRight().clone().multiply(plane.getWidth() / 2));
         Vector upLeft = plane.getCenter().clone().add(plane.getUp().clone().multiply(plane.getHeight() / 2)).subtract(plane.getRight().clone().multiply(plane.getWidth() / 2));
         for(float d = .1F; d <= 1; d += .1F) {
-            playParticle(w, MathHelper.interpolate(downRight, upRight, d), Color.BLUE);
-            playParticle(w, MathHelper.interpolate(downLeft, upLeft, d), Color.BLUE);
-            playParticle(w, MathHelper.interpolate(downLeft, downRight, d), Color.BLUE);
-            playParticle(w, MathHelper.interpolate(upLeft, upRight, d), Color.BLUE);
-            playParticle(w, MathHelper.interpolate(plane.getCenter(), plane.getCenter().clone().add(plane.getNormal().clone().multiply(2)), d), Color.RED);
+            ParticleUtils.playParticle(w, MathHelper.interpolate(downRight, upRight, d), Color.BLUE);
+            ParticleUtils.playParticle(w, MathHelper.interpolate(downLeft, upLeft, d), Color.BLUE);
+            ParticleUtils.playParticle(w, MathHelper.interpolate(downLeft, downRight, d), Color.BLUE);
+            ParticleUtils.playParticle(w, MathHelper.interpolate(upLeft, upRight, d), Color.BLUE);
+            ParticleUtils.playParticle(w, MathHelper.interpolate(plane.getCenter(), plane.getCenter().clone().add(plane.getNormal().clone().multiply(2)), d), Color.RED);
         }
-        playParticle(w, downRight, Color.BLUE);
-        playParticle(w, downLeft, Color.BLUE);
-        playParticle(w, upRight, Color.BLUE);
-        playParticle(w, upLeft, Color.BLUE);
+        ParticleUtils.playParticle(w, downRight, Color.BLUE);
+        ParticleUtils.playParticle(w, downLeft, Color.BLUE);
+        ParticleUtils.playParticle(w, upRight, Color.BLUE);
+        ParticleUtils.playParticle(w, upLeft, Color.BLUE);
     }
 
     private void rotateToFace(Location loc) {
@@ -94,10 +94,6 @@ public abstract class ClickableComponent<T extends ComponentData> extends MenuCo
         plane.rotate((float)rotation.getX(), (float)-rotation.getY());
         if(selected)
             currentIcon.teleport(location.clone().add(plane.getNormal()));
-    }
-
-    private void playParticle(World w, Vector v, Color c) {
-        w.spawnParticle(Particle.REDSTONE, v.getX(), v.getY(), v.getZ(), 5, new Particle.DustOptions(c, 1));
     }
 
 }

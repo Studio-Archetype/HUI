@@ -1,5 +1,6 @@
 package studio.archetype.holoui.menu.components;
 
+import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
 import studio.archetype.holoui.config.MenuComponentData;
@@ -18,6 +19,7 @@ public abstract class MenuComponent<T extends ComponentData> {
     protected final Vector offset;
     protected final T data;
 
+    @Getter
     protected Location location;
     protected MenuIcon<?> currentIcon;
 
@@ -25,13 +27,10 @@ public abstract class MenuComponent<T extends ComponentData> {
     public MenuComponent(MenuSession session, MenuComponentData data) {
         this.session = session;
         this.id = data.id();
-        this.offset = data.offset();
+        this.offset = data.offset().clone().multiply(new Vector(-1, 1, 1));
         this.data = (T)data.data();
 
-        this.location = MathHelper.rotateAroundPoint(
-                session.getCenterPoint().clone().add(offset),
-                session.getPlayer().getEyeLocation(),
-                0, session.getPlayer().getLocation().getYaw());
+        this.location = session.getCenterPoint().clone().add(offset);
     }
 
     public abstract void tick();
@@ -41,6 +40,7 @@ public abstract class MenuComponent<T extends ComponentData> {
     protected abstract void onClose();
 
     public void open() {
+        rotateByPlayer();
         this.currentIcon = createIcon();
         this.currentIcon.spawn();
         onOpen();
@@ -53,6 +53,7 @@ public abstract class MenuComponent<T extends ComponentData> {
 
     public void move(Location loc) {
         this.location = loc.add(offset);
+        rotateByPlayer();
         this.currentIcon.teleport(location);
     }
 
@@ -65,5 +66,11 @@ public abstract class MenuComponent<T extends ComponentData> {
             return new ToggleComponent(session, data);
         else
             return null;
+    }
+
+    protected void rotateByPlayer() {
+        MathHelper.rotateAroundPoint(this.location,
+                session.getPlayer().getEyeLocation(),
+                0, session.getInitialY());
     }
 }

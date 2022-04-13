@@ -1,6 +1,8 @@
 package studio.archetype.holoui.menu;
 
+import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -12,7 +14,9 @@ import studio.archetype.holoui.config.MenuDefinitionData;
 import studio.archetype.holoui.menu.components.ClickableComponent;
 import studio.archetype.holoui.menu.components.MenuComponent;
 import studio.archetype.holoui.utils.Events;
+import studio.archetype.holoui.utils.ParticleUtils;
 import studio.archetype.holoui.utils.SchedulerUtils;
+import studio.archetype.holoui.utils.math.MathHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,11 +26,11 @@ public final class MenuSessionManager {
 
     private static final List<MenuSession> sessions = new ArrayList<>();
 
-    private BukkitTask debug;
+    private BukkitTask debugHitbox, debugPos;
 
     public MenuSessionManager() {
-        if(HuiSettings.DEBUG.value())
-            controlDebugTask(true);
+        controlHitboxDebug(HuiSettings.DEBUG_HITBOX.value());
+        controlPositionDebug(HuiSettings.DEBUG_SPACING.value());
         SchedulerUtils.scheduleSyncTask(HoloUI.INSTANCE, 1L, () -> sessions.forEach(s -> s.getComponents().forEach(MenuComponent::tick)), false);
         Events.listen(PlayerMoveEvent.class, EventPriority.MONITOR, e -> sessions.forEach(s -> {
             if(e.getPlayer().equals(s.getPlayer())) {
@@ -83,13 +87,24 @@ public final class MenuSessionManager {
         return sessions.stream().filter(s -> s.getPlayer().equals(p)).findFirst();
     }
 
-    public void controlDebugTask(boolean enable) {
-        if(enable && (debug == null || debug.isCancelled())) {
-            debug = SchedulerUtils.scheduleSyncTask(HoloUI.INSTANCE, 2L, () -> sessions.forEach(s -> s.getComponents().forEach(c -> {
+    public void controlHitboxDebug(boolean hitbox) {
+        if(hitbox && (debugHitbox == null || debugHitbox.isCancelled())) {
+            debugHitbox = SchedulerUtils.scheduleSyncTask(HoloUI.INSTANCE, 2L, () -> sessions.forEach(s -> s.getComponents().forEach(c -> {
                 if(c instanceof ClickableComponent<?> o)
                     o.highlightHitbox(s.getPlayer().getWorld());
             })), false);
-        } else if(!enable && (debug != null && !debug.isCancelled()))
-            debug.cancel();
+        } else if(!hitbox && (debugHitbox != null && !debugHitbox.isCancelled()))
+            debugHitbox.cancel();
+    }
+
+    public void controlPositionDebug(boolean positionDebug) {
+        if(positionDebug && (debugPos == null || debugPos.isCancelled())) {
+            debugPos = SchedulerUtils.scheduleSyncTask(HoloUI.INSTANCE, 2L, () -> sessions.forEach(s -> {
+                World w = s.getPlayer().getWorld();
+                ParticleUtils.playParticle(w, MathHelper.rotateAroundPoint(s.getCenterPoint().clone(), s.getPlayer().getEyeLocation(), 0, s.getInitialY()).toVector(), Color.YELLOW);
+                s.getComponents().forEach(c -> ParticleUtils.playParticle(w, c.getLocation().toVector(), Color.ORANGE));
+            }), false);
+        } else if(!positionDebug && (debugPos != null && !debugPos.isCancelled()))
+            debugPos.cancel();
     }
 }

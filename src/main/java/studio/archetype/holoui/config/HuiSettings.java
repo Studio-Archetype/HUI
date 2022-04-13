@@ -8,7 +8,8 @@ import java.io.File;
 
 public class HuiSettings extends Settings {
 
-    public static final Entry<Boolean> DEBUG = new Entry<>(EntryType.BOOLEAN, false, (b) -> HoloUI.INSTANCE.getSessionManager().controlDebugTask(b));
+    public static final Entry<Boolean> DEBUG_HITBOX = new Entry<>(EntryType.BOOLEAN, false, (b) -> HoloUI.INSTANCE.getSessionManager().controlHitboxDebug(b));
+    public static final Entry<Boolean> DEBUG_SPACING = new Entry<>(EntryType.BOOLEAN, false, (b) -> HoloUI.INSTANCE.getSessionManager().controlPositionDebug(b));
 
     public HuiSettings(File configDir) {
         super(new File(configDir, "settings.json"));
@@ -16,6 +17,7 @@ public class HuiSettings extends Settings {
 
     @Override
     protected void registerFields() {
-        registerField("debug", DEBUG);
+        registerField("debugHitbox", DEBUG_HITBOX);
+        registerField("debugPosition", DEBUG_SPACING);
     }
 }

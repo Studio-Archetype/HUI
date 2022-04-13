@@ -9,7 +9,7 @@ public final class MathHelper {
 
     public static Location rotateAroundPoint(Location loc, Location center, float pitch, float yaw) {
         loc.subtract(center);
-        Vector newPos = loc.toVector().rotateAroundX(pitch).rotateAroundY(yaw);
+        Vector newPos = loc.toVector().rotateAroundX(Math.toRadians(pitch)).rotateAroundY(Math.toRadians(yaw));
         loc.setX(newPos.getX());
         loc.setY(newPos.getY());
         loc.setZ(newPos.getZ());

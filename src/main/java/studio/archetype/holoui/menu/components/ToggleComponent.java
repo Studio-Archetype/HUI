@@ -2,7 +2,7 @@ package studio.archetype.holoui.menu.components;
 
 import com.google.common.collect.Lists;
 import me.clip.placeholderapi.PlaceholderAPI;
-import org.bukkit.Sound;
+import org.bukkit.Location;
 import studio.archetype.holoui.config.MenuComponentData;
 import studio.archetype.holoui.config.components.ToggleComponentData;
 import studio.archetype.holoui.menu.MenuSession;
@@ -47,15 +47,29 @@ public class ToggleComponent extends ClickableComponent<ToggleComponentData> {
     }
 
     @Override
+    public void onOpen() {
+        super.onOpen();
+    }
+
+    @Override
     protected MenuIcon<?> createIcon() {
+        falseIcon.teleport(location);
+        trueIcon.teleport(location);
         return state ? trueIcon : falseIcon;
+    }
+
+    @Override
+    public void move(Location loc) {
+        super.move(loc);
+        falseIcon.teleport(location);
+        trueIcon.teleport(location);
     }
 
     private void changeIcon(MenuIcon<?> icon) {
         this.currentIcon.remove();
         this.currentIcon = icon;
-        this.plane = icon.createBoundingBox();
         this.currentIcon.teleport(location.clone());
+        this.plane = this.currentIcon.createBoundingBox();
         this.currentIcon.spawn();
     }
 
