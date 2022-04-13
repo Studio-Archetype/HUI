@@ -28,11 +28,12 @@ public class TextMenuIcon extends MenuIcon<TextIconData> {
     @Override
     protected List<UUID> createArmorStands(Location loc) {
         List<UUID> uuids = Lists.newArrayList();
-        loc.add(0, components.size() / 2F  * NAMETAG_SIZE, 0);
+        loc.add(0, ((components.size() - 1) / 2F  * NAMETAG_SIZE) - NAMETAG_SIZE, 0);
         components.forEach(c -> {
             uuids.add(ArmorStandManager.add(ArmorStandBuilder.nametagArmorStand(c, loc)));
             loc.subtract(0, NAMETAG_SIZE, 0);
         });
+        System.out.println(loc);
         return uuids;
     }
 
@@ -40,7 +41,7 @@ public class TextMenuIcon extends MenuIcon<TextIconData> {
     public CollisionPlane createBoundingBox() {
         float width = 0;
         for(Component component : components)
-            width = Math.max(width, component.getContents().length() * NAMETAG_SIZE * 0.8F);
-        return new CollisionPlane(position.toVector(), width / 2, components.size() * NAMETAG_SIZE / 2);
+            width = Math.max(width, component.getString().length() * NAMETAG_SIZE / 2);
+        return new CollisionPlane(position.toVector(), width, components.size() * NAMETAG_SIZE);
     }
 }

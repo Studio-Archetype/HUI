@@ -6,6 +6,7 @@ import studio.archetype.holoui.config.MenuComponentData;
 import studio.archetype.holoui.config.components.ButtonComponentData;
 import studio.archetype.holoui.config.components.ComponentData;
 import studio.archetype.holoui.config.components.DecoComponentData;
+import studio.archetype.holoui.config.components.ToggleComponentData;
 import studio.archetype.holoui.menu.MenuSession;
 import studio.archetype.holoui.menu.icon.MenuIcon;
 import studio.archetype.holoui.utils.math.MathHelper;
@@ -31,7 +32,6 @@ public abstract class MenuComponent<T extends ComponentData> {
                 session.getCenterPoint().clone().add(offset),
                 session.getPlayer().getEyeLocation(),
                 0, session.getPlayer().getLocation().getYaw());
-        this.currentIcon = createIcon();
     }
 
     public abstract void tick();
@@ -41,6 +41,7 @@ public abstract class MenuComponent<T extends ComponentData> {
     protected abstract void onClose();
 
     public void open() {
+        this.currentIcon = createIcon();
         this.currentIcon.spawn();
         onOpen();
     }
@@ -60,6 +61,8 @@ public abstract class MenuComponent<T extends ComponentData> {
             return new ButtonComponent(session, data);
         else if(data.data() instanceof DecoComponentData)
             return new DecoComponent(session, data);
+        else if(data.data() instanceof ToggleComponentData)
+            return new ToggleComponent(session, data);
         else
             return null;
     }

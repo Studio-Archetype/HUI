@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import studio.archetype.holoui.config.components.ButtonComponentData;
 import studio.archetype.holoui.config.components.ComponentData;
 import studio.archetype.holoui.config.components.DecoComponentData;
+import studio.archetype.holoui.config.components.ToggleComponentData;
 import studio.archetype.holoui.utils.codec.CodecDispatcherEnum;
 import studio.archetype.holoui.utils.codec.EnumCodec;
 
@@ -12,7 +13,7 @@ import studio.archetype.holoui.utils.codec.EnumCodec;
 public enum MenuComponentType implements EnumCodec.Values, CodecDispatcherEnum<ComponentData> {
     BUTTON("button", ButtonComponentData.CODEC),
     DECO("decoration", DecoComponentData.CODEC),
-    TOGGLE("toggle", null);
+    TOGGLE("toggle", ToggleComponentData.CODEC);
 
     public static final Codec<MenuComponentType> CODEC = new EnumCodec<>(MenuComponentType.class);
 

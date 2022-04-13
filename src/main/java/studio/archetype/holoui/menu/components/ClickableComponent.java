@@ -27,13 +27,13 @@ public abstract class ClickableComponent<T extends ComponentData> extends MenuCo
     public ClickableComponent(MenuSession session, MenuComponentData data, float highlightMod) {
         super(session, data);
         this.highlightMod = highlightMod;
-        this.plane = currentIcon.createBoundingBox();
     }
 
     public abstract void onClick();
 
     @Override
     public void onOpen() {
+        this.plane = currentIcon.createBoundingBox();
         click = Events.listen(PlayerInteractEvent.class, EventPriority.MONITOR, e -> {
             if(session.getPlayer().equals(e.getPlayer()) && selected) {
                 if(e.getAction() == Action.LEFT_CLICK_AIR || e.getAction() == Action.LEFT_CLICK_BLOCK) {
