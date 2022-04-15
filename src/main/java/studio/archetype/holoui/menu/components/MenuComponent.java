@@ -23,7 +23,7 @@ public abstract class MenuComponent<T extends ComponentData> {
     protected Location location;
     protected MenuIcon<?> currentIcon;
 
-    @SuppressWarnings("unchecked-cast")
+    @SuppressWarnings("unchecked")
     public MenuComponent(MenuSession session, MenuComponentData data) {
         this.session = session;
         this.id = data.id();

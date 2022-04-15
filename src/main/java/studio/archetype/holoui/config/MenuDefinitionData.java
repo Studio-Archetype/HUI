@@ -14,7 +14,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MenuDefinitionData {
 
-    private final String translationKey;
     private final Vector offset;
     private final boolean lockPosition;
     private final List<MenuComponentData> componentData;
@@ -22,7 +21,6 @@ public class MenuDefinitionData {
     @Setter private String id;
 
     public static final Codec<MenuDefinitionData> CODEC = RecordCodecBuilder.create(i -> i.group(
-            Codec.STRING.fieldOf("translationKey").forGetter(MenuDefinitionData::getTranslationKey),
             Codecs.VECTOR.fieldOf("offset").forGetter(MenuDefinitionData::getOffset),
             Codec.BOOL.optionalFieldOf("lockPosition", true).forGetter(MenuDefinitionData::isLockPosition),
             MenuComponentData.CODEC.listOf().fieldOf("components").forGetter(MenuDefinitionData::getComponentData)

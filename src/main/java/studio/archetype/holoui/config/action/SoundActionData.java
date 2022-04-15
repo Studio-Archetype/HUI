@@ -9,7 +9,7 @@ import studio.archetype.holoui.utils.codec.Codecs;
 
 public record SoundActionData(Sound sound, SoundSource source, float volume, float pitch) implements MenuActionData {
 
-    public MenuActionType getType() { return MenuActionType.COMMAND; }
+    public MenuActionType getType() { return MenuActionType.SOUND; }
 
     public static final Codec<SoundActionData> CODEC = RecordCodecBuilder.create(i -> i.group(
             Codecs.SOUND.fieldOf("sound").forGetter(SoundActionData::sound),

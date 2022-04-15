@@ -49,7 +49,6 @@ public final class HoloCommand extends BrigadierCommand {
             return 1;
         }
         HoloUI.INSTANCE.getSessionManager().createNewSession(p, data.get());
-        p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TranslatableComponent(data.get().getTranslationKey()));
         return 1;
     }
 
