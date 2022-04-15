@@ -1,5 +1,5 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$schema": "https://cdn.studioarchetype.net/holoui.schema.json",
   "$id": "https://idk.what/to-put-here/holoui.schema.json",
   "title": "HoloUI Menu Config",
   "description": "Defines a HoloUI menu and all its components.",
@@ -126,7 +126,7 @@
 
     "buttonComponent": {
       "title": "Button Component Data Object",
-      "description": "TBA",
+      "description": "A object defining the data of a Button Component.",
       "type": "object",
       "required": [ "actions", "icon" ],
       "properties": {
@@ -147,7 +147,7 @@
     },
     "decoComponent": {
       "title": "Decoration Component Data Object",
-      "description": "TBA",
+      "description": "A object defining the data of a Decorative Component.",
       "type": "object",
       "required": [ "icon" ],
       "properties": {
@@ -159,7 +159,7 @@
     },
     "toggleComponent": {
       "title": "Toggle Component Data Object",
-      "description": "TBA",
+      "description": "A object defining the data of a Toggle Component.",
       "type": "object",
       "required": [ "condition", "expectedValue", "trueActions", "falseActions", "trueIcon", "falseIcon" ],
       "properties": {
@@ -198,7 +198,7 @@
 
     "commandAction": {
       "title": "Command Action Data Object",
-      "description": "TBA",
+      "description": "A object defining the data of a Command Action.",
       "type": "object",
       "required": [ "command", "source"],
       "properties": {
@@ -215,7 +215,7 @@
     },
     "soundAction": {
       "title": "Sound Action Data Object",
-      "description": "TBA",
+      "description": "A object defining the data of a Sound Action.",
       "type": "object",
       "required": [ "sound" ],
       "properties": {
@@ -241,7 +241,7 @@
 
     "textIcon": {
       "title": "Text Icon Data Object",
-      "description": "TBA",
+      "description": "A object defining the data of a Text Icon.",
       "type": "object",
       "required": [ "text" ],
       "properties": {
@@ -253,7 +253,7 @@
     },
     "textImageIcon": {
       "title": "Text Image Icon Data Object",
-      "description": "TBA",
+      "description": "A object defining the data of a Text Image Icon.",
       "type": "object",
       "required": [ "path" ],
       "properties": {
