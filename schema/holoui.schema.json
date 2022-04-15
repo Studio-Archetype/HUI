@@ -1,6 +1,6 @@
 {
-  "$schema": "https://cdn.studioarchetype.net/holoui.schema.json",
-  "$id": "https://idk.what/to-put-here/holoui.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cdn.studioarchetype.net/holoui.schema.json",
   "title": "HoloUI Menu Config",
   "description": "Defines a HoloUI menu and all its components.",
   "type": "object",
