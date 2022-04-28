@@ -3,15 +3,20 @@ package studio.archetype.holoui.menu.icon;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
+import studio.archetype.holoui.HoloUI;
 import studio.archetype.holoui.config.icon.ItemIconData;
 import studio.archetype.holoui.config.icon.MenuIconData;
 import studio.archetype.holoui.config.icon.TextIconData;
 import studio.archetype.holoui.config.icon.TextImageIconData;
+import studio.archetype.holoui.exceptions.MenuIconException;
+import studio.archetype.holoui.exceptions.MenuIconException;
 import studio.archetype.holoui.menu.ArmorStandManager;
+import studio.archetype.holoui.menu.components.MenuComponent;
 import studio.archetype.holoui.utils.math.CollisionPlane;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
 
 public abstract class MenuIcon<D extends MenuIconData> {
 
@@ -23,7 +28,7 @@ public abstract class MenuIcon<D extends MenuIconData> {
     protected List<UUID> armorStands;
     protected Location position;
 
-    public MenuIcon(Player p, Location loc, D data) {
+    public MenuIcon(Player p, Location loc, D data) throws MenuIconException {
         this.player = p;
         this.position = loc.clone();
         this.data = data;
@@ -53,13 +58,26 @@ public abstract class MenuIcon<D extends MenuIconData> {
         move(offset);
     }
 
-    public static MenuIcon<?> createIcon(Player p, Location loc, MenuIconData data) {
-        if(data instanceof ItemIconData d)
-            return new ItemMenuIcon(p, loc, d);
-        else if(data instanceof TextImageIconData d)
-            return new TextImageMenuIcon(p, loc, d);
-        else if(data instanceof TextIconData d)
-            return new TextMenuIcon(p, loc, d);
-        return null;
+    public static MenuIcon<?> createIcon(Player p, Location loc, MenuIconData data, MenuComponent<?> component) {
+        try {
+            if(data instanceof ItemIconData d)
+                return new ItemMenuIcon(p, loc, d);
+            else if(data instanceof TextImageIconData d)
+                return new TextImageMenuIcon(p, loc, d);
+            else if(data instanceof TextIconData d)
+                return new TextMenuIcon(p, loc, d);
+            return null;
+        } catch(MenuIconException e) {
+            HoloUI.log(Level.WARNING, "An error occurred while creating a Menu Icon for the component \"%s\":", component.getId());
+            HoloUI.logException(e, 1);
+            if(e.getCause() != null)
+                HoloUI.logException(e.getCause(), 2);
+            HoloUI.log(Level.WARNING, "Falling back to missing icon.");
+            try {
+                return new TextImageMenuIcon(p, loc);
+            } catch(MenuIconException ignored) {
+                return null;
+            }
+        }
     }
 }

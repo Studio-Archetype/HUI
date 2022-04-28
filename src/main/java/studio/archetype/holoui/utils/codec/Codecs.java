@@ -3,6 +3,7 @@ package studio.archetype.holoui.utils.codec;
 import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.levelgen.feature.trunkplacers.BendingTrunkPlacer;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;

@@ -15,9 +15,11 @@ import studio.archetype.holoui.utils.math.MathHelper;
 public abstract class MenuComponent<T extends ComponentData> {
 
     protected final MenuSession session;
-    protected final String id;
     protected final Vector offset;
     protected final T data;
+
+    @Getter
+    protected final String id;
 
     @Getter
     protected Location location;
@@ -47,14 +49,16 @@ public abstract class MenuComponent<T extends ComponentData> {
     }
 
     public void close() {
-        this.currentIcon.remove();
+        if(this.currentIcon != null)
+            this.currentIcon.remove();
         onClose();
     }
 
     public void move(Location loc) {
         this.location = loc.add(offset);
         rotateByPlayer();
-        this.currentIcon.teleport(location);
+        if(this.currentIcon != null)
+            this.currentIcon.teleport(location);
     }
 
     public static MenuComponent<?> getComponent(MenuSession session, MenuComponentData data) {

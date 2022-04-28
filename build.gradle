@@ -33,6 +33,7 @@ dependencies {
     compileOnly "org.spigotmc:spigot-api:${project.spigotJarVersion}"
     compileOnly "org.bukkit:craftbukkit:${project.spigotJarVersion}:remapped-mojang"
     compileOnly "me.clip:placeholderapi:${project.placeholderVersion}"
+    implementation "org.sejda.imageio:webp-imageio:${project.webpVersion}"
 }
 
 processResources {

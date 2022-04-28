@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+import com.luciad.imageio.webp.WebPReadParam;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
@@ -15,10 +16,12 @@ import org.apache.commons.io.FilenameUtils;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import studio.archetype.holoui.HoloUI;
+import studio.archetype.holoui.enums.ImageFormat;
 import studio.archetype.holoui.utils.SchedulerUtils;
 import studio.archetype.holoui.utils.file.FolderWatcher;
 
-import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.FileImageInputStream;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -109,11 +112,19 @@ public final class ConfigManager {
         return menuRegistry.containsKey(key);
     }
 
-    public BufferedImage hasImage(String relative) throws IOException {
-        File f = new File(imageDir, relative.endsWith(".png") ? relative : relative + ".png");
+    public Pair<ImageFormat, BufferedImage> getImage(String relative) throws IOException {
+        File f = new File(imageDir, relative);
         if(!f.exists() || f.isDirectory())
             throw new FileNotFoundException();
-        return ImageIO.read(f);
+        ImageFormat format = ImageFormat.getFormat(f);
+        ImageReader reader = format.getReader();
+        reader.setInput(new FileImageInputStream(f));
+        if(format == ImageFormat.WEBP) {
+            WebPReadParam params = new WebPReadParam();
+            params.setBypassFiltering(true);
+            return new Pair<>(format, reader.read(0, params));
+        } else
+            return new Pair<>(format, reader.read(0));
     }
 
     private void loadConfigs() {
@@ -149,7 +160,8 @@ public final class ConfigManager {
                 }
             }
         } catch(IOException | JsonParseException ex) {
-            HoloUI.log(Level.WARNING, "A %s occurred while parsing menu config \"%s.json\":\n\t", ex.getClass().getSimpleName(), menuName, ex.getMessage());
+            HoloUI.log(Level.WARNING, "An error occurred while parsing menu config \"%s.json\":", menuName);
+            HoloUI.logException(ex, 1);
         }
         return Optional.empty();
     }

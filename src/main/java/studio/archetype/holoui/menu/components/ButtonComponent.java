@@ -20,7 +20,7 @@ public class ButtonComponent extends ClickableComponent<ButtonComponentData> {
     }
 
     @Override
-    public MenuIcon<?> createIcon() { return MenuIcon.createIcon(session.getPlayer(), location, data.iconData()); }
+    public MenuIcon<?> createIcon() { return MenuIcon.createIcon(session.getPlayer(), location, data.iconData(), this); }
 
     @Override
     public void onClick() { actions.forEach(a -> a.execute(session)); }

@@ -1,6 +1,7 @@
 package studio.archetype.holoui.menu.icon;
 
 import com.google.common.collect.Lists;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
@@ -9,11 +10,15 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import studio.archetype.holoui.HoloUI;
 import studio.archetype.holoui.config.icon.TextImageIconData;
+import studio.archetype.holoui.enums.ImageFormat;
+import studio.archetype.holoui.exceptions.HoloUIException;
+import studio.archetype.holoui.exceptions.MenuIconException;
 import studio.archetype.holoui.menu.ArmorStandManager;
 import studio.archetype.holoui.utils.ArmorStandBuilder;
 import studio.archetype.holoui.utils.TextUtils;
 import studio.archetype.holoui.utils.math.CollisionPlane;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
@@ -24,9 +29,14 @@ public class TextImageMenuIcon extends MenuIcon<TextImageIconData> {
 
     private final List<Component> components;
 
-    public TextImageMenuIcon(Player p, Location loc, TextImageIconData data) {
+    public TextImageMenuIcon(Player p, Location loc, TextImageIconData data) throws MenuIconException {
         super(p, loc, data);
         components = createComponents();
+    }
+
+    public TextImageMenuIcon(Player p, Location loc) throws MenuIconException {
+        super(p, loc, null);
+        components = MISSING;
     }
 
     @Override
@@ -37,7 +47,6 @@ public class TextImageMenuIcon extends MenuIcon<TextImageIconData> {
             uuids.add(ArmorStandManager.add(ArmorStandBuilder.nametagArmorStand(c, loc)));
             loc.subtract(0, NAMETAG_SIZE, 0);
         });
-        System.out.println(loc);
         return uuids;
     }
 
@@ -49,15 +58,17 @@ public class TextImageMenuIcon extends MenuIcon<TextImageIconData> {
         return new CollisionPlane(position.toVector(), width, (components.size() - 1) * NAMETAG_SIZE);
     }
 
-    private List<Component> createComponents() {
+    private List<Component> createComponents() throws MenuIconException {
         try {
-            BufferedImage image = HoloUI.INSTANCE.getConfigManager().hasImage(data.relativePath());
+            Pair<ImageFormat, BufferedImage> imageData = HoloUI.INSTANCE.getConfigManager().getImage(data.relativePath());
+            BufferedImage image = imageData.getSecond();
+            ImageFormat format = imageData.getFirst();
             List<Component> lines = Lists.newArrayList();
             for(int y = 0; y < image.getHeight(); y++) {
                 MutableComponent component = new TextComponent("");
                 for(int x = 0; x < image.getWidth(); x++) {
                     int colour = image.getRGB(x, y);
-                    if(((colour >> 24) & 0x0000FF) < 255)
+                    if(format != ImageFormat.JPEG && ((colour >> 24) & 0x0000FF) < 255)
                         component.append(new TextComponent(" ").setStyle(Style.EMPTY.withBold(true))).append(new TextComponent(" "));
                     else
                         component.append(TextUtils.textColor("█", colour & 0x00FFFFFF));
@@ -67,10 +78,9 @@ public class TextImageMenuIcon extends MenuIcon<TextImageIconData> {
             }
             return lines;
         } catch(IOException e) {
-            HoloUI.log(Level.WARNING, "Failed to load relative image \"%s\":", data.relativePath());
-            HoloUI.log(Level.WARNING, "\t%s" + (e.getMessage() != null ? " - %s" : ""), e.getClass().getSimpleName(), e.getMessage());
-            HoloUI.log(Level.WARNING, "Falling back to missing texture.");
-            return MISSING;
+            MenuIconException ex = new MenuIconException("Failed to load relative image \"%s\"!", data.relativePath());
+            ex.initCause(e);
+            throw ex;
         }
     }
 

@@ -5,6 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import studio.archetype.holoui.config.icon.ItemIconData;
+import studio.archetype.holoui.exceptions.MenuIconException;
 import studio.archetype.holoui.menu.ArmorStandManager;
 import studio.archetype.holoui.utils.ArmorStandBuilder;
 import studio.archetype.holoui.utils.ItemUtils;
@@ -20,7 +21,7 @@ public class ItemMenuIcon extends MenuIcon<ItemIconData> {
 
     private final ItemStack item;
 
-    public ItemMenuIcon(Player p, Location loc, ItemIconData data) {
+    public ItemMenuIcon(Player p, Location loc, ItemIconData data) throws MenuIconException {
         super(p, loc, data);
         this.item = new ItemUtils.Builder(data.materialType())
                 .modelData(data.customModelValue())

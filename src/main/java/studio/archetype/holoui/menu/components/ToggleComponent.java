@@ -23,8 +23,8 @@ public class ToggleComponent extends ClickableComponent<ToggleComponentData> {
         super(session, data, ((ToggleComponentData) data.data()).highlightMod());
         this.condition = this.data.condition();
         this.expected = this.data.expectedValue();
-        this.trueIcon = MenuIcon.createIcon(session.getPlayer(), location, this.data.trueIcon());
-        this.falseIcon = MenuIcon.createIcon(session.getPlayer(), location, this.data.falseIcon());
+        this.trueIcon = MenuIcon.createIcon(session.getPlayer(), location, this.data.trueIcon(), this);
+        this.falseIcon = MenuIcon.createIcon(session.getPlayer(), location, this.data.falseIcon(), this);
         this.trueActions = Lists.newArrayList();
         this.data.trueActions().forEach(a -> trueActions.add(MenuAction.get(a)));
         this.falseActions = Lists.newArrayList();

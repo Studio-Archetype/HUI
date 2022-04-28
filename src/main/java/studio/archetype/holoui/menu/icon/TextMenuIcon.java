@@ -7,7 +7,9 @@ import net.minecraft.network.chat.TextComponent;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import studio.archetype.holoui.config.icon.TextIconData;
+import studio.archetype.holoui.exceptions.MenuIconException;
 import studio.archetype.holoui.menu.ArmorStandManager;
+import studio.archetype.holoui.menu.components.MenuComponent;
 import studio.archetype.holoui.utils.ArmorStandBuilder;
 import studio.archetype.holoui.utils.math.CollisionPlane;
 
@@ -18,7 +20,7 @@ public class TextMenuIcon extends MenuIcon<TextIconData> {
 
     private final List<Component> components;
 
-    public TextMenuIcon(Player p, Location loc, TextIconData data) {
+    public TextMenuIcon(Player p, Location loc, TextIconData data) throws MenuIconException {
         super(p, loc, data);
         components = Lists.newArrayList();
         for(String s : data.text().split("\n"))
@@ -33,7 +35,6 @@ public class TextMenuIcon extends MenuIcon<TextIconData> {
             uuids.add(ArmorStandManager.add(ArmorStandBuilder.nametagArmorStand(c, loc)));
             loc.subtract(0, NAMETAG_SIZE, 0);
         });
-        System.out.println(loc);
         return uuids;
     }
 
