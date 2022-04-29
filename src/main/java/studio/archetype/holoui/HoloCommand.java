@@ -4,20 +4,19 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TranslatableComponent;
 import net.minecraft.commands.CommandSourceStack;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import studio.archetype.holoui.config.MenuDefinitionData;
 import studio.archetype.holoui.utils.BrigadierCommand;
+import studio.archetype.holoui.utils.SchedulerUtils;
 
 import java.util.Optional;
 
 public final class HoloCommand extends BrigadierCommand {
 
-    public static final String PREFIX = "[HUI]: ";
+    public static final String PREFIX = "[HoloUI]: ";
     public static final String ROOT_PERM = "test.permission.hologui";
 
     private static final String CMD = "hui";
@@ -34,7 +33,10 @@ public final class HoloCommand extends BrigadierCommand {
                         .then(argument("ui", StringArgumentType.string())
                                 .executes(ctx -> open(ctx, StringArgumentType.getString(ctx, "ui")))))
                 .then(literal("close")
-                        .executes(HoloCommand::close));
+                        .executes(HoloCommand::close))
+                .then(literal("builder")
+                        .then(literal("start")
+                                .executes(HoloCommand::startServer)));
     }
 
     private static int info(CommandContext<CommandSourceStack> ctx) {
@@ -68,6 +70,16 @@ public final class HoloCommand extends BrigadierCommand {
             p.sendMessage(PREFIX + ChatColor.GREEN + "Menu closed.");
         else
             p.sendMessage(PREFIX + ChatColor.RED + "No menu is currently open.");
+        return 1;
+    }
+
+    private static int startServer(CommandContext<CommandSourceStack> ctx) {
+        SchedulerUtils.runAsync(HoloUI.INSTANCE, () -> {
+            CommandSender sender = ctx.getSource().getBukkitSender();
+            sender.sendMessage(PREFIX + ChatColor.GREEN + "Starting server...");
+            if(!HoloUI.INSTANCE.getBuilderServer().prepareServer())
+                sender.sendMessage(PREFIX + ChatColor.RED + "An error occurred while setting up the server! Check the logs for details.");
+        });
         return 1;
     }
 }

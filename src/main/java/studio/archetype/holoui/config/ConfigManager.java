@@ -175,8 +175,7 @@ public final class ConfigManager {
                 }
             }
         } catch(IOException | JsonParseException ex) {
-            HoloUI.log(Level.WARNING, "An error occurred while parsing menu config \"%s.json\":", menuName);
-            HoloUI.logException(ex, 1);
+            HoloUI.logExceptionStack(false, ex, "An error occurred while parsing menu config \"%s.json\":", menuName);
         }
         return Optional.empty();
     }

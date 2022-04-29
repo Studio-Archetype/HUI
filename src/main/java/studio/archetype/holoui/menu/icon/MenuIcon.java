@@ -69,10 +69,7 @@ public abstract class MenuIcon<D extends MenuIconData> {
                 return new AnimatedTextImageMenuIcon(p, loc, d);
             return null;
         } catch(MenuIconException e) {
-            HoloUI.log(Level.WARNING, "An error occurred while creating a Menu Icon for the component \"%s\":", component.getId());
-            HoloUI.logException(e, 1);
-            if(e.getCause() != null)
-                HoloUI.logException(e.getCause(), 2);
+            HoloUI.logExceptionStack(false, e, "An error occurred while creating a Menu Icon for the component \"%s\":", component.getId());
             HoloUI.log(Level.WARNING, "Falling back to missing icon.");
             try {
                 return new TextImageMenuIcon(p, loc);

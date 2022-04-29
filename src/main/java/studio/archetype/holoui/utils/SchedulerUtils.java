@@ -18,6 +18,10 @@ public class SchedulerUtils {
         return Bukkit.getScheduler().runTaskTimer(p, onIteration, period, delayStart ? period : 0);
     }
 
+    public static BukkitTask runAsync(Plugin p, Runnable r) {
+        return Bukkit.getScheduler().runTaskAsynchronously(p, r);
+    }
+
     @RequiredArgsConstructor
     private static class TimerRunnable extends BukkitRunnable {
 
