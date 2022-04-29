@@ -7,7 +7,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import studio.archetype.holoui.enums.MenuIconType;
 
 import java.util.List;
-import java.util.Optional;
 
 public record AnimatedImageData(Either<String, List<String>> source, int speed) implements MenuIconData {
 

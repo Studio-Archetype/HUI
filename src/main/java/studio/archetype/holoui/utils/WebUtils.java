@@ -1,11 +1,8 @@
 package studio.archetype.holoui.utils;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import com.google.gson.stream.JsonReader;
 import org.apache.commons.io.FileUtils;
-import studio.archetype.holoui.HoloUI;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -13,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 
 public final class WebUtils {
 

@@ -6,7 +6,6 @@ import org.bukkit.util.Vector;
 import studio.archetype.holoui.HoloUI;
 import studio.archetype.holoui.config.icon.*;
 import studio.archetype.holoui.exceptions.MenuIconException;
-import studio.archetype.holoui.exceptions.MenuIconException;
 import studio.archetype.holoui.menu.ArmorStandManager;
 import studio.archetype.holoui.menu.components.MenuComponent;
 import studio.archetype.holoui.utils.math.CollisionPlane;

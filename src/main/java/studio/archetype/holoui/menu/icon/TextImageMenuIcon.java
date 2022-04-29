@@ -11,7 +11,6 @@ import org.bukkit.entity.Player;
 import studio.archetype.holoui.HoloUI;
 import studio.archetype.holoui.config.icon.TextImageIconData;
 import studio.archetype.holoui.enums.ImageFormat;
-import studio.archetype.holoui.exceptions.HoloUIException;
 import studio.archetype.holoui.exceptions.MenuIconException;
 import studio.archetype.holoui.menu.ArmorStandManager;
 import studio.archetype.holoui.utils.ArmorStandBuilder;
