@@ -25,7 +25,7 @@ public class BuilderServer extends NanoHTTPD implements Runnable {
 
     public BuilderServer(File pluginDir) {
         super(HuiSettings.BUILDER_PORT.value());
-        serverDir = new File(pluginDir, ".builder");
+        serverDir = new File(pluginDir, "builder");
         versionFile = new File(serverDir, "version");
     }
 

@@ -19,8 +19,8 @@ public final class HoloCommand extends BrigadierCommand {
     public static final String PREFIX = "[HoloUI]: ";
     public static final String ROOT_PERM = "test.permission.hologui";
 
-    private static final String CMD = "hui";
-    private static final String[] ALIASES = { "holo", "holoui", "holou", "hu" };
+    private static final String CMD = "holoui";
+    private static final String[] ALIASES = { "holo", "hui", "holou", "hu" };
 
     public HoloCommand() { super(CMD, ROOT_PERM, ALIASES); }
 
