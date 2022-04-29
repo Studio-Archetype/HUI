@@ -109,7 +109,7 @@
         "type": {
           "type": "string",
           "description": "Defines the type of icon.",
-          "enum": [ "text", "textImage" ]
+          "enum": [ "text", "textImage", "animatedTextImage" ]
         }
       },
       "allOf": [
@@ -120,6 +120,10 @@
         {
           "if": { "properties": { "type": { "const": "textImage" } } },
           "then": { "$ref": "#/$defs/textImageIcon" }
+        },
+        {
+          "if": { "properties": { "type": { "const": "animatedTextImage" } } },
+          "then": { "$ref": "#/$defs/animatedTextImageIcon" }
         }
       ]
     },
@@ -260,6 +264,33 @@
         "path": {
           "description": "Defines the path to the image displayed, relative to the \"images\" directory.",
           "type": "string"
+        }
+      }
+    },
+    "animatedTextImageIcon": {
+      "title": "Animated Text Image Icon Data Object",
+      "description": "A object defining the data of an animated Text Image Icon.",
+      "type": "object",
+      "required": [ "source", "speed" ],
+      "properties": {
+        "path": {
+          "description": "Defines the path to the image displayed, relative to the \"images\" directory.",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          ]
+        },
+        "speed": {
+          "description": "Defines the path to the image displayed, relative to the \"images\" directory.",
+          "type": "integer",
+          "minimum": 1
         }
       }
     }

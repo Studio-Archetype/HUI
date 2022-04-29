@@ -4,10 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 import studio.archetype.holoui.HoloUI;
-import studio.archetype.holoui.config.icon.ItemIconData;
-import studio.archetype.holoui.config.icon.MenuIconData;
-import studio.archetype.holoui.config.icon.TextIconData;
-import studio.archetype.holoui.config.icon.TextImageIconData;
+import studio.archetype.holoui.config.icon.*;
 import studio.archetype.holoui.exceptions.MenuIconException;
 import studio.archetype.holoui.exceptions.MenuIconException;
 import studio.archetype.holoui.menu.ArmorStandManager;
@@ -36,6 +33,8 @@ public abstract class MenuIcon<D extends MenuIconData> {
 
     protected abstract List<UUID> createArmorStands(Location loc);
     public abstract CollisionPlane createBoundingBox();
+
+    public void tick() { }
 
     public void spawn() {
         armorStands = createArmorStands(position.clone().subtract(0, NAMETAG_SIZE, 0));
@@ -66,6 +65,8 @@ public abstract class MenuIcon<D extends MenuIconData> {
                 return new TextImageMenuIcon(p, loc, d);
             else if(data instanceof TextIconData d)
                 return new TextMenuIcon(p, loc, d);
+            else if(data instanceof AnimatedImageData d)
+                return new AnimatedTextImageMenuIcon(p, loc, d);
             return null;
         } catch(MenuIconException e) {
             HoloUI.log(Level.WARNING, "An error occurred while creating a Menu Icon for the component \"%s\":", component.getId());

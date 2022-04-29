@@ -1,5 +1,6 @@
 package studio.archetype.holoui.config;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
@@ -20,13 +21,12 @@ import studio.archetype.holoui.enums.ImageFormat;
 import studio.archetype.holoui.utils.SchedulerUtils;
 import studio.archetype.holoui.utils.file.FolderWatcher;
 
+import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.FileImageInputStream;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -125,6 +125,21 @@ public final class ConfigManager {
             return new Pair<>(format, reader.read(0, params));
         } else
             return new Pair<>(format, reader.read(0));
+    }
+
+    public List<BufferedImage> getGifFrames(String relative) throws IOException {
+        File f = new File(imageDir, relative);
+        if(!f.exists() || f.isDirectory())
+            throw new FileNotFoundException();
+        if(!FilenameUtils.isExtension(f.getName(), "gif"))
+            throw new InvalidObjectException("Path given does not correspond to a gif.");
+
+        List<BufferedImage> frames = Lists.newArrayList();
+        ImageReader reader = ImageIO.getImageReadersByMIMEType("image/gif").next();
+        reader.setInput(ImageIO.createImageInputStream(f));
+        for(int i = 0; i < reader.getNumImages(true); i++)
+            frames.add(reader.read(i));
+        return frames;
     }
 
     private void loadConfigs() {

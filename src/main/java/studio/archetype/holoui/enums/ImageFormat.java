@@ -22,7 +22,6 @@ public enum ImageFormat {
     private final String mimeType;
 
     public ImageReader getReader() throws IOException {
-        System.out.println(Arrays.toString(ImageIO.getReaderFormatNames()));
         Iterator<ImageReader> r = ImageIO.getImageReadersByMIMEType(mimeType);
         try {
             return r.next();

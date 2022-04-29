@@ -14,6 +14,6 @@ public class DecoComponent extends MenuComponent<DecoComponentData> {
     protected MenuIcon<?> createIcon() { return MenuIcon.createIcon(session.getPlayer(), location, data.iconData(), this); }
 
     protected void onOpen() { }
-    public void tick() { }
+    public void onTick() { }
     protected void onClose() { }
 }

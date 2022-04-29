@@ -35,7 +35,13 @@ public abstract class MenuComponent<T extends ComponentData> {
         this.location = session.getCenterPoint().clone().add(offset);
     }
 
-    public abstract void tick();
+    public void tick() {
+        onTick();
+        if(currentIcon != null)
+            currentIcon.tick();
+    }
+
+    public abstract void onTick();
 
     protected abstract MenuIcon<?> createIcon();
     protected abstract void onOpen();

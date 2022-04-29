@@ -18,12 +18,10 @@ import studio.archetype.holoui.utils.ArmorStandBuilder;
 import studio.archetype.holoui.utils.TextUtils;
 import studio.archetype.holoui.utils.math.CollisionPlane;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
-import java.util.logging.Level;
 
 public class TextImageMenuIcon extends MenuIcon<TextImageIconData> {
 
@@ -84,7 +82,7 @@ public class TextImageMenuIcon extends MenuIcon<TextImageIconData> {
         }
     }
 
-    private static final List<Component> MISSING = Lists.newArrayList(
+    public static final List<Component> MISSING = Lists.newArrayList(
             TextUtils.textColor("████", "#000000").append(TextUtils.textColor("████", "#f800f8")),
             TextUtils.textColor("████", "#000000").append(TextUtils.textColor("████", "#f800f8")),
             TextUtils.textColor("████", "#000000").append(TextUtils.textColor("████", "#f800f8")),

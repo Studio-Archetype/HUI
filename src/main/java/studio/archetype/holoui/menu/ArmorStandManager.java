@@ -2,6 +2,7 @@ package studio.archetype.holoui.menu;
 
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket;
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
 import net.minecraft.network.protocol.game.ClientboundSetEquipmentPacket;
@@ -79,6 +80,14 @@ public class ArmorStandManager {
         ArmorStand stand = armorStands.get(uuid);
         stand.setPos(stand.getPosition(1).add(NMSUtils.vec3(offset)));
         PacketUtils.send(playerVisibility.get(uuid), new ClientboundTeleportEntityPacket(stand));
+    }
+
+    public static void changeName(UUID uuid, Component name) {
+        if(!armorStands.containsKey(uuid))
+            return;
+        ArmorStand stand = armorStands.get(uuid);
+        stand.setCustomName(name);
+        PacketUtils.send(playerVisibility.get(uuid), new ClientboundSetEntityDataPacket(stand.getId(), stand.getEntityData(), true));
     }
 
     private static void sendSpawnPackets(Player p, ArmorStand stand) {
