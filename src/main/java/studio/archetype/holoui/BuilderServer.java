@@ -51,7 +51,7 @@ public class BuilderServer extends NanoHTTPD implements Runnable {
             if(entry.get("name").getAsString().equalsIgnoreCase(BUILT_NAME))
                 return entry.get("browser_download_url").getAsString();
         }
-        throw new IOException("Invalid release manifest: No server built available!");
+        throw new IOException("Invalid release manifest: No server build available!");
     }
 
     private void prepareFolder() throws IOException {
