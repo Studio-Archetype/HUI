@@ -8,12 +8,8 @@ import io.undertow.Handlers;
 import io.undertow.Undertow;
 import io.undertow.server.handlers.resource.PathResourceManager;
 import io.undertow.server.handlers.resource.ResourceHandler;
-import io.undertow.util.Headers;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
-import studio.archetype.holoui.config.HuiSettings;
-import studio.archetype.holoui.utils.SchedulerUtils;
 import studio.archetype.holoui.utils.WebUtils;
 import studio.archetype.holoui.utils.ZipUtils;
 
