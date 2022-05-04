@@ -4,9 +4,16 @@ import com.github.zafarkhaja.semver.Version;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import fi.iki.elonen.NanoHTTPD;
+import io.undertow.Handlers;
+import io.undertow.Undertow;
+import io.undertow.server.handlers.resource.PathResourceManager;
+import io.undertow.server.handlers.resource.ResourceHandler;
+import io.undertow.util.Headers;
 import org.apache.commons.io.FileUtils;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import studio.archetype.holoui.config.HuiSettings;
+import studio.archetype.holoui.utils.SchedulerUtils;
 import studio.archetype.holoui.utils.WebUtils;
 import studio.archetype.holoui.utils.ZipUtils;
 
@@ -14,7 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 
-public class BuilderServer extends NanoHTTPD implements Runnable {
+public final class BuilderServer {
 
     private static final String URL = "https://api.github.com/repos/Studio-Archetype/HUI-Builder/releases/latest";
     private static final String BUILT_NAME = "builder_static.zip";
@@ -22,9 +29,9 @@ public class BuilderServer extends NanoHTTPD implements Runnable {
     private final File serverDir, versionFile;
 
     private String version;
+    private ServerRunnable serverRunnable;
 
     public BuilderServer(File pluginDir) {
-        super(HuiSettings.BUILDER_PORT.value());
         serverDir = new File(pluginDir, "builder");
         versionFile = new File(serverDir, "version");
     }
@@ -95,22 +102,49 @@ public class BuilderServer extends NanoHTTPD implements Runnable {
         }
     }
 
-    /*public Response serve(IHTTPSession session) {
-        Map<String, String> header = session.getHeaders();
-        Map<String, List<String>> parms = session.getParameters();
-        String uri = session.getUri();
+    public boolean isServerRunning() {
+        return this.serverRunnable != null && !this.serverRunnable.isCancelled();
+    }
 
-        for (File homeDir : this.rootDirs) {
-            // Make sure we won't die of an exception later
-            if (!homeDir.isDirectory()) {
-                return getInternalErrorResponse("given path is not a directory (" + homeDir + ").");
-            }
+    public boolean stopServer() {
+        if(isServerRunning()) {
+            this.serverRunnable.cancel();
+            this.serverRunnable = null;
+            HoloUI.log(Level.INFO, "Server stopped.");
+            return true;
         }
-        return respond(Collections.unmodifiableMap(header), session, uri);
-    }*/
+        return false;
+    }
 
-    @Override
-    public void run() {
+    public void startServer(String host, int port) {
+        stopServer();
+        this.serverRunnable = new ServerRunnable(host, port);
+        this.serverRunnable.runTaskAsynchronously(HoloUI.INSTANCE);
+        HoloUI.log(Level.INFO, "Server started at \"%s:%d\"", host, port);
+    }
 
+    private final class ServerRunnable extends BukkitRunnable {
+
+        private final Undertow server;
+
+        public ServerRunnable(String host, int port) {
+            this.server = Undertow.builder()
+                    .addHttpListener(port, host)
+                    .setHandler(Handlers.path()
+                            .addPrefixPath("/", new ResourceHandler(new PathResourceManager(serverDir.toPath()))
+                                    .addWelcomeFiles("index.html")))
+                    .build();
+        }
+
+        @Override
+        public void run() {
+            server.start();
+        }
+
+        @Override
+        public synchronized void cancel() throws IllegalStateException {
+            server.stop();
+            super.cancel();
+        }
     }
 }

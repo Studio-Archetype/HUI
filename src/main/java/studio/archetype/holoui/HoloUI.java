@@ -38,6 +38,7 @@ public final class HoloUI extends JavaPlugin {
     public void onDisable() {
         configManager.shutdown();
         sessionManager.destroyAll();
+        builderServer.stopServer();
     }
 
     public static void log(Level logLevel, String s, Object... args) {

@@ -34,7 +34,7 @@ dependencies {
     compileOnly "org.bukkit:craftbukkit:${project.spigotJarVersion}:remapped-mojang"
     compileOnly "me.clip:placeholderapi:${project.placeholderVersion}"
     implementation "org.sejda.imageio:webp-imageio:${project.webpVersion}"
-    implementation "org.nanohttpd:nanohttpd-webserver:${project.webServerVersion}"
+    implementation "io.undertow:undertow-core:${project.webServerVersion}"
     implementation "com.github.zafarkhaja:java-semver:${project.semVerVersion}"
 }
 
