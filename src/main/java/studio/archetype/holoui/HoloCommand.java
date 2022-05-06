@@ -38,6 +38,7 @@ public final class HoloCommand extends BrigadierCommand {
                 .then(literal("close")
                         .executes(HoloCommand::close))
                 .then(literal("builder")
+                        .executes(HoloCommand::serverStatus)
                         .then(literal("start")
                                 .executes(HoloCommand::startServer))
                         .then(literal("stop")
@@ -84,40 +85,47 @@ public final class HoloCommand extends BrigadierCommand {
         BuilderServer server = HoloUI.INSTANCE.getBuilderServer();
         CommandSender sender = ctx.getSource().getBukkitSender();
         if(server.isServerRunning()) {
-            sender.sendMessage(PREFIX + ChatColor.RED + "Server is already running.");
+            sender.sendMessage(PREFIX + ChatColor.RED + "Builder is already running.");
             return 1;
         }
         SchedulerUtils.runAsync(HoloUI.INSTANCE, () -> {
-            sender.sendMessage(PREFIX + ChatColor.GREEN + "Starting server...");
+            sender.sendMessage(PREFIX + ChatColor.GREEN + "Starting builder...");
             if(!server.prepareServer())
-                sender.sendMessage(PREFIX + ChatColor.RED + "An error occurred while setting up the server! Check the logs for details.");
-            String host = "0.0.0.0"; // TODO Config
-            int port = HuiSettings.BUILDER_PORT.value();
-            server.startServer(host, port);
-            String url = host + ":" + port;
+                sender.sendMessage(PREFIX + ChatColor.RED + "An error occurred while setting up the builder! Check the logs for details.");
+            server.startServer(HuiSettings.BUILDER_IP.value(), HuiSettings.BUILDER_PORT.value());
+            serverStatus(ctx);
+        });
+        return 1;
+    }
+
+    private static int serverStatus(CommandContext<CommandSourceStack> ctx) {
+        CommandSender sender = ctx.getSource().getBukkitSender();
+        if(HoloUI.INSTANCE.getBuilderServer().isServerRunning()) {
+            String url = HuiSettings.BUILDER_IP.value() + ":" + HuiSettings.BUILDER_PORT.value();
             sender.spigot().sendMessage(new ComponentBuilder(PREFIX)
-                    .append(new ComponentBuilder("Server started at ")
+                    .append(new ComponentBuilder("Builder is running at ")
                             .color(net.md_5.bungee.api.ChatColor.GREEN)
                             .create())
                     .append(new ComponentBuilder(url)
                             .underlined(true)
                             .color(net.md_5.bungee.api.ChatColor.WHITE)
-                            .event(new ClickEvent(ClickEvent.Action.OPEN_URL, url))
+                            .event(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://" + url))
                             .create())
                     .append(new ComponentBuilder(".")
                             .color(net.md_5.bungee.api.ChatColor.GREEN)
                             .create())
                     .create());
-        });
+        } else
+            sender.sendMessage(PREFIX + ChatColor.RED + "Builder is not running.");
         return 1;
     }
 
     private static int stopServer(CommandContext<CommandSourceStack> ctx) {
         CommandSender sender = ctx.getSource().getBukkitSender();
         if(HoloUI.INSTANCE.getBuilderServer().stopServer())
-            sender.sendMessage(PREFIX + ChatColor.GREEN + "Server has been stopped.");
+            sender.sendMessage(PREFIX + ChatColor.GREEN + "Builder has been stopped.");
         else
-            sender.sendMessage(PREFIX + ChatColor.RED + "Server is not running.");
+            sender.sendMessage(PREFIX + ChatColor.RED + "Builder is not running.");
         return 1;
     }
 
@@ -125,7 +133,7 @@ public final class HoloCommand extends BrigadierCommand {
         BuilderServer server = HoloUI.INSTANCE.getBuilderServer();
         CommandSender sender = ctx.getSource().getBukkitSender();
         if(!server.isServerRunning()) {
-            sender.sendMessage(PREFIX + ChatColor.RED + "Server is not running.");
+            sender.sendMessage(PREFIX + ChatColor.RED + "Builder is not running.");
             return 1;
         }
         server.stopServer();

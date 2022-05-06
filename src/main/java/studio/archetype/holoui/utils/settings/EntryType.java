@@ -16,6 +16,11 @@ public interface EntryType<E> {
         public void serialize(String key, Integer object, JsonObject json) { json.addProperty(key, object); }
     };
 
+    EntryType<String> STRING = new EntryType<>() {
+        public String parse(String key, JsonObject element) { return element.get(key).getAsString(); }
+        public void serialize(String key, String object, JsonObject json) { json.addProperty(key, object); }
+    };
+
     /*EntryType<Byte> BYTE = (key, element) -> element.get(key).getAsByte();
     EntryType<Short> SHORT = (key, element) -> element.get(key).getAsShort();
     EntryType<Long> LONG = (key, element) -> element.get(key).getAsLong();
