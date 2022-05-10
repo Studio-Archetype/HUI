@@ -33,6 +33,7 @@ public final class HoloCommand extends BrigadierCommand {
                 .then(literal("list")
                         .executes(HoloCommand::list))
                 .then(literal("open")
+                        .executes(HoloCommand::list)
                         .then(argument("ui", StringArgumentType.string())
                                 .executes(ctx -> open(ctx, StringArgumentType.getString(ctx, "ui")))))
                 .then(literal("close")
@@ -42,12 +43,24 @@ public final class HoloCommand extends BrigadierCommand {
                         .then(literal("start")
                                 .executes(HoloCommand::startServer))
                         .then(literal("stop")
-                                .executes(HoloCommand::stopServer))
-                        .then(literal("restart")
-                                .executes(HoloCommand::restartServer)));
+                                .executes(HoloCommand::stopServer)));
     }
 
     private static int info(CommandContext<CommandSourceStack> ctx) {
+        ctx.getSource().getBukkitSender().spigot().sendMessage(new ComponentBuilder(PREFIX)
+                .append(new ComponentBuilder("You are running" + ChatColor.WHITE + " HoloUI " + HoloUI.VERSION + ChatColor.GRAY + " by ")
+                        .color(net.md_5.bungee.api.ChatColor.GRAY)
+                        .create())
+                .append(new ComponentBuilder("Studio Archetype")
+                        .underlined(true)
+                        .color(net.md_5.bungee.api.ChatColor.WHITE)
+                        .event(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://studioarchetype.net/"))
+                        .create())
+                .append(new ComponentBuilder(".")
+                        .color(net.md_5.bungee.api.ChatColor.GRAY)
+                        .underlined(false)
+                        .create())
+                .create());
         return 1;
     }
 
@@ -55,7 +68,7 @@ public final class HoloCommand extends BrigadierCommand {
         Player p = ctx.getSource().getPlayerOrException().getBukkitEntity();
         Optional<MenuDefinitionData> data = HoloUI.INSTANCE.getConfigManager().get(ui);
         if(data.isEmpty()) {
-            p.sendMessage(PREFIX + ChatColor.RED + "\"" + ui + "\" is not a registered menu.");
+            p.sendMessage(PREFIX + ChatColor.RED + "\"" + ui + "\" is not available.");
             return 1;
         }
         HoloUI.INSTANCE.getSessionManager().createNewSession(p, data.get());
@@ -64,11 +77,12 @@ public final class HoloCommand extends BrigadierCommand {
 
     private static int list(CommandContext<CommandSourceStack> ctx) {
         CommandSender sender = ctx.getSource().getBukkitSender();
-        sender.sendMessage(
-                PREFIX + ChatColor.GRAY + "Listing registered menus...",
-                ChatColor.GRAY + "------------------------------");
-        HoloUI.INSTANCE.getConfigManager().keys().forEach(s -> sender.sendMessage(ChatColor.GRAY + "\t- " + ChatColor.WHITE + s));
-        sender.sendMessage(ChatColor.GRAY + "------------------------------");
+        if(HoloUI.INSTANCE.getConfigManager().keys().isEmpty()) {
+            sender.sendMessage(PREFIX + ChatColor.GRAY + "No menus are available.");
+        }
+        sender.sendMessage(ChatColor.GRAY + "----------+=== Menus ===+----------");
+        HoloUI.INSTANCE.getConfigManager().keys().forEach(s -> sender.sendMessage(ChatColor.GRAY + "  - " + ChatColor.WHITE + s));
+        sender.sendMessage(ChatColor.GRAY + "----------------------------------");
         return 1;
     }
 
@@ -101,7 +115,8 @@ public final class HoloCommand extends BrigadierCommand {
     private static int serverStatus(CommandContext<CommandSourceStack> ctx) {
         CommandSender sender = ctx.getSource().getBukkitSender();
         if(HoloUI.INSTANCE.getBuilderServer().isServerRunning()) {
-            String url = HuiSettings.BUILDER_IP.value() + ":" + HuiSettings.BUILDER_PORT.value();
+            String host = HuiSettings.BUILDER_IP.value().equalsIgnoreCase("0.0.0.0") ? "localhost" : HuiSettings.BUILDER_IP.value();
+            String url = host + ":" + HuiSettings.BUILDER_PORT.value();
             sender.spigot().sendMessage(new ComponentBuilder(PREFIX)
                     .append(new ComponentBuilder("Builder is running at ")
                             .color(net.md_5.bungee.api.ChatColor.GREEN)
@@ -113,10 +128,25 @@ public final class HoloCommand extends BrigadierCommand {
                             .create())
                     .append(new ComponentBuilder(".")
                             .color(net.md_5.bungee.api.ChatColor.GREEN)
+                            .underlined(false)
                             .create())
                     .create());
-        } else
-            sender.sendMessage(PREFIX + ChatColor.RED + "Builder is not running.");
+        } else {
+            sender.spigot().sendMessage(new ComponentBuilder(PREFIX)
+                    .append(new ComponentBuilder("Builder is not running. Start it ")
+                            .color(net.md_5.bungee.api.ChatColor.RED)
+                            .create())
+                    .append(new ComponentBuilder("here")
+                            .underlined(true)
+                            .color(net.md_5.bungee.api.ChatColor.WHITE)
+                            .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/holoui builder start"))
+                            .create())
+                    .append(new ComponentBuilder(".")
+                            .color(net.md_5.bungee.api.ChatColor.RED)
+                            .underlined(false)
+                            .create())
+                    .create());
+        }
         return 1;
     }
 
@@ -126,18 +156,6 @@ public final class HoloCommand extends BrigadierCommand {
             sender.sendMessage(PREFIX + ChatColor.GREEN + "Builder has been stopped.");
         else
             sender.sendMessage(PREFIX + ChatColor.RED + "Builder is not running.");
-        return 1;
-    }
-
-    private static int restartServer(CommandContext<CommandSourceStack> ctx) {
-        BuilderServer server = HoloUI.INSTANCE.getBuilderServer();
-        CommandSender sender = ctx.getSource().getBukkitSender();
-        if(!server.isServerRunning()) {
-            sender.sendMessage(PREFIX + ChatColor.RED + "Builder is not running.");
-            return 1;
-        }
-        server.stopServer();
-        startServer(ctx);
         return 1;
     }
 }
