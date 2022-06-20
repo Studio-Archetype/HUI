@@ -3,16 +3,15 @@ package studio.archetype.holoui.menu;
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket;
-import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
-import net.minecraft.network.protocol.game.ClientboundSetEquipmentPacket;
-import net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket;
+import net.minecraft.network.protocol.game.*;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.item.ItemStack;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Consumer;
 import org.bukkit.util.Vector;
 import studio.archetype.holoui.utils.NMSUtils;
 import studio.archetype.holoui.utils.PacketUtils;
@@ -46,6 +45,7 @@ public class ArmorStandManager {
             return;
         ArmorStand stand = armorStands.get(uuid);
         PacketUtils.send(playerVisibility.get(uuid), new ClientboundRemoveEntitiesPacket(stand.getId()));
+        stand.getPassengers().forEach(e -> PacketUtils.send(playerVisibility.get(uuid), new ClientboundRemoveEntitiesPacket(e.getId())));
         playerVisibility.remove(uuid);
 
     }
@@ -90,6 +90,14 @@ public class ArmorStandManager {
         PacketUtils.send(playerVisibility.get(uuid), new ClientboundSetEntityDataPacket(stand.getId(), stand.getEntityData(), true));
     }
 
+    public static void rotate(UUID uuid, float yaw) {
+        if(!armorStands.containsKey(uuid))
+            return;
+        ArmorStand stand = armorStands.get(uuid);
+        stand.setYRot(yaw);
+        PacketUtils.send(playerVisibility.get(uuid), new ClientboundTeleportEntityPacket(stand));
+    }
+
     private static void sendSpawnPackets(Player p, ArmorStand stand) {
         PacketUtils.send(p, stand.getAddEntityPacket());
         PacketUtils.send(p, new ClientboundSetEntityDataPacket(stand.getId(), stand.getEntityData(), true));
@@ -99,5 +107,12 @@ public class ArmorStandManager {
                 stacks.add(new Pair<>(s, stand.getItemBySlot(s)));
         if(!stacks.isEmpty())
             PacketUtils.send(p, new ClientboundSetEquipmentPacket(stand.getId(), stacks));
+        if(!stand.getPassengers().isEmpty()) {
+            stand.getPassengers().forEach(e -> {
+                PacketUtils.send(p, e.getAddEntityPacket());
+                PacketUtils.send(p, new ClientboundSetEntityDataPacket(e.getId(), e.getEntityData(), true));
+            });
+            PacketUtils.send(p, new ClientboundSetPassengersPacket(stand));
+        }
     }
 }

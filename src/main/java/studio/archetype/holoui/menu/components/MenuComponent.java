@@ -10,6 +10,8 @@ import studio.archetype.holoui.config.components.DecoComponentData;
 import studio.archetype.holoui.config.components.ToggleComponentData;
 import studio.archetype.holoui.menu.MenuSession;
 import studio.archetype.holoui.menu.icon.MenuIcon;
+import studio.archetype.holoui.menu.special.inventories.InventoryProgressComponent;
+import studio.archetype.holoui.menu.special.inventories.InventorySlotComponent;
 import studio.archetype.holoui.utils.math.MathHelper;
 
 public abstract class MenuComponent<T extends ComponentData> {
@@ -60,11 +62,19 @@ public abstract class MenuComponent<T extends ComponentData> {
         onClose();
     }
 
-    public void move(Location loc) {
+    public void move(Location loc, boolean adjustRotation) {
         this.location = loc.add(offset);
-        rotateByPlayer();
+        if(adjustRotation)
+            rotateByPlayer();
+        else
+            rotateByCenter();
         if(this.currentIcon != null)
             this.currentIcon.teleport(location);
+    }
+
+    public void rotate(float yaw) {
+        if(this.currentIcon != null)
+            this.currentIcon.rotate(yaw);
     }
 
     public static MenuComponent<?> getComponent(MenuSession session, MenuComponentData data) {
@@ -74,13 +84,19 @@ public abstract class MenuComponent<T extends ComponentData> {
             return new DecoComponent(session, data);
         else if(data.data() instanceof ToggleComponentData)
             return new ToggleComponent(session, data);
+        else if(data.data() instanceof InventorySlotComponent.Data)
+            return new InventorySlotComponent(session, data);
+        else if(data.data() instanceof InventoryProgressComponent.Data)
+            return new InventoryProgressComponent(session, data);
         else
             return null;
     }
 
     protected void rotateByPlayer() {
-        MathHelper.rotateAroundPoint(this.location,
-                session.getPlayer().getEyeLocation(),
-                0, session.getInitialY());
+        MathHelper.rotateAroundPoint(this.location, session.getPlayer().getEyeLocation(), 0, session.getInitialY());
+    }
+
+    protected void rotateByCenter() {
+        MathHelper.rotateAroundPoint(this.location, session.getCenterPoint(), 0, session.getInitialY());
     }
 }

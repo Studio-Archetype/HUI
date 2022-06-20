@@ -8,7 +8,7 @@ import studio.archetype.holoui.utils.codec.EnumCodec;
 
 @AllArgsConstructor
 public enum MenuIconType implements EnumCodec.Values, CodecDispatcherEnum<MenuIconData> {
-    ITEM_TEXTURE("itemTexture", ItemIconData.CODEC),
+    ITEM("item", ItemIconData.CODEC),
     ANIMATED_TEXT_IMAGE("animatedTextImage", AnimatedImageData.CODEC),
     TEXT_IMAGE("textImage", TextImageIconData.CODEC),
     TEXT("text", TextIconData.CODEC),

@@ -64,8 +64,8 @@ public abstract class ClickableComponent<T extends ComponentData> extends MenuCo
     }
 
     @Override
-    public void move(Location loc) {
-        super.move(loc);
+    public void move(Location loc, boolean rotation) {
+        super.move(loc, rotation);
         this.plane.move(location);
     }
 

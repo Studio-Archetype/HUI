@@ -48,4 +48,9 @@ public final class MathHelper {
         rot.setX(Math.toDegrees(Math.atan(-dir.getY() / xz)));
         return rot;
     }
+
+    public static float getYawToLookAt(Vector origin, Vector target) {
+        Vector v = target.clone().subtract(origin);
+        return (float)Math.toDegrees(Math.atan2(v.getZ(), v.getX()));
+    }
 }

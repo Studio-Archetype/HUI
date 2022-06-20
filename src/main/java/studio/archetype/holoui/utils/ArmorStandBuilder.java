@@ -7,6 +7,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -23,8 +24,19 @@ public final class ArmorStandBuilder {
         return this;
     }
 
+    public ArmorStandBuilder rot(float x, float y) {
+        armorStand.setXRot(x);
+        armorStand.setYRot(y);
+        return this;
+    }
+
     public ArmorStandBuilder small(boolean small) {
         armorStand.setSmall(small);
+        return this;
+    }
+
+    public ArmorStandBuilder arms(boolean arms) {
+        armorStand.setShowArms(arms);
         return this;
     }
 
@@ -126,7 +138,23 @@ public final class ArmorStandBuilder {
         return new ArmorStandBuilder(loc.getWorld())
                 .marker(true).gravity(false)
                 .invisible(true).basePlate(false).zeroPose()
-                .name(component, true).pos(loc)
+                .name(component, true).pos(loc).small(false)
                 .build();
+    }
+
+    public static ArmorStandBuilder itemArmorStand(ItemStack s, Location loc) {
+        return new ArmorStandBuilder(loc.getWorld())
+                .marker(true).gravity(false)
+                .invisible(true).basePlate(false).zeroPose()
+                .helmet(s)
+                .pos(loc);
+    }
+
+    public static ArmorStandBuilder tinyItemArmorStand(ItemStack s, Location loc) {
+        return new ArmorStandBuilder(loc.getWorld())
+                .marker(true).gravity(false).small(true)
+                .invisible(true).basePlate(false).arms(true).zeroPose()
+                .mainHand(s, true)
+                .pos(loc);
     }
 }

@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import studio.archetype.holoui.enums.MenuIconType;
 
-public record TextIconData(String text) implements  MenuIconData {
+public record TextIconData(String text) implements MenuIconData {
 
     public MenuIconType getType() { return MenuIconType.TEXT; }
 

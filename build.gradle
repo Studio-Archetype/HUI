@@ -10,6 +10,11 @@ version project.version
 
 file(jar.archiveFile.get().getAsFile().getParentFile().getParentFile().getParentFile().getAbsolutePath() + '/build/resources/main/plugin.yml').delete()
 
+
+compileJava {
+    options.encoding = 'UTF-8'
+}
+
 shadowJar {
     append("plugin.yml")
 }

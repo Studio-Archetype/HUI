@@ -11,6 +11,7 @@ import studio.archetype.holoui.HoloUI;
 import studio.archetype.holoui.config.icon.AnimatedImageData;
 import studio.archetype.holoui.exceptions.MenuIconException;
 import studio.archetype.holoui.menu.ArmorStandManager;
+import studio.archetype.holoui.menu.MenuSession;
 import studio.archetype.holoui.utils.ArmorStandBuilder;
 import studio.archetype.holoui.utils.TextUtils;
 import studio.archetype.holoui.utils.math.CollisionPlane;
@@ -28,8 +29,8 @@ public class AnimatedTextImageMenuIcon extends MenuIcon<AnimatedImageData> {
     private int currentFrame;
     private int passedTicks;
 
-    public AnimatedTextImageMenuIcon(Player p, Location loc, AnimatedImageData data) throws MenuIconException {
-        super(p, loc, data);
+    public AnimatedTextImageMenuIcon(MenuSession session, Location loc, AnimatedImageData data) throws MenuIconException {
+        super(session, loc, data);
         createComponents();
         currentFrame = passedTicks = 0;
     }

@@ -13,6 +13,7 @@ import studio.archetype.holoui.config.icon.TextImageIconData;
 import studio.archetype.holoui.enums.ImageFormat;
 import studio.archetype.holoui.exceptions.MenuIconException;
 import studio.archetype.holoui.menu.ArmorStandManager;
+import studio.archetype.holoui.menu.MenuSession;
 import studio.archetype.holoui.utils.ArmorStandBuilder;
 import studio.archetype.holoui.utils.TextUtils;
 import studio.archetype.holoui.utils.math.CollisionPlane;
@@ -26,13 +27,13 @@ public class TextImageMenuIcon extends MenuIcon<TextImageIconData> {
 
     private final List<Component> components;
 
-    public TextImageMenuIcon(Player p, Location loc, TextImageIconData data) throws MenuIconException {
-        super(p, loc, data);
+    public TextImageMenuIcon(MenuSession session, Location loc, TextImageIconData data) throws MenuIconException {
+        super(session, loc, data);
         components = createComponents();
     }
 
-    public TextImageMenuIcon(Player p, Location loc) throws MenuIconException {
-        super(p, loc, null);
+    public TextImageMenuIcon(MenuSession session, Location loc) throws MenuIconException {
+        super(session, loc, null);
         components = MISSING;
     }
 

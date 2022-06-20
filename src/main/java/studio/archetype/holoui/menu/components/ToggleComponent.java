@@ -23,8 +23,8 @@ public class ToggleComponent extends ClickableComponent<ToggleComponentData> {
         super(session, data, ((ToggleComponentData) data.data()).highlightMod());
         this.condition = this.data.condition();
         this.expected = this.data.expectedValue();
-        this.trueIcon = MenuIcon.createIcon(session.getPlayer(), location, this.data.trueIcon(), this);
-        this.falseIcon = MenuIcon.createIcon(session.getPlayer(), location, this.data.falseIcon(), this);
+        this.trueIcon = MenuIcon.createIcon(session, location, this.data.trueIcon(), this);
+        this.falseIcon = MenuIcon.createIcon(session, location, this.data.falseIcon(), this);
         this.trueActions = Lists.newArrayList();
         this.data.trueActions().forEach(a -> trueActions.add(MenuAction.get(a)));
         this.falseActions = Lists.newArrayList();
@@ -47,11 +47,6 @@ public class ToggleComponent extends ClickableComponent<ToggleComponentData> {
     }
 
     @Override
-    public void onOpen() {
-        super.onOpen();
-    }
-
-    @Override
     protected MenuIcon<?> createIcon() {
         falseIcon.teleport(location);
         trueIcon.teleport(location);
@@ -59,8 +54,8 @@ public class ToggleComponent extends ClickableComponent<ToggleComponentData> {
     }
 
     @Override
-    public void move(Location loc) {
-        super.move(loc);
+    public void move(Location loc, boolean rotation) {
+        super.move(loc, rotation);
         falseIcon.teleport(location);
         trueIcon.teleport(location);
     }
