@@ -2,6 +2,7 @@ package studio.archetype.holoui.menu.special.inventories;
 
 import com.google.common.collect.Lists;
 import org.bukkit.block.*;
+import org.bukkit.inventory.DoubleChestInventory;
 import org.bukkit.inventory.Inventory;
 import studio.archetype.holoui.config.MenuComponentData;
 
@@ -14,6 +15,12 @@ public class ChestLikePreview implements InventoryPreviewMenu<Inventory> {
     @Override
     public void supply(Container b, List<MenuComponentData> components) {
         Inventory inv = getInventory(b);
+        if(inv instanceof DoubleChestInventory) {
+            if(((org.bukkit.block.data.type.Chest)b.getBlockData()).getType() == org.bukkit.block.data.type.Chest.Type.LEFT)
+                inv = ((DoubleChestInventory)inv).getRightSide();
+            else
+                inv = ((DoubleChestInventory)inv).getLeftSide();
+        }
         components.addAll(getLine(inv, 0, .75F));
         components.addAll(getLine(inv, 9, .25F));
         components.addAll(getLine(inv, 18, -.25F));
