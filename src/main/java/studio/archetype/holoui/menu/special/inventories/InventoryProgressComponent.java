@@ -2,8 +2,8 @@ package studio.archetype.holoui.menu.special.inventories;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextComponent;
 import org.bukkit.inventory.Inventory;
 import studio.archetype.holoui.config.MenuComponentData;
 import studio.archetype.holoui.config.components.ComponentData;
@@ -57,10 +57,10 @@ public class InventoryProgressComponent extends MenuComponent<InventoryProgressC
 
     private Component getBar(double invProgress) {
         int progress = (int)(invProgress * segmentCount);
-        TextComponent c = new TextComponent("");
+        MutableComponent c = Component.literal("");
         for(int i = 0; i < segmentCount; i++) {
             Style s = i < progress ? this.color : Style.EMPTY.withColor(ChatFormatting.DARK_GRAY);
-            c.append(new TextComponent("|").withStyle(s));
+            c.append(Component.literal("|").withStyle(s));
         }
 
         return c;

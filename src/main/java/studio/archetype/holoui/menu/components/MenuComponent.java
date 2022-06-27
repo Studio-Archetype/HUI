@@ -3,6 +3,7 @@ package studio.archetype.holoui.menu.components;
 import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
+import studio.archetype.holoui.config.HuiSettings;
 import studio.archetype.holoui.config.MenuComponentData;
 import studio.archetype.holoui.config.components.ButtonComponentData;
 import studio.archetype.holoui.config.components.ComponentData;
@@ -10,6 +11,7 @@ import studio.archetype.holoui.config.components.DecoComponentData;
 import studio.archetype.holoui.config.components.ToggleComponentData;
 import studio.archetype.holoui.menu.MenuSession;
 import studio.archetype.holoui.menu.icon.MenuIcon;
+import studio.archetype.holoui.menu.special.BlockMenuSession;
 import studio.archetype.holoui.menu.special.inventories.InventoryProgressComponent;
 import studio.archetype.holoui.menu.special.inventories.InventorySlotComponent;
 import studio.archetype.holoui.utils.math.MathHelper;
@@ -49,8 +51,8 @@ public abstract class MenuComponent<T extends ComponentData> {
     protected abstract void onOpen();
     protected abstract void onClose();
 
-    public void open() {
-        rotateByPlayer();
+    public void open(boolean rotateByPlayer) {
+        adjustRotation(rotateByPlayer);
         this.currentIcon = createIcon();
         this.currentIcon.spawn();
         onOpen();
@@ -62,14 +64,17 @@ public abstract class MenuComponent<T extends ComponentData> {
         onClose();
     }
 
-    public void move(Location loc, boolean adjustRotation) {
-        this.location = loc.add(offset);
-        if(adjustRotation)
+    public void adjustRotation(boolean byPlayer) {
+        if(byPlayer)
             rotateByPlayer();
         else
             rotateByCenter();
         if(this.currentIcon != null)
             this.currentIcon.teleport(location);
+    }
+
+    public void move(Location loc) {
+        this.location = loc.add(offset);
     }
 
     public void rotate(float yaw) {
@@ -97,6 +102,7 @@ public abstract class MenuComponent<T extends ComponentData> {
     }
 
     protected void rotateByCenter() {
-        MathHelper.rotateAroundPoint(this.location, session.getCenterPoint(), 0, session.getInitialY());
+        if(session instanceof BlockMenuSession)
+            MathHelper.rotateAroundPoint(this.location, session.getCenterPoint(), 0, session.getInitialY());
     }
 }

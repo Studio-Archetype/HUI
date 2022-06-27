@@ -1,9 +1,12 @@
 package studio.archetype.holoui.menu.special;
 
+import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import studio.archetype.holoui.config.HuiSettings;
 import studio.archetype.holoui.config.MenuDefinitionData;
 import studio.archetype.holoui.menu.MenuSession;
+import studio.archetype.holoui.utils.math.MathHelper;
 
 public class BlockMenuSession extends MenuSession {
 
@@ -19,9 +22,9 @@ public class BlockMenuSession extends MenuSession {
 
     // TODO configurable max distance
     public boolean shouldRender(Block lookingAt) {
-        double distance = getPlayer().getLocation().distance(block.getLocation().add(.5, .5, .5));
-        if(distance <= MIN_DISTANCE || distance >= MAX_DISTANCE)
-            return false;
+        double distance = getPlayer().getLocation().distance(centerPoint);
+        /*if(distance <= MIN_DISTANCE || distance >= MAX_DISTANCE)
+            return false;*/
         return lookingAt.equals(this.block);
     }
 
@@ -29,5 +32,20 @@ public class BlockMenuSession extends MenuSession {
     public void rotate(float yaw) {
         super.rotate(yaw);
         this.initialY = yaw;
+    }
+
+    @Override
+    public void move(Location loc, boolean adjustRotation) {
+        if(!HuiSettings.PREVIEW_FOLLOW_PLAYER.value())
+            this.centerPoint = block.getLocation().add(getOffset()).clone().subtract(-.5, -.5, -.5);
+        else
+            this.centerPoint = loc.add(getOffset());
+        rotateCenter();
+        adjustRotation(adjustRotation);
+    }
+
+    public void open() {
+        this.initialY = -(float)MathHelper.getRotationFromDirection(getPlayer().getEyeLocation().getDirection()).getY();
+        getComponents().forEach(c -> c.open(false));
     }
 }

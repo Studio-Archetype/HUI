@@ -20,8 +20,8 @@ public class MenuSession {
     private final Vector offset;
     private final List<MenuComponent<?>> components;
 
-    private Location centerPoint;
-    protected float initialY;
+    protected Location centerPoint;
+    protected float initialY = Float.NaN;
 
     public MenuSession(MenuDefinitionData data, Player p) {
         this.id = data.getId();
@@ -37,7 +37,14 @@ public class MenuSession {
 
     public void move(Location loc, boolean adjustRotation) {
         this.centerPoint = loc.add(offset);
-        components.forEach(c -> c.move(this.centerPoint.clone(), adjustRotation));
+        components.forEach(c -> {
+            c.move(this.centerPoint.clone());
+            c.adjustRotation(adjustRotation);
+        });
+    }
+
+    public void adjustRotation(boolean byPlayer) {
+        components.forEach(c -> c.adjustRotation(byPlayer));
     }
 
     public void rotate(float yaw) {
@@ -46,7 +53,7 @@ public class MenuSession {
 
     public void open() {
         this.initialY = -player.getEyeLocation().getYaw();
-        components.forEach(MenuComponent::open);
+        components.forEach(c -> c.open(true));
     }
 
     public void close() {
@@ -55,5 +62,14 @@ public class MenuSession {
 
     public Location getCenterInitialYAdjusted() {
         return MathHelper.rotateAroundPoint(centerPoint.clone(), player.getEyeLocation(), 0, initialY);
+    }
+
+    public Location getCenterNoOffset() {
+        return this.centerPoint.clone().subtract(offset);
+    }
+
+    public void rotateCenter() {
+        MathHelper.rotateAroundPoint(this.centerPoint, getCenterNoOffset(), 0, initialY);
+        getComponents().forEach(c -> c.move(this.centerPoint.clone()));
     }
 }

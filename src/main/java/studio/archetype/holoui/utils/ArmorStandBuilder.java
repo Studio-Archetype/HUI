@@ -2,12 +2,10 @@ package studio.archetype.holoui.utils;
 
 import net.minecraft.core.Rotations;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -104,7 +102,7 @@ public final class ArmorStandBuilder {
 
     public ArmorStandBuilder name(String name) { return name(name, true); }
     public ArmorStandBuilder name(Component name) { return name(name, true); }
-    public ArmorStandBuilder name(String name, boolean visible) { return name(new TextComponent(name), visible); }
+    public ArmorStandBuilder name(String name, boolean visible) { return name(Component.literal(name), visible); }
 
     public ArmorStandBuilder name(Component name, boolean visible) {
         armorStand.setCustomName(name);

@@ -103,6 +103,8 @@ public final class MenuSessionManager {
     }
 
     public void destroyAll() {
+        previews.forEach(MenuSession::close);
+        previews.clear();
         sessions.forEach(MenuSession::close);
         sessions.clear();
     }

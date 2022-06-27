@@ -3,9 +3,7 @@ package studio.archetype.holoui.menu.icon;
 import com.google.common.collect.Lists;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 import studio.archetype.holoui.config.icon.TextIconData;
 import studio.archetype.holoui.exceptions.MenuIconException;
 import studio.archetype.holoui.menu.ArmorStandManager;
@@ -24,7 +22,7 @@ public class TextMenuIcon extends MenuIcon<TextIconData> {
         super(session, loc, data);
         components = Lists.newArrayList();
         for(String s : data.text().split("\n"))
-            components.add(new TextComponent(PlaceholderAPI.setPlaceholders(session.getPlayer(), s)));
+            components.add(Component.literal(PlaceholderAPI.setPlaceholders(session.getPlayer(), s)));
     }
 
     @Override

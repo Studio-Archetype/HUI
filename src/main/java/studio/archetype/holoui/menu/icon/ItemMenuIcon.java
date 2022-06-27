@@ -2,20 +2,11 @@ package studio.archetype.holoui.menu.icon;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.decoration.ArmorStand;
-import net.minecraft.world.entity.decoration.ItemFrame;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_18_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
-import studio.archetype.holoui.HoloUI;
 import studio.archetype.holoui.config.icon.ItemIconData;
 import studio.archetype.holoui.exceptions.MenuIconException;
 import studio.archetype.holoui.menu.ArmorStandManager;
@@ -59,7 +50,7 @@ public class ItemMenuIcon extends MenuIcon<ItemIconData> {
         uuids.add(ArmorStandManager.add(builder.build()));
         if(item.getAmount() > 1) {
             loc.add(0F, -NAMETAG_SIZE - .15F, 0);
-            Component count = new TextComponent(String.valueOf(item.getAmount()));
+            Component count = Component.literal(String.valueOf(item.getAmount()));
             uuids.add(ArmorStandManager.add(ArmorStandBuilder.nametagArmorStand(count, loc)));
         }
         return uuids;
@@ -67,20 +58,28 @@ public class ItemMenuIcon extends MenuIcon<ItemIconData> {
 
     public void updateCount(int count) {
         if(armorStands.size() == 1 && count > 1) {
-            move(new Vector(0, .09F, 0));
-            armorStands.add(ArmorStandManager.add(ArmorStandBuilder.nametagArmorStand(new TextComponent(String.valueOf(count)), position.clone().add(0F, -NAMETAG_SIZE - .15F, 0))));
+            ArmorStandManager.move(armorStands.get(0), new Vector(0, .09F, 0));
+            UUID armorStand = ArmorStandManager.add(ArmorStandBuilder.nametagArmorStand(Component.literal(String.valueOf(count)), position.clone().add(0F, -NAMETAG_SIZE - .37F, 0)));
+            armorStands.add(armorStand);
+            ArmorStandManager.spawn(armorStand, session.getPlayer());
         } else if(armorStands.size() == 2 && count < 2){
-            move(new Vector(0, -.09F, 0));
+            ArmorStandManager.move(armorStands.get(0), new Vector(0, -.09F, 0));
             ArmorStandManager.delete(armorStands.get(1));
             armorStands.remove(1);
         } else {
-            ArmorStandManager.changeName(armorStands.get(1), new TextComponent(String.valueOf(count)));
+            ArmorStandManager.changeName(armorStands.get(1), Component.literal(String.valueOf(count)));
         }
     }
 
     @Override
     public void rotate(float yaw) {
-        super.rotate(-yaw + (isBlock() ? 0 : 180));
+        if(isBlock()) {
+            Vector v = new Vector(0, 0, BLOCK_OFFSET.getZ());
+            ArmorStandManager.move(armorStands.get(0), v.clone().multiply(-1));
+            super.rotate(-yaw + 180);
+            ArmorStandManager.move(armorStands.get(0), v);
+        } else
+            super.rotate(-yaw + 180);
     }
 
     private boolean isBlock() {

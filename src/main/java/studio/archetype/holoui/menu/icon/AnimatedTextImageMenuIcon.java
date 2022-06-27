@@ -4,9 +4,7 @@ import com.google.common.collect.Lists;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextComponent;
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 import studio.archetype.holoui.HoloUI;
 import studio.archetype.holoui.config.icon.AnimatedImageData;
 import studio.archetype.holoui.exceptions.MenuIconException;
@@ -83,11 +81,11 @@ public class AnimatedTextImageMenuIcon extends MenuIcon<AnimatedImageData> {
             getImages().forEach(i -> {
                 List<Component> lines = Lists.newArrayList();
                 for(int y = 0; y < i.getHeight(); y++) {
-                    MutableComponent component = new TextComponent("");
+                    MutableComponent component = Component.literal("");
                     for(int x = 0; x < i.getWidth(); x++) {
                         int colour = i.getRGB(x, y);
                         if(((colour >> 24) & 0x0000FF) < 255)
-                            component.append(new TextComponent(" ").setStyle(Style.EMPTY.withBold(true))).append(new TextComponent(" "));
+                            component.append(Component.literal(" ").setStyle(Style.EMPTY.withBold(true))).append(Component.literal(" "));
                         else
                             component.append(TextUtils.textColor("█", colour & 0x00FFFFFF));
                     }

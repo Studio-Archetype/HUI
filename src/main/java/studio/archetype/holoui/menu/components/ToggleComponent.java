@@ -54,8 +54,8 @@ public class ToggleComponent extends ClickableComponent<ToggleComponentData> {
     }
 
     @Override
-    public void move(Location loc, boolean rotation) {
-        super.move(loc, rotation);
+    public void move(Location loc) {
+        super.move(loc);
         falseIcon.teleport(location);
         trueIcon.teleport(location);
     }

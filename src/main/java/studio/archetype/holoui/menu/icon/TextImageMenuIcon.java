@@ -5,9 +5,7 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextComponent;
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 import studio.archetype.holoui.HoloUI;
 import studio.archetype.holoui.config.icon.TextImageIconData;
 import studio.archetype.holoui.enums.ImageFormat;
@@ -63,11 +61,11 @@ public class TextImageMenuIcon extends MenuIcon<TextImageIconData> {
             ImageFormat format = imageData.getFirst();
             List<Component> lines = Lists.newArrayList();
             for(int y = 0; y < image.getHeight(); y++) {
-                MutableComponent component = new TextComponent("");
+                MutableComponent component = Component.literal("");
                 for(int x = 0; x < image.getWidth(); x++) {
                     int colour = image.getRGB(x, y);
                     if(format != ImageFormat.JPEG && ((colour >> 24) & 0x0000FF) < 255)
-                        component.append(new TextComponent(" ").setStyle(Style.EMPTY.withBold(true))).append(new TextComponent(" "));
+                        component.append(Component.literal(" ").setStyle(Style.EMPTY.withBold(true))).append(Component.literal(" "));
                     else
                         component.append(TextUtils.textColor("█", colour & 0x00FFFFFF));
                 }
