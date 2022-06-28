@@ -22,7 +22,7 @@ import java.util.UUID;
 public class ItemMenuIcon extends MenuIcon<ItemIconData> {
 
     private static final float ITEM_OFFSET = 1F;
-    private static final Vector BLOCK_OFFSET = new Vector(0, -.7, -.3F);
+    private static final float BLOCK_OFFSET = -.95F;
 
     private final ItemStack item;
 
@@ -42,11 +42,10 @@ public class ItemMenuIcon extends MenuIcon<ItemIconData> {
         List<UUID> uuids = Lists.newArrayList();
         Location location = loc.clone();
         if(isBlock())
-            location.add(BLOCK_OFFSET);
+            location.add(0, BLOCK_OFFSET, 0);
         else
             location.subtract(0, ITEM_OFFSET + (item.getAmount() > 1 ? 0 : .09F), 0);
         ArmorStandBuilder builder = ArmorStandBuilder.itemArmorStand(item, location).small(true);
-        builder.rot(0, (float)MathHelper.getRotationFromDirection(session.getPlayer().getEyeLocation().getDirection().multiply(-1F)).getY());
         uuids.add(ArmorStandManager.add(builder.build()));
         if(item.getAmount() > 1) {
             loc.add(0F, -NAMETAG_SIZE - .15F, 0);
@@ -72,12 +71,17 @@ public class ItemMenuIcon extends MenuIcon<ItemIconData> {
     }
 
     @Override
+    public void spawn() {
+        super.spawn();
+        rotate((float)MathHelper.getRotationFromDirection(session.getPlayer().getEyeLocation().getDirection().multiply(-1F)).getY());
+    }
+
+    @Override
     public void rotate(float yaw) {
         if(isBlock()) {
-            Vector v = new Vector(0, 0, BLOCK_OFFSET.getZ());
-            ArmorStandManager.move(armorStands.get(0), v.clone().multiply(-1));
+            Location offset = MathHelper.rotateAroundPoint(this.position.clone().add(0, BLOCK_OFFSET, .3F), this.position, 0, yaw);
+            ArmorStandManager.goTo(armorStands.get(0), offset);
             super.rotate(-yaw + 180);
-            ArmorStandManager.move(armorStands.get(0), v);
         } else
             super.rotate(-yaw + 180);
     }
