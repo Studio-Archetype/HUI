@@ -109,7 +109,7 @@
         "type": {
           "type": "string",
           "description": "Defines the type of icon.",
-          "enum": [ "text", "textImage", "animatedTextImage" ]
+          "enum": [ "text", "textImage", "animatedTextImage", "item" ]
         }
       },
       "allOf": [
@@ -124,6 +124,10 @@
         {
           "if": { "properties": { "type": { "const": "animatedTextImage" } } },
           "then": { "$ref": "#/$defs/animatedTextImageIcon" }
+        },
+        {
+          "if": { "properties": { "type": { "const": "item" } } },
+          "then": { "$ref": "#/$defs/itemIcon" }
         }
       ]
     },
@@ -291,6 +295,26 @@
           "description": "Defines the path to the image displayed, relative to the \"images\" directory.",
           "type": "integer",
           "minimum": 1
+        }
+      }
+    },
+    "itemIcon": {
+      "title": "Item Icon Data Object",
+      "description": "A object defining the data of an Item Icon.",
+      "type": "object",
+      "required": [ "item"],
+      "properties": {
+        "item": {
+          "description": "Defines the type of item displayed.",
+          "type": "string"
+        },
+        "count": {
+          "description": "Defines the count of the item stack constructed from the material."
+        },
+        "customModelData": {
+          "description": "Defines the custom model data property for use with resource packs.",
+          "type": "integer",
+          "minimum": 0
         }
       }
     }
