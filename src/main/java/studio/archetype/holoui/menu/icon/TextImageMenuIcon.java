@@ -38,7 +38,7 @@ public class TextImageMenuIcon extends MenuIcon<TextImageIconData> {
     @Override
     protected List<UUID> createArmorStands(Location loc) {
         List<UUID> uuids = Lists.newArrayList();
-        loc.add(0, ((components.size() - 1) / 2F  * NAMETAG_SIZE) - NAMETAG_SIZE, 0);
+        loc.add(0, ((components.size() - 1) / 2F * NAMETAG_SIZE) - NAMETAG_SIZE, 0);
         components.forEach(c -> {
             uuids.add(ArmorStandManager.add(ArmorStandBuilder.nametagArmorStand(c, loc)));
             loc.subtract(0, NAMETAG_SIZE, 0);
