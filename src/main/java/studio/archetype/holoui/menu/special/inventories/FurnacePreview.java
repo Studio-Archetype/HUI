@@ -2,17 +2,13 @@ package studio.archetype.holoui.menu.special.inventories;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
-import org.bukkit.Material;
-import org.bukkit.block.BlastFurnace;
 import org.bukkit.block.Container;
-import org.bukkit.block.Smoker;
-import org.bukkit.craftbukkit.v1_19_R1.util.CraftMagicNumbers;
 import org.bukkit.inventory.FurnaceInventory;
 import studio.archetype.holoui.config.MenuComponentData;
 import studio.archetype.holoui.config.components.DecoComponentData;
 import studio.archetype.holoui.config.icon.TextIconData;
+import studio.archetype.holoui.utils.NMSUtils;
 
-import java.awt.*;
 import java.util.List;
 
 public class FurnacePreview implements InventoryPreviewMenu<FurnaceInventory> {
@@ -30,10 +26,8 @@ public class FurnacePreview implements InventoryPreviewMenu<FurnaceInventory> {
         components.add(component("output", .9F, 0.25F, 0, new InventorySlotComponent.Data(inv, 2)));
         components.add(component("fuelProgress", 0, -.15F, 0, new InventoryProgressComponent.Data(inv, i -> {
             FurnaceInventory furnace = (FurnaceInventory)i;
-            if(furnace.getFuel() == null)
-                return 0D;
-            double burnTime = (double)furnace.getHolder().getBurnTime() * (i.getHolder() instanceof BlastFurnace || i.getHolder() instanceof Smoker ? 2 : 1);
-            return burnTime / (float)getBurnTime(furnace.getFuel().getType());
+            float litTime = getBurnTime(furnace);
+            return litTime >= 0 ? litTime : 0D;
         }, 40, ChatFormatting.GOLD)));
     }
 
@@ -42,7 +36,7 @@ public class FurnacePreview implements InventoryPreviewMenu<FurnaceInventory> {
         return b.getInventory() instanceof FurnaceInventory;
     }
 
-    private int getBurnTime(Material m) {
-        return AbstractFurnaceBlockEntity.getFuel().getOrDefault(CraftMagicNumbers.getItem(m), 20);
+    private float getBurnTime(FurnaceInventory m) {
+        return NMSUtils.getFurnaceLitTime((AbstractFurnaceBlockEntity) NMSUtils.getBlockEntity(m.getHolder().getWorld(), m.getLocation()));
     }
 }

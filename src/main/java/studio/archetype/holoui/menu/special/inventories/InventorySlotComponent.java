@@ -11,7 +11,6 @@ import studio.archetype.holoui.menu.MenuSession;
 import studio.archetype.holoui.menu.components.MenuComponent;
 import studio.archetype.holoui.menu.icon.ItemMenuIcon;
 import studio.archetype.holoui.menu.icon.MenuIcon;
-import studio.archetype.holoui.menu.icon.TextMenuIcon;
 
 public class InventorySlotComponent extends MenuComponent<InventorySlotComponent.Data> {
 
