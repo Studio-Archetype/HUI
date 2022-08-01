@@ -79,6 +79,7 @@ public final class HoloCommand extends BrigadierCommand {
         CommandSender sender = ctx.getSource().getBukkitSender();
         if(HoloUI.INSTANCE.getConfigManager().keys().isEmpty()) {
             sender.sendMessage(PREFIX + ChatColor.GRAY + "No menus are available.");
+            return 1;
         }
         sender.sendMessage(ChatColor.GRAY + "----------+=== Menus ===+----------");
         HoloUI.INSTANCE.getConfigManager().keys().forEach(s -> sender.sendMessage(ChatColor.GRAY + "  - " + ChatColor.WHITE + s));
