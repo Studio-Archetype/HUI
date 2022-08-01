@@ -35,7 +35,7 @@ public class ItemMenuIcon extends MenuIcon<ItemIconData> {
 
     @Override // TODO Bounding Box Item
     public CollisionPlane createBoundingBox() {
-        return null;
+        return new CollisionPlane(position.toVector().clone().subtract(new Vector(0, 0.05F, 0)), .75F, .75F);
     }
 
     protected List<UUID> createArmorStands(Location loc) {
