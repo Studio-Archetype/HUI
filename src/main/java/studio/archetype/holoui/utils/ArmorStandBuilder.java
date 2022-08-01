@@ -142,7 +142,7 @@ public final class ArmorStandBuilder {
 
     public static ArmorStandBuilder itemArmorStand(ItemStack s, Location loc) {
         return new ArmorStandBuilder(loc.getWorld())
-                .marker(false).gravity(false)
+                .marker(true).gravity(false)
                 .invisible(true).basePlate(false).zeroPose()
                 .helmet(s)
                 .pos(loc);
