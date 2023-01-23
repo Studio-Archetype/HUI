@@ -5,7 +5,6 @@ import com.google.common.collect.Maps;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
-import com.luciad.imageio.webp.WebPReadParam;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
@@ -120,9 +119,7 @@ public final class ConfigManager {
         ImageReader reader = format.getReader();
         reader.setInput(new FileImageInputStream(f));
         if(format == ImageFormat.WEBP) {
-            WebPReadParam params = new WebPReadParam();
-            params.setBypassFiltering(true);
-            return new Pair<>(format, reader.read(0, params));
+            throw new IOException("WebP images are not supported due to Spigot's policy on native libraries.");
         } else
             return new Pair<>(format, reader.read(0));
     }
