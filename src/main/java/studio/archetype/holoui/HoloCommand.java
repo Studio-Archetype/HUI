@@ -20,7 +20,7 @@ import java.util.Optional;
 public final class HoloCommand extends BrigadierCommand {
 
     public static final String PREFIX = "[HoloUI]: ";
-    public static final String ROOT_PERM = "test.permission.hologui";
+    public static final String ROOT_PERM = "holoui.command";
 
     private static final String CMD = "holoui";
     private static final String[] ALIASES = { "holo", "hui", "holou", "hu" };
@@ -71,12 +71,24 @@ public final class HoloCommand extends BrigadierCommand {
             p.sendMessage(PREFIX + ChatColor.RED + "\"" + ui + "\" is not available.");
             return 1;
         }
+        if(!p.hasPermission(ROOT_PERM + ".open")) {
+            p.sendMessage(PREFIX + ChatColor.RED + "You do not have permission to run this command.");
+            return 1;
+        }
+        if(!p.hasPermission("holoui.open." + ui)) {
+            p.sendMessage(PREFIX + ChatColor.RED + "You lack permission to open \"" + ui + "\".");
+            return 1;
+        }
         HoloUI.INSTANCE.getSessionManager().createNewSession(p, data.get());
         return 1;
     }
 
     private static int list(CommandContext<CommandSourceStack> ctx) {
         CommandSender sender = ctx.getSource().getBukkitSender();
+        if(!sender.hasPermission(ROOT_PERM + ".list")) {
+            sender.sendMessage(PREFIX + ChatColor.RED + "You do not have permission to run this command.");
+            return 1;
+        }
         if(HoloUI.INSTANCE.getConfigManager().keys().isEmpty()) {
             sender.sendMessage(PREFIX + ChatColor.GRAY + "No menus are available.");
             return 1;
@@ -89,6 +101,10 @@ public final class HoloCommand extends BrigadierCommand {
 
     private static int close(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         Player p = ctx.getSource().getPlayerOrException().getBukkitEntity();
+        if(!p.hasPermission(ROOT_PERM + ".close")) {
+            p.sendMessage(PREFIX + ChatColor.RED + "You do not have permission to run this command.");
+            return 1;
+        }
         if(HoloUI.INSTANCE.getSessionManager().destroySession(p))
             p.sendMessage(PREFIX + ChatColor.GREEN + "Menu closed.");
         else
@@ -99,6 +115,10 @@ public final class HoloCommand extends BrigadierCommand {
     private static int startServer(CommandContext<CommandSourceStack> ctx) {
         BuilderServer server = HoloUI.INSTANCE.getBuilderServer();
         CommandSender sender = ctx.getSource().getBukkitSender();
+        if(!sender.hasPermission(ROOT_PERM + ".server_start")) {
+            sender.sendMessage(PREFIX + ChatColor.RED + "You do not have permission to run this command.");
+            return 1;
+        }
         if(server.isServerRunning()) {
             sender.sendMessage(PREFIX + ChatColor.RED + "Builder is already running.");
             return 1;
@@ -115,6 +135,10 @@ public final class HoloCommand extends BrigadierCommand {
 
     private static int serverStatus(CommandContext<CommandSourceStack> ctx) {
         CommandSender sender = ctx.getSource().getBukkitSender();
+        if(!sender.hasPermission(ROOT_PERM + ".server_status")) {
+            sender.sendMessage(PREFIX + ChatColor.RED + "You do not have permission to run this command.");
+            return 1;
+        }
         if(HoloUI.INSTANCE.getBuilderServer().isServerRunning()) {
             String host = HuiSettings.BUILDER_IP.value().equalsIgnoreCase("0.0.0.0") ? "localhost" : HuiSettings.BUILDER_IP.value();
             String url = host + ":" + HuiSettings.BUILDER_PORT.value();
@@ -162,6 +186,10 @@ public final class HoloCommand extends BrigadierCommand {
 
     private static int stopServer(CommandContext<CommandSourceStack> ctx) {
         CommandSender sender = ctx.getSource().getBukkitSender();
+        if(!sender.hasPermission(ROOT_PERM + ".server_stop")) {
+            sender.sendMessage(PREFIX + ChatColor.RED + "You do not have permission to run this command.");
+            return 1;
+        }
         if(HoloUI.INSTANCE.getBuilderServer().stopServer())
             sender.sendMessage(PREFIX + ChatColor.GREEN + "Builder has been stopped.");
         else

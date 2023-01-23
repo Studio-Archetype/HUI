@@ -160,7 +160,6 @@ public final class MenuSessionManager {
             debugPos.cancel();
     }
 
-    //TODO Permissions
     private void listenToInventoryPreview() {
         Events.listen(PlayerToggleSneakEvent.class, EventPriority.MONITOR, e -> managePreviewEvents(e.getPlayer()));
         Events.listen(PlayerMoveEvent.class, EventPriority.MONITOR, e -> managePreviewEvents(e.getPlayer()));
