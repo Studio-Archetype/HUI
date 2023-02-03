@@ -33,7 +33,6 @@ public class ItemMenuIcon extends MenuIcon<ItemIconData> {
                 .get();
     }
 
-    @Override // TODO Bounding Box Item
     public CollisionPlane createBoundingBox() {
         return new CollisionPlane(position.toVector().clone().subtract(new Vector(0, 0.05F, 0)), .75F, .75F);
     }
@@ -74,6 +73,8 @@ public class ItemMenuIcon extends MenuIcon<ItemIconData> {
     public void spawn() {
         super.spawn();
         rotate((float)MathHelper.getRotationFromDirection(session.getPlayer().getEyeLocation().getDirection().multiply(-1F)).getY());
+        Vector dir = session.getPlayer().getEyeLocation().getDirection();
+        rotate(-(float)MathHelper.getRotationFromDirection(dir).getY());
     }
 
     @Override

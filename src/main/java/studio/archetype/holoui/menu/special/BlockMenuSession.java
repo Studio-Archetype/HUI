@@ -35,13 +35,13 @@ public class BlockMenuSession extends MenuSession {
     }
 
     @Override
-    public void move(Location loc, boolean adjustRotation) {
+    public void move(Location loc, boolean byPlayer) {
         if(!HuiSettings.PREVIEW_FOLLOW_PLAYER.value())
             this.centerPoint = block.getLocation().add(getOffset()).clone().subtract(-.5, -.5, -.5);
         else
             this.centerPoint = loc.add(getOffset());
         rotateCenter();
-        adjustRotation(adjustRotation);
+        adjustRotation(byPlayer);
     }
 
     public void open() {

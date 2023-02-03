@@ -7,6 +7,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
+import studio.archetype.holoui.HoloUI;
 import studio.archetype.holoui.config.MenuComponentData;
 import studio.archetype.holoui.config.components.ComponentData;
 import studio.archetype.holoui.menu.MenuSession;
@@ -14,6 +15,8 @@ import studio.archetype.holoui.utils.Events;
 import studio.archetype.holoui.utils.ParticleUtils;
 import studio.archetype.holoui.utils.math.CollisionPlane;
 import studio.archetype.holoui.utils.math.MathHelper;
+
+import java.util.logging.Level;
 
 public abstract class ClickableComponent<T extends ComponentData> extends MenuComponent<T> {
 
@@ -67,6 +70,14 @@ public abstract class ClickableComponent<T extends ComponentData> extends MenuCo
     public void move(Location loc) {
         super.move(loc);
         this.plane.move(location);
+    }
+
+    @Override
+    public void adjustRotation(boolean byPlayer) {
+        super.adjustRotation(byPlayer);
+        if(this.plane != null) {
+            this.plane.move(location);
+        }
     }
 
     public void highlightHitbox(World w) {

@@ -35,11 +35,11 @@ public class MenuSession {
         data.getComponentData().forEach(a -> components.add(MenuComponent.getComponent(this, a)));
     }
 
-    public void move(Location loc, boolean adjustRotation) {
+    public void move(Location loc, boolean byPlayer) {
         this.centerPoint = loc.add(offset);
         components.forEach(c -> {
             c.move(this.centerPoint.clone());
-            c.adjustRotation(adjustRotation);
+            c.adjustRotation(byPlayer);
         });
     }
 

@@ -13,6 +13,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Consumer;
 import org.bukkit.util.Vector;
+import studio.archetype.holoui.HoloUI;
 import studio.archetype.holoui.utils.NMSUtils;
 import studio.archetype.holoui.utils.PacketUtils;
 
@@ -20,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
 
 public class ArmorStandManager {
 
@@ -87,7 +89,7 @@ public class ArmorStandManager {
             return;
         ArmorStand stand = armorStands.get(uuid);
         stand.setCustomName(name);
-        PacketUtils.send(playerVisibility.get(uuid), new ClientboundSetEntityDataPacket(stand.getId(), stand.getEntityData(), true));
+        PacketUtils.send(playerVisibility.get(uuid), new ClientboundSetEntityDataPacket(stand.getId(), stand.getEntityData().getNonDefaultValues()));
     }
 
     public static void rotate(UUID uuid, float yaw) {
@@ -100,7 +102,7 @@ public class ArmorStandManager {
 
     private static void sendSpawnPackets(Player p, ArmorStand stand) {
         PacketUtils.send(p, stand.getAddEntityPacket());
-        PacketUtils.send(p, new ClientboundSetEntityDataPacket(stand.getId(), stand.getEntityData(), true));
+        PacketUtils.send(p, new ClientboundSetEntityDataPacket(stand.getId(), stand.getEntityData().getNonDefaultValues()));
         List<Pair<EquipmentSlot, ItemStack>> stacks = Lists.newArrayList();
         for(EquipmentSlot s : EquipmentSlot.values())
             if(stand.hasItemInSlot(s))
@@ -110,7 +112,7 @@ public class ArmorStandManager {
         if(!stand.getPassengers().isEmpty()) {
             stand.getPassengers().forEach(e -> {
                 PacketUtils.send(p, e.getAddEntityPacket());
-                PacketUtils.send(p, new ClientboundSetEntityDataPacket(e.getId(), e.getEntityData(), true));
+                PacketUtils.send(p, new ClientboundSetEntityDataPacket(e.getId(), e.getEntityData().getNonDefaultValues()));
             });
             PacketUtils.send(p, new ClientboundSetPassengersPacket(stand));
         }

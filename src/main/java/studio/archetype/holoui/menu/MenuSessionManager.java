@@ -28,6 +28,7 @@ import studio.archetype.holoui.utils.math.MathHelper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
 
 public final class MenuSessionManager {
 
@@ -142,6 +143,7 @@ public final class MenuSessionManager {
             debugHitbox.cancel();
     }
 
+    //TODO Fix anchor particle
     public void controlPositionDebug(boolean positionDebug) {
         if(positionDebug && (debugPos == null || debugPos.isCancelled())) {
             debugPos = SchedulerUtils.scheduleSyncTask(HoloUI.INSTANCE, 2L, () -> {

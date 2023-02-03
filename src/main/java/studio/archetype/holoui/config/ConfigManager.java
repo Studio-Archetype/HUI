@@ -8,16 +8,23 @@ import com.google.gson.JsonParser;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
+import io.netty.handler.logging.LogLevel;
 import lombok.Getter;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.Sound;
+import org.bukkit.command.defaults.BukkitCommand;
+import org.bukkit.craftbukkit.v1_19_R2.CraftServer;
 import org.bukkit.entity.Player;
 import studio.archetype.holoui.HoloUI;
+import studio.archetype.holoui.OpenCommand;
 import studio.archetype.holoui.enums.ImageFormat;
+import studio.archetype.holoui.utils.NMSUtils;
 import studio.archetype.holoui.utils.SchedulerUtils;
+import studio.archetype.holoui.utils.SimpleCommand;
 import studio.archetype.holoui.utils.file.FolderWatcher;
 
 import javax.imageio.ImageIO;
@@ -52,7 +59,11 @@ public final class ConfigManager {
         menuDefinitionFolder = new FolderWatcher(menuDir);
         settings = new HuiSettings(configDir);
 
-        loadConfigs();
+        menuDefinitionFolder.getWatchers().keySet().forEach(f -> {
+            if(f.getPath().contains("menus")) {
+                registerMenu(f);
+            }
+        });
 
         SchedulerUtils.scheduleSyncTask(HoloUI.INSTANCE, 5L, () -> {
             if(menuDefinitionFolder.checkModifiedFast()) {
@@ -75,24 +86,34 @@ public final class ConfigManager {
         }, true);
         SchedulerUtils.scheduleSyncTask(HoloUI.INSTANCE, 20L, () -> {
             if(menuDefinitionFolder.checkModified()) {
-                menuDefinitionFolder.getCreated().forEach(f -> {
-                    String name = FilenameUtils.getBaseName(f.getName());
-                    Optional<MenuDefinitionData> data = loadConfig(name, f);
-                    data.ifPresent(d -> {
-                        menuRegistry.put(name, d);
-                        HoloUI.log(Level.INFO, "New menu config \"%s\" detected and registered.", name);
-                    });
-                });
-                menuDefinitionFolder.getDeleted().forEach(f -> {
-                    String name = FilenameUtils.getBaseName(f.getName());
-                    if(menuRegistry.containsKey(name)) {
-                        HoloUI.INSTANCE.getSessionManager().destroyAllType(name);
-                        menuRegistry.remove(name);
-                        HoloUI.log(Level.INFO, "Menu config \"%s\" has been deleted and unregistered.", name);
-                    }
-                });
+                menuDefinitionFolder.getCreated().forEach(this::registerMenu);
+                menuDefinitionFolder.getDeleted().forEach(this::unregisterMenu);
             }
         }, true);
+    }
+
+    private void registerMenu(File f) {
+        String name = FilenameUtils.getBaseName(f.getName());
+        Optional<MenuDefinitionData> data = loadConfig(name, f);
+        data.ifPresent(d -> {
+            menuRegistry.put(name, d);
+            if(!SimpleCommand.register(new OpenCommand(name)) && !SimpleCommand.isRegistered(name)) {
+                HoloUI.log(Level.WARNING,"Unable to register direct open command for \"/" + name + "\"!");
+            }
+            HoloUI.log(Level.INFO, "New menu config \"%s\" detected and registered.", name);
+        });
+    }
+
+    private void unregisterMenu(File f) {
+        String name = FilenameUtils.getBaseName(f.getName());
+        if(menuRegistry.containsKey(name)) {
+            if(!SimpleCommand.unregister(name)) {
+                HoloUI.log(Level.WARNING,"Unable to unregister direct command for \"/" + name + "\"!");
+            }
+            HoloUI.INSTANCE.getSessionManager().destroyAllType(name);
+            menuRegistry.remove(name);
+            HoloUI.log(Level.INFO, "Menu config \"%s\" has been deleted and unregistered.", name);
+        }
     }
 
     public void shutdown() {
@@ -137,19 +158,6 @@ public final class ConfigManager {
         for(int i = 0; i < reader.getNumImages(true); i++)
             frames.add(reader.read(i));
         return frames;
-    }
-
-    private void loadConfigs() {
-        menuDefinitionFolder.getWatchers().keySet().forEach(f -> {
-            if(f.getPath().contains("menus")) {
-                String name = FilenameUtils.getBaseName(f.getName());
-                Optional<MenuDefinitionData> data = loadConfig(name, f);
-                data.ifPresent(d -> {
-                    menuRegistry.put(name, d);
-                    HoloUI.log(Level.INFO, "Registered menu config \"%s\".", name);
-                });
-            }
-        });
     }
 
     private Optional<MenuDefinitionData> loadConfig(String menuName, File f) {

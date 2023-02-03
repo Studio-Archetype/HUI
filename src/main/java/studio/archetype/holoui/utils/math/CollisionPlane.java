@@ -19,6 +19,7 @@ public class CollisionPlane {
         this.height = height;
         this.up = UP.clone();
         this.right = RIGHT.clone();
+        calcNormal();
     }
 
     public boolean isLookingAt(Vector origin, Vector direction) {

@@ -79,7 +79,11 @@ public final class HoloCommand extends BrigadierCommand {
             p.sendMessage(PREFIX + ChatColor.RED + "You lack permission to open \"" + ui + "\".");
             return 1;
         }
-        HoloUI.INSTANCE.getSessionManager().createNewSession(p, data.get());
+        try {
+            HoloUI.INSTANCE.getSessionManager().createNewSession(p, data.get());
+        } catch(NullPointerException e) {
+            HoloUI.logExceptionStack(true, e, "Null in session creation?");
+        }
         return 1;
     }
 
