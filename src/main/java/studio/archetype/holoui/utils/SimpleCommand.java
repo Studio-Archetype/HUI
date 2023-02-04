@@ -2,9 +2,11 @@ package studio.archetype.holoui.utils;
 
 import com.google.common.collect.Lists;
 import org.bukkit.command.Command;
+import studio.archetype.holoui.HoloUI;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
 
 public abstract class SimpleCommand extends Command {
 
@@ -22,6 +24,7 @@ public abstract class SimpleCommand extends Command {
         if(isRegistered(cmd.getName()))
             return false;
         if(cmd.register(NMSUtils.getCommandMap())) {
+            NMSUtils.getCommandMap().register(cmd.getName(), "hui", cmd);
             REGISTRY.add(cmd);
             NMSUtils.syncCommands();
             return true;
