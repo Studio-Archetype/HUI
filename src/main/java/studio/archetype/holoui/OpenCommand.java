@@ -3,12 +3,10 @@ package studio.archetype.holoui;
 import com.google.common.collect.Lists;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.Player;
 import studio.archetype.holoui.config.MenuDefinitionData;
 import studio.archetype.holoui.utils.SimpleCommand;
 
-import java.util.Collections;
 import java.util.Optional;
 
 public class OpenCommand extends SimpleCommand {

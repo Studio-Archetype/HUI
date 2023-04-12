@@ -12,9 +12,9 @@ public record EnumCodec<E extends Enum<E> & EnumCodec.Values>(Class<E> clazz) im
     public <T> DataResult<E> read(DynamicOps<T> dynamicOps, T t) {
         DataResult<String> res = dynamicOps.getStringValue(t);
         if(res.error().isPresent() || res.result().isEmpty())
-            return DataResult.error("Unable to parse EnumCodec for \"" + clazz.getSimpleName() + "\": " + res.error().get().message());
+            return DataResult.error(() -> "Unable to parse EnumCodec for \"" + clazz.getSimpleName() + "\": " + res.error().get().message());
         Optional<E> value = Values.getValue(clazz, res.result().get());
-        return value.map(DataResult::success).orElseGet(() -> DataResult.error("Unable to parse EnumCodec for \"" + clazz.getSimpleName() + "\": Unknown enum value \"" + res.result().get() + "\""));
+        return value.map(DataResult::success).orElseGet(() -> DataResult.error(() -> "Unable to parse EnumCodec for \"" + clazz.getSimpleName() + "\": Unknown enum value \"" + res.result().get() + "\""));
     }
 
     @Override
