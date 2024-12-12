@@ -1,5 +1,8 @@
 package studio.archetype.holoui;
 
+import co.aikar.commands.PaperCommandManager;
+import com.github.retrooper.packetevents.PacketEvents;
+import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
 import lombok.Getter;
 import org.bukkit.plugin.java.JavaPlugin;
 import studio.archetype.holoui.config.ConfigManager;
@@ -10,11 +13,9 @@ import java.util.logging.Level;
 
 @Getter
 public final class HoloUI extends JavaPlugin {
-
-    public static final String VERSION = "1.0.0";
-
     public static HoloUI INSTANCE;
 
+    private PaperCommandManager commandManager;
     private HoloCommand command;
     private ConfigManager configManager;
     private MenuSessionManager sessionManager;
@@ -22,13 +23,22 @@ public final class HoloUI extends JavaPlugin {
     private BuilderServer builderServer;
 
     @Override
-    public void onEnable() {
+    public void onLoad() {
         INSTANCE = this;
 
+        PacketEvents.setAPI(SpigotPacketEventsBuilder.build(this));
+        PacketEvents.getAPI().load();
+    }
+
+    @Override
+    public void onEnable() {
         ImageIO.scanForPlugins();
+        PacketEvents.getAPI().init();
 
         this.configManager = new ConfigManager(getDataFolder());
+        this.commandManager = new PaperCommandManager(this);
         this.command = new HoloCommand();
+        commandManager.registerCommand(command);
         this.sessionManager = new MenuSessionManager();
 
         this.builderServer = new BuilderServer(getDataFolder());
@@ -38,6 +48,9 @@ public final class HoloUI extends JavaPlugin {
     public void onDisable() {
         configManager.shutdown();
         sessionManager.destroyAll();
+        commandManager.unregisterCommands();
+        PacketEvents.getAPI().terminate();
+
         builderServer.stopServer();
     }
 

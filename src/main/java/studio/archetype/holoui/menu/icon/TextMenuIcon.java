@@ -2,14 +2,15 @@ package studio.archetype.holoui.menu.icon;
 
 import com.google.common.collect.Lists;
 import me.clip.placeholderapi.PlaceholderAPI;
-import net.minecraft.network.chat.Component;
+import net.kyori.adventure.text.Component;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import studio.archetype.holoui.config.icon.TextIconData;
 import studio.archetype.holoui.exceptions.MenuIconException;
 import studio.archetype.holoui.menu.ArmorStandManager;
 import studio.archetype.holoui.menu.MenuSession;
-import studio.archetype.holoui.utils.ArmorStandBuilder;
+import studio.archetype.holoui.utils.ArmorStand;
+import studio.archetype.holoui.utils.TextUtils;
 import studio.archetype.holoui.utils.math.CollisionPlane;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public class TextMenuIcon extends MenuIcon<TextIconData> {
         super(session, loc, data);
         components = Lists.newArrayList();
         for(String s : data.text().split("\n"))
-            components.add(Component.literal(ChatColor.translateAlternateColorCodes('&', PlaceholderAPI.setPlaceholders(session.getPlayer(), s))));
+            components.add(Component.text(ChatColor.translateAlternateColorCodes('&', PlaceholderAPI.setPlaceholders(session.getPlayer(), s))));
     }
 
     @Override
@@ -31,7 +32,7 @@ public class TextMenuIcon extends MenuIcon<TextIconData> {
         List<UUID> uuids = Lists.newArrayList();
         loc.add(0, ((components.size() - 1) / 2F * NAMETAG_SIZE) - NAMETAG_SIZE, 0);
         components.forEach(c -> {
-            uuids.add(ArmorStandManager.add(ArmorStandBuilder.nametagArmorStand(c, loc)));
+            uuids.add(ArmorStandManager.add(ArmorStand.Builder.nametagArmorStand(c, loc)));
             loc.subtract(0, NAMETAG_SIZE, 0);
         });
         return uuids;
@@ -41,7 +42,7 @@ public class TextMenuIcon extends MenuIcon<TextIconData> {
     public CollisionPlane createBoundingBox() {
         float width = 0;
         for(Component component : components)
-            width = Math.max(width, component.getString().length() * NAMETAG_SIZE / 2);
+            width = Math.max(width, TextUtils.content(component).length() * NAMETAG_SIZE / 2);
         return new CollisionPlane(position.toVector(), width, components.size() * NAMETAG_SIZE);
     }
 
