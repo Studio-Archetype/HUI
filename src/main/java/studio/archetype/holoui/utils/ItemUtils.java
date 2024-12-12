@@ -1,20 +1,19 @@
 package studio.archetype.holoui.utils;
 
-import net.minecraft.resources.ResourceLocation;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftItemStack;
+import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 
 public final class ItemUtils {
 
-    public static Material identifierToMaterial(ResourceLocation loc) {
-        return Material.valueOf(loc.getPath().toUpperCase());
+    public static Material identifierToMaterial(NamespacedKey loc) {
+        return Material.valueOf(loc.getKey());
     }
 
-    public static ResourceLocation materialToIdentifier(Material m) {
-        return new ResourceLocation(m.name().toLowerCase());
+    public static NamespacedKey materialToIdentifier(Material m) {
+        return m.getKey();
     }
 
     public static final class Builder {
@@ -50,10 +49,6 @@ public final class ItemUtils {
             if(meta != null)
                 stack.setItemMeta(meta);
             return stack;
-        }
-
-        public net.minecraft.world.item.ItemStack getNotchian() {
-            return CraftItemStack.asNMSCopy(get());
         }
     }
 }

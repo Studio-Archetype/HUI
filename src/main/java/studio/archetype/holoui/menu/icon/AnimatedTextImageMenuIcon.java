@@ -1,16 +1,15 @@
 package studio.archetype.holoui.menu.icon;
 
 import com.google.common.collect.Lists;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Location;
 import studio.archetype.holoui.HoloUI;
 import studio.archetype.holoui.config.icon.AnimatedImageData;
 import studio.archetype.holoui.exceptions.MenuIconException;
 import studio.archetype.holoui.menu.ArmorStandManager;
 import studio.archetype.holoui.menu.MenuSession;
-import studio.archetype.holoui.utils.ArmorStandBuilder;
+import studio.archetype.holoui.utils.ArmorStand;
 import studio.archetype.holoui.utils.TextUtils;
 import studio.archetype.holoui.utils.math.CollisionPlane;
 
@@ -50,7 +49,7 @@ public class AnimatedTextImageMenuIcon extends MenuIcon<AnimatedImageData> {
         List<UUID> uuids = Lists.newArrayList();
         location.add(0, ((frameComponents.getFirst().size() - 1) / 2F  * NAMETAG_SIZE) - NAMETAG_SIZE, 0);
         frameComponents.getFirst().forEach(c -> {
-            uuids.add(ArmorStandManager.add(ArmorStandBuilder.nametagArmorStand(c, location)));
+            uuids.add(ArmorStandManager.add(ArmorStand.Builder.nametagArmorStand(c, location)));
             location.subtract(0, NAMETAG_SIZE, 0);
         });
         return uuids;
@@ -60,7 +59,7 @@ public class AnimatedTextImageMenuIcon extends MenuIcon<AnimatedImageData> {
     public CollisionPlane createBoundingBox() {
         float width = 0;
         for(Component component : frameComponents.getFirst())
-            width = Math.max(width, component.getString().length() * NAMETAG_SIZE / 2);
+            width = Math.max(width, TextUtils.content(component).length() * NAMETAG_SIZE / 2);
         return new CollisionPlane(position.toVector(), width, (frameComponents.getFirst().size() - 1) * NAMETAG_SIZE);
     }
 
@@ -81,15 +80,16 @@ public class AnimatedTextImageMenuIcon extends MenuIcon<AnimatedImageData> {
             getImages().forEach(i -> {
                 List<Component> lines = Lists.newArrayList();
                 for(int y = 0; y < i.getHeight(); y++) {
-                    MutableComponent component = Component.literal("");
+                    var component = Component.text();
                     for(int x = 0; x < i.getWidth(); x++) {
                         int colour = i.getRGB(x, y);
                         if(((colour >> 24) & 0x0000FF) < 255)
-                            component.append(Component.literal(" ").setStyle(Style.EMPTY.withBold(true))).append(Component.literal(" "));
+                            component.append(Component.text(" ").decorate(TextDecoration.BOLD))
+                                    .append(Component.text(" "));
                         else
                             component.append(TextUtils.textColor("█", colour & 0x00FFFFFF));
                     }
-                    lines.add(component);
+                    lines.add(component.build());
                 }
                 frameComponents.add(lines);
             });

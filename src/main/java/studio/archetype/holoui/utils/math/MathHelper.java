@@ -1,9 +1,7 @@
 package studio.archetype.holoui.utils.math;
 
-import net.minecraft.world.phys.Vec3;
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
-import studio.archetype.holoui.utils.NMSUtils;
 
 public final class MathHelper {
 
@@ -18,10 +16,6 @@ public final class MathHelper {
 
     public static Vector unit(Vector a, Vector b) {
         return b.clone().subtract(a);
-    }
-
-    public static Vector unit(Vec3 a, Vector b) {
-        return b.clone().subtract(NMSUtils.vector(a));
     }
 
     public static Vector interpolate(Vector start, Vector end, float delta) {

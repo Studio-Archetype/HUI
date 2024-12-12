@@ -1,9 +1,8 @@
 package studio.archetype.holoui.menu.special.inventories;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.Style;
 import org.bukkit.inventory.Inventory;
 import studio.archetype.holoui.config.MenuComponentData;
 import studio.archetype.holoui.config.components.ComponentData;
@@ -30,7 +29,7 @@ public class InventoryProgressComponent extends MenuComponent<InventoryProgressC
         this.inventory = this.data.inv();
         this.progress = this.data.progress();
         this.segmentCount = this.data.segments();
-        this.color = Style.EMPTY.withColor(this.data.color());
+        this.color = this.data.color();
     }
 
     @Override
@@ -57,16 +56,16 @@ public class InventoryProgressComponent extends MenuComponent<InventoryProgressC
 
     private Component getBar(double invProgress) {
         int progress = (int)(invProgress * segmentCount);
-        MutableComponent c = Component.literal("");
+        var c = Component.text();
         for(int i = 0; i < segmentCount; i++) {
-            Style s = i < progress ? this.color : Style.EMPTY.withColor(ChatFormatting.DARK_GRAY);
-            c.append(Component.literal("|").withStyle(s));
+            Style s = i < progress ? this.color : Style.style(NamedTextColor.DARK_GRAY);
+            c.append(Component.text("|").style(s));
         }
 
-        return c;
+        return c.build();
     }
 
-    public record Data(Inventory inv, Function<Inventory, Double> progress, int segments, ChatFormatting color) implements ComponentData {
+    public record Data(Inventory inv, Function<Inventory, Double> progress, int segments, Style color) implements ComponentData {
         public MenuComponentType getType() { return null; }
     }
 }

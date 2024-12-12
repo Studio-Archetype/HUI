@@ -2,7 +2,7 @@ package studio.archetype.holoui.menu.icon;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import net.minecraft.network.chat.Component;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -11,7 +11,7 @@ import studio.archetype.holoui.config.icon.ItemIconData;
 import studio.archetype.holoui.exceptions.MenuIconException;
 import studio.archetype.holoui.menu.ArmorStandManager;
 import studio.archetype.holoui.menu.MenuSession;
-import studio.archetype.holoui.utils.ArmorStandBuilder;
+import studio.archetype.holoui.utils.ArmorStand;
 import studio.archetype.holoui.utils.ItemUtils;
 import studio.archetype.holoui.utils.math.CollisionPlane;
 import studio.archetype.holoui.utils.math.MathHelper;
@@ -44,12 +44,12 @@ public class ItemMenuIcon extends MenuIcon<ItemIconData> {
             location.add(0, BLOCK_OFFSET, 0);
         else
             location.subtract(0, ITEM_OFFSET + (item.getAmount() > 1 ? 0 : .09F), 0);
-        ArmorStandBuilder builder = ArmorStandBuilder.itemArmorStand(item, location).small(true);
+        ArmorStand.Builder builder = ArmorStand.Builder.itemArmorStand(item, location).small(true);
         uuids.add(ArmorStandManager.add(builder.build()));
         if(item.getAmount() > 1) {
             loc.add(0F, -NAMETAG_SIZE - .15F, 0);
-            Component count = Component.literal(String.valueOf(item.getAmount()));
-            uuids.add(ArmorStandManager.add(ArmorStandBuilder.nametagArmorStand(count, loc)));
+            Component count = Component.text(item.getAmount());
+            uuids.add(ArmorStandManager.add(ArmorStand.Builder.nametagArmorStand(count, loc)));
         }
         return uuids;
     }
@@ -57,7 +57,7 @@ public class ItemMenuIcon extends MenuIcon<ItemIconData> {
     public void updateCount(int count) {
         if(armorStands.size() == 1 && count > 1) {
             ArmorStandManager.move(armorStands.get(0), new Vector(0, .09F, 0));
-            UUID armorStand = ArmorStandManager.add(ArmorStandBuilder.nametagArmorStand(Component.literal(String.valueOf(count)), position.clone().add(0F, -NAMETAG_SIZE - .37F, 0)));
+            UUID armorStand = ArmorStandManager.add(ArmorStand.Builder.nametagArmorStand(Component.text(count), position.clone().add(0F, -NAMETAG_SIZE - .37F, 0)));
             armorStands.add(armorStand);
             ArmorStandManager.spawn(armorStand, session.getPlayer());
         } else if(armorStands.size() == 2 && count < 2){
@@ -65,7 +65,7 @@ public class ItemMenuIcon extends MenuIcon<ItemIconData> {
             ArmorStandManager.delete(armorStands.get(1));
             armorStands.remove(1);
         } else {
-            ArmorStandManager.changeName(armorStands.get(1), Component.literal(String.valueOf(count)));
+            ArmorStandManager.changeName(armorStands.get(1), Component.text(count));
         }
     }
 

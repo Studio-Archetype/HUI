@@ -2,9 +2,8 @@ package studio.archetype.holoui.menu.icon;
 
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Location;
 import studio.archetype.holoui.HoloUI;
 import studio.archetype.holoui.config.icon.TextImageIconData;
@@ -12,7 +11,7 @@ import studio.archetype.holoui.enums.ImageFormat;
 import studio.archetype.holoui.exceptions.MenuIconException;
 import studio.archetype.holoui.menu.ArmorStandManager;
 import studio.archetype.holoui.menu.MenuSession;
-import studio.archetype.holoui.utils.ArmorStandBuilder;
+import studio.archetype.holoui.utils.ArmorStand;
 import studio.archetype.holoui.utils.TextUtils;
 import studio.archetype.holoui.utils.math.CollisionPlane;
 
@@ -40,7 +39,7 @@ public class TextImageMenuIcon extends MenuIcon<TextImageIconData> {
         List<UUID> uuids = Lists.newArrayList();
         loc.add(0, ((components.size() - 1) / 2F * NAMETAG_SIZE) - NAMETAG_SIZE, 0);
         components.forEach(c -> {
-            uuids.add(ArmorStandManager.add(ArmorStandBuilder.nametagArmorStand(c, loc)));
+            uuids.add(ArmorStandManager.add(ArmorStand.Builder.nametagArmorStand(c, loc)));
             loc.subtract(0, NAMETAG_SIZE, 0);
         });
         return uuids;
@@ -50,7 +49,7 @@ public class TextImageMenuIcon extends MenuIcon<TextImageIconData> {
     public CollisionPlane createBoundingBox() {
         float width = 0;
         for(Component component : components)
-            width = Math.max(width, component.getString().length() * NAMETAG_SIZE / 2);
+            width = Math.max(width, TextUtils.content(component).length() * NAMETAG_SIZE / 2);
         return new CollisionPlane(position.toVector(), width, (components.size() - 1) * NAMETAG_SIZE);
     }
 
@@ -61,16 +60,16 @@ public class TextImageMenuIcon extends MenuIcon<TextImageIconData> {
             ImageFormat format = imageData.getFirst();
             List<Component> lines = Lists.newArrayList();
             for(int y = 0; y < image.getHeight(); y++) {
-                MutableComponent component = Component.literal("");
+                var component = Component.text();
                 for(int x = 0; x < image.getWidth(); x++) {
                     int colour = image.getRGB(x, y);
                     if(format != ImageFormat.JPEG && ((colour >> 24) & 0x0000FF) < 255)
-                        component.append(Component.literal(" ").setStyle(Style.EMPTY.withBold(true))).append(Component.literal(" "));
+                        component.append(Component.text(" ").decorate(TextDecoration.BOLD)).append(Component.text(" "));
                     else
                         component.append(TextUtils.textColor("█", colour & 0x00FFFFFF));
                 }
 
-                lines.add(component);
+                lines.add(component.build());
             }
             return lines;
         } catch(IOException e) {

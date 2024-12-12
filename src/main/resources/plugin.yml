@@ -4,3 +4,20 @@ main: ${main}
 api-version: ${apiVersion}
 
 depend: [PlaceholderAPI]
+
+libraries:
+  - "net.kyori:adventure-api:4.17.0"
+  - "net.kyori:adventure-key:4.17.0"
+  - "net.kyori:adventure-nbt:4.17.0"
+  - "net.kyori:examination-api:1.3.0"
+  - "net.kyori:examination-string:1.3.0"
+  - "io.undertow:undertow-core:${webServerVersion}"
+  - "com.github.zafarkhaja:java-semver:${semVerVersion}"
+
+softdepend:
+  - ProtocolLib
+  - ProtocolSupport
+  - ViaVersion
+  - ViaBackwards
+  - ViaRewind
+  - Geyser-Spigot
