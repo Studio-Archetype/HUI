@@ -57,15 +57,24 @@ public final class MenuSessionManager {
             });
         }, false);
         Events.listen(PlayerMoveEvent.class, EventPriority.HIGHEST, e -> sessions.forEach(s -> {
-            if(e.getPlayer().equals(s.getPlayer())) {
-                if(s.isFreezePlayer()) {
-                    Location to = e.getFrom();
-                    to.setDirection(e.getTo().getDirection());
-                    e.setTo(to);
-                    e.setCancelled(true);
-                } else if(s.isFollowPlayer()){
-                    s.move(e.getTo().clone(), true);
+            if (!e.getPlayer().equals(s.getPlayer()) || e.getTo() == null)
+                return;
+
+            if (s.isFreezePlayer()) {
+                Location from = e.getFrom();
+                Location to = e.getTo();
+                to.setX(from.getX());
+                to.setY(from.getY());
+                to.setZ(from.getZ());
+                Player player = e.getPlayer();
+                if (!player.getVelocity().isZero()) {
+                    player.setVelocity(new Vector());
                 }
+                return;
+            }
+
+            if (s.isFollowPlayer()) {
+                s.move(e.getTo(), true);
             }
         }));
         Events.listen(PlayerQuitEvent.class, e -> {
