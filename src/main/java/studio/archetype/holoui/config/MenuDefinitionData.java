@@ -23,7 +23,7 @@ public class MenuDefinitionData {
     public static final Codec<MenuDefinitionData> CODEC = RecordCodecBuilder.create(i -> i.group(
             Codecs.VECTOR.fieldOf("offset").forGetter(MenuDefinitionData::getOffset),
             Codec.BOOL.optionalFieldOf("lockPosition", true).forGetter(MenuDefinitionData::isFreeze),
-            Codec.BOOL.optionalFieldOf("followPlayer", true).forGetter(MenuDefinitionData::isFreeze),
+            Codec.BOOL.optionalFieldOf("followPlayer", true).forGetter(MenuDefinitionData::isFollow),
             MenuComponentData.CODEC.listOf().fieldOf("components").forGetter(MenuDefinitionData::getComponentData)
     ).apply(i, MenuDefinitionData::new));
 }
