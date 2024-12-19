@@ -6,7 +6,9 @@ import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.ChatColor;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 public final class TextUtils {

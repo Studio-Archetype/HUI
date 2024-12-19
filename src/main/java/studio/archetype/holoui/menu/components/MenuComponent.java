@@ -3,7 +3,6 @@ package studio.archetype.holoui.menu.components;
 import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
-import studio.archetype.holoui.config.HuiSettings;
 import studio.archetype.holoui.config.MenuComponentData;
 import studio.archetype.holoui.config.components.ButtonComponentData;
 import studio.archetype.holoui.config.components.ComponentData;

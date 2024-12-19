@@ -18,8 +18,8 @@ import studio.archetype.holoui.config.HuiSettings;
 import studio.archetype.holoui.config.MenuDefinitionData;
 import studio.archetype.holoui.menu.components.ClickableComponent;
 import studio.archetype.holoui.menu.components.MenuComponent;
-import studio.archetype.holoui.menu.special.inventories.InventoryPreviewMenu;
 import studio.archetype.holoui.menu.special.BlockMenuSession;
+import studio.archetype.holoui.menu.special.inventories.InventoryPreviewMenu;
 import studio.archetype.holoui.utils.Events;
 import studio.archetype.holoui.utils.ParticleUtils;
 import studio.archetype.holoui.utils.SchedulerUtils;
@@ -28,7 +28,6 @@ import studio.archetype.holoui.utils.math.MathHelper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Level;
 
 public final class MenuSessionManager {
 

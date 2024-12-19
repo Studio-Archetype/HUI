@@ -1,7 +1,7 @@
 package studio.archetype.holoui.menu.special.inventories;
 
-import com.google.common.collect.Lists;
-import org.bukkit.block.*;
+import org.bukkit.block.Container;
+import org.bukkit.block.Hopper;
 import org.bukkit.inventory.Inventory;
 import studio.archetype.holoui.config.MenuComponentData;
 

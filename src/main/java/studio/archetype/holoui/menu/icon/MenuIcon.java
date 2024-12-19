@@ -1,9 +1,7 @@
 package studio.archetype.holoui.menu.icon;
 
-import io.undertow.server.session.Session;
 import lombok.NonNull;
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 import studio.archetype.holoui.HoloUI;
 import studio.archetype.holoui.config.icon.*;
@@ -12,7 +10,6 @@ import studio.archetype.holoui.menu.ArmorStandManager;
 import studio.archetype.holoui.menu.MenuSession;
 import studio.archetype.holoui.menu.components.MenuComponent;
 import studio.archetype.holoui.utils.math.CollisionPlane;
-import studio.archetype.holoui.utils.math.MathHelper;
 
 import java.util.List;
 import java.util.UUID;
