@@ -72,7 +72,7 @@ dependencies {
 processResources {
     filesMatching('**/plugin.yml') {
         expand(
-                'name': project.name,
+                'name': pluginName,
                 'version': version,
                 'main': main,
                 'apiVersion': apiVersion,
