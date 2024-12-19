@@ -3,7 +3,6 @@ package studio.archetype.holoui.menu.icon;
 import com.google.common.collect.Lists;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import studio.archetype.holoui.config.icon.TextIconData;
 import studio.archetype.holoui.exceptions.MenuIconException;
@@ -13,8 +12,10 @@ import studio.archetype.holoui.utils.ArmorStand;
 import studio.archetype.holoui.utils.TextUtils;
 import studio.archetype.holoui.utils.math.CollisionPlane;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class TextMenuIcon extends MenuIcon<TextIconData> {
 
@@ -22,9 +23,9 @@ public class TextMenuIcon extends MenuIcon<TextIconData> {
 
     public TextMenuIcon(MenuSession session, Location loc, TextIconData data) throws MenuIconException {
         super(session, loc, data);
-        components = Lists.newArrayList();
-        for(String s : data.text().split("\n"))
-            components.add(Component.text(ChatColor.translateAlternateColorCodes('&', PlaceholderAPI.setPlaceholders(session.getPlayer(), s))));
+        components = Arrays.stream(data.text().split("\n"))
+                .map(s -> TextUtils.parse(PlaceholderAPI.setPlaceholders(session.getPlayer(), s)))
+                .collect(Collectors.toList());
     }
 
     @Override

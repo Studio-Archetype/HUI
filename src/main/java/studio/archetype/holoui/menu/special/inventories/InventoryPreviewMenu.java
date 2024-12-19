@@ -39,6 +39,7 @@ public interface InventoryPreviewMenu<T extends Inventory> {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     default T getInventory(Container b) {
         return (T)b.getInventory();
     }

@@ -63,6 +63,7 @@ dependencies {
     //Provided
     implementation "com.mojang:datafixerupper:$datafixerupperVersion"
     compileOnly "commons-io:commons-io:$commonsIoVersion"
+    compileOnly "net.kyori:adventure-text-minimessage:$adventureVersion"
 
     //Dynamically loaded
     compileOnly "io.undertow:undertow-core:$webServerVersion"
@@ -77,7 +78,8 @@ processResources {
                 'main': main,
                 'apiVersion': apiVersion,
                 'webServerVersion': webServerVersion,
-                'semVerVersion': semVerVersion
+                'semVerVersion': semVerVersion,
+                'adventureVersion': adventureVersion
         )
     }
 }
