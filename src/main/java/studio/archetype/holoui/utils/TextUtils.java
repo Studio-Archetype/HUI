@@ -4,6 +4,8 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
 
+import java.util.logging.Logger;
+
 public final class TextUtils {
 
     public static Component textColor(String text, String hexColor) {
@@ -24,5 +26,13 @@ public final class TextUtils {
             builder.append(content(child));
         }
         return builder.toString();
+    }
+
+    public static void splash(Logger logger) {
+        logger.info("    __  __        __        ______        _ ");
+        logger.info("   / / / /____   / /____   / ____/__  __ (_)");
+        logger.info("  / /_/ // __ \\ / // __ \\ / / __ / / / // / ");
+        logger.info(" / __  // /_/ // // /_/ // /_/ // /_/ // /  ");
+        logger.info("/_/ /_/ \\____//_/ \\____/ \\____/ \\__,_//_/   ");
     }
 }

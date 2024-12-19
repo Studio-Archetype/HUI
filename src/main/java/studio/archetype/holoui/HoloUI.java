@@ -7,6 +7,7 @@ import lombok.Getter;
 import org.bukkit.plugin.java.JavaPlugin;
 import studio.archetype.holoui.config.ConfigManager;
 import studio.archetype.holoui.menu.MenuSessionManager;
+import studio.archetype.holoui.utils.TextUtils;
 
 import javax.imageio.ImageIO;
 import java.util.logging.Level;
@@ -34,6 +35,7 @@ public final class HoloUI extends JavaPlugin {
     public void onEnable() {
         ImageIO.scanForPlugins();
         PacketEvents.getAPI().init();
+        TextUtils.splash(getLogger());
 
         this.configManager = new ConfigManager(getDataFolder());
         this.commandManager = new PaperCommandManager(this);
