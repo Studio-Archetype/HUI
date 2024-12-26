@@ -12,7 +12,7 @@ registerCustomOutputTask('CrazyDev22', 'C://Users/Julian/Desktop/server/plugins'
 registerCustomOutputTaskUnix('CrazyDev22LT', '/home/julian/Desktop/server/plugins')
 // ==============================================================
 
-group 'studio.archetype.hologui2'
+group 'com.volmit'
 version project.version
 
 file(jar.archiveFile.get().getAsFile().getParentFile().getParentFile().getParentFile().getAbsolutePath() + '/build/resources/main/plugin.yml').delete()
@@ -103,13 +103,6 @@ def registerCustomOutputTask(name, path) {
             fileName.replace("holoui-" + version + ".jar", "Holoui.jar")
         }
     }
-
-    tasks.register('downloadBile' + name, Download) {
-        group "server"
-        src 'https://github.com/VolmitSoftware/BileTools/releases/download/2/BileTools-2.jar'
-        dest file(path)
-        dest file(path)
-    }
 }
 
 def registerCustomOutputTaskUnix(name, path) {
@@ -126,12 +119,5 @@ def registerCustomOutputTaskUnix(name, path) {
         rename { String fileName ->
             fileName.replace("holoui-" + version + ".jar", "Holoui.jar")
         }
-    }
-
-    tasks.register('downloadBile' + name, Download) {
-        group "server"
-        src 'https://github.com/VolmitSoftware/BileTools/releases/download/2/BileTools-2.jar'
-        dest file(path)
-        dest file(path)
     }
 }
