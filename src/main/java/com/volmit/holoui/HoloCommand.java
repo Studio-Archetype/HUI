@@ -12,8 +12,6 @@ import com.volmit.holoui.config.HuiSettings;
 import com.volmit.holoui.config.MenuDefinitionData;
 import com.volmit.holoui.utils.SchedulerUtils;
 
-import java.util.Optional;
-
 import static com.volmit.holoui.HoloUI.INSTANCE;
 
 @CommandAlias("holoui|holo|hui|holou|hu")

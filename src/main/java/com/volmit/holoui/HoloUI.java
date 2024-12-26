@@ -2,11 +2,9 @@ package com.volmit.holoui;
 
 import co.aikar.commands.PaperCommandManager;
 import com.github.retrooper.packetevents.PacketEvents;
-import com.volmit.holoui.config.MenuDefinitionData;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
 import lombok.Getter;
 import org.bstats.bukkit.Metrics;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import com.volmit.holoui.config.ConfigManager;
 import com.volmit.holoui.menu.MenuSessionManager;
