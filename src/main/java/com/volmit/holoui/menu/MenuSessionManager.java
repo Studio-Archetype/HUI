@@ -66,7 +66,8 @@ public final class MenuSessionManager {
                 to.setY(from.getY());
                 to.setZ(from.getZ());
                 Player player = e.getPlayer();
-                if (!player.getVelocity().isZero()) {
+                Vector velocity = player.getVelocity();
+                if (velocity.getX() != 0 || velocity.getY() != 0 || velocity.getZ() != 0) {
                     player.setVelocity(new Vector());
                 }
                 return;

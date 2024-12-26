@@ -2,8 +2,11 @@ package com.volmit.holoui;
 
 import co.aikar.commands.PaperCommandManager;
 import com.github.retrooper.packetevents.PacketEvents;
+import com.volmit.holoui.config.MenuDefinitionData;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
 import lombok.Getter;
+import org.bstats.bukkit.Metrics;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import com.volmit.holoui.config.ConfigManager;
 import com.volmit.holoui.menu.MenuSessionManager;
@@ -22,6 +25,7 @@ public final class HoloUI extends JavaPlugin {
     private MenuSessionManager sessionManager;
 
     private BuilderServer builderServer;
+    private Metrics metrics;
 
     @Override
     public void onLoad() {
@@ -40,10 +44,14 @@ public final class HoloUI extends JavaPlugin {
         this.configManager = new ConfigManager(getDataFolder());
         this.commandManager = new PaperCommandManager(this);
         this.command = new HoloCommand();
+        command.registerCompletions(commandManager.getCommandCompletions());
+        command.registerContexts(commandManager.getCommandContexts());
         commandManager.registerCommand(command);
+
         this.sessionManager = new MenuSessionManager();
 
         this.builderServer = new BuilderServer(getDataFolder());
+        this.metrics = new Metrics(this, 24222);
     }
 
     @Override
@@ -54,6 +62,7 @@ public final class HoloUI extends JavaPlugin {
         PacketEvents.getAPI().terminate();
 
         builderServer.stopServer();
+        metrics.shutdown();
     }
 
     public static void log(Level logLevel, String s, Object... args) {

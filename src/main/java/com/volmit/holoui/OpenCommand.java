@@ -19,11 +19,10 @@ public class OpenCommand extends SimpleCommand {
 
     @Override
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-        if(!(sender instanceof Player)) {
+        if(!(sender instanceof Player p)) {
             sender.sendMessage(HoloCommand.PREFIX + ChatColor.RED + "Direct menus can only be executed by players.");
             return true;
         }
-        Player p = (Player)sender;
         Optional<MenuDefinitionData> data = HoloUI.INSTANCE.getConfigManager().get(getName());
         if(data.isEmpty()) {
             p.sendMessage(HoloCommand.PREFIX + ChatColor.RED + "\"" + getName() + "\" is not available.");

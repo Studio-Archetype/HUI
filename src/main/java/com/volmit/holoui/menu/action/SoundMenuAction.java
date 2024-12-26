@@ -9,6 +9,6 @@ public class SoundMenuAction extends MenuAction<SoundActionData> {
 
     @Override
     public void execute(MenuSession session) {
-        session.getPlayer().playSound(session.getPlayer(), data.sound(), data.source().getCategory(), data.volume(), data.pitch());
+        session.getPlayer().playSound(session.getPlayer().getLocation(), data.sound(), data.source().getCategory(), data.volume(), data.pitch());
     }
 }

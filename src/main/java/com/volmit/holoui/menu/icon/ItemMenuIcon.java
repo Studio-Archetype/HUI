@@ -2,6 +2,7 @@ package com.volmit.holoui.menu.icon;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.volmit.holoui.utils.registries.Materials;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -93,7 +94,7 @@ public class ItemMenuIcon extends MenuIcon<ItemIconData> {
 
 
     private static final List<Material> BLOCK_BLACKLIST = ImmutableList.of(
-            Material.BARRIER, Material.LIGHT, Material.HOPPER, Material.TURTLE_EGG, Material.GRASS, Material.TALL_GRASS,
+            Material.BARRIER, Material.LIGHT, Material.HOPPER, Material.TURTLE_EGG, Materials.GRASS, Material.TALL_GRASS,
             Material.WHITE_STAINED_GLASS_PANE, Material.ORANGE_STAINED_GLASS_PANE, Material.MAGENTA_STAINED_GLASS_PANE,
             Material.LIGHT_BLUE_STAINED_GLASS_PANE, Material.YELLOW_STAINED_GLASS_PANE, Material.LIME_STAINED_GLASS_PANE,
             Material.PINK_STAINED_GLASS_PANE, Material.GRAY_STAINED_GLASS_PANE, Material.LIGHT_GRAY_STAINED_GLASS_PANE,

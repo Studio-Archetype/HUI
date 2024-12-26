@@ -1,8 +1,7 @@
 plugins {
     id 'java'
-    id "io.freefair.lombok" version "6.3.0"
-    id "de.undercouch.download" version "5.0.1"
-    id "com.github.johnrengelman.shadow" version "7.1.2"
+    id "io.freefair.lombok" version "8.11"
+    id "com.gradleup.shadow" version "8.3.5"
 }
 
 // ADD YOURSELF AS A NEW LINE IF YOU WANT YOUR OWN BUILD TASK GENERATED
@@ -15,7 +14,7 @@ registerCustomOutputTaskUnix('CrazyDev22LT', '/home/julian/Desktop/server/plugin
 group 'com.volmit'
 version project.version
 
-file(jar.archiveFile.get().getAsFile().getParentFile().getParentFile().getParentFile().getAbsolutePath() + '/build/resources/main/plugin.yml').delete()
+layout.buildDirectory.file("resources/main/plugin.yml").get().asFile.delete()
 
 compileJava {
     options.encoding = 'UTF-8'
@@ -39,6 +38,7 @@ shadowJar {
     relocate("co.aikar.commands", "${libs}.acf")
     relocate("co.aikar.locales", "${libs}.locales")
     relocate("com.mojang.serialization", "${libs}.serialization")
+    relocate("org.bstats", "${libs}.bstats")
 }
 
 repositories {
@@ -53,12 +53,13 @@ repositories {
 dependencies {
     compileOnly "org.projectlombok:lombok:$lombokVersion"
     annotationProcessor "org.projectlombok:lombok:$lombokVersion"
-    compileOnly "org.spigotmc:spigot-api:$spigotJarVersion"
+    compileOnly "org.spigotmc:spigot-api:$spigotVersion"
     compileOnly "me.clip:placeholderapi:$placeholderVersion"
 
     //Shaded
     implementation "com.github.retrooper:packetevents-spigot:$packeteventsVersion"
     implementation "co.aikar:acf-paper:$acfVersion"
+    implementation 'org.bstats:bstats-bukkit:3.1.0'
 
     //Provided
     implementation "com.mojang:datafixerupper:$datafixerupperVersion"
@@ -84,7 +85,7 @@ processResources {
     }
 }
 
-build.dependsOn(shadowJar)
+tasks.build.dependsOn(shadowJar)
 
 // IDE Server stuff
 def registerCustomOutputTask(name, path) {
@@ -93,11 +94,11 @@ def registerCustomOutputTask(name, path) {
     }
     AbstractCopyTask
 
-    tasks.register('build' + name, Copy) {
+    tasks.register("build$name", Copy) {
         group('dev')
         outputs.upToDateWhen { true }
         dependsOn(build)
-        from(new File(buildDir, "libs/holoui-" + version + ".jar"))
+        from(layout.buildDirectory.file("libs/holoui-${version}.jar"))
         into(file(path))
         rename { String fileName ->
             fileName.replace("holoui-" + version + ".jar", "Holoui.jar")
@@ -110,11 +111,11 @@ def registerCustomOutputTaskUnix(name, path) {
         return;
     }
 
-    tasks.register('build' + name, Copy) {
+    tasks.register("build$name", Copy) {
         group('dev')
         outputs.upToDateWhen { true }
         dependsOn(build)
-        from(new File(buildDir, "libs/holoui-" + version + ".jar"))
+        from(layout.buildDirectory.file("libs/holoui-${version}.jar"))
         into(file(path))
         rename { String fileName ->
             fileName.replace("holoui-" + version + ".jar", "Holoui.jar")

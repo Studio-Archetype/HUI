@@ -2,11 +2,13 @@ package com.volmit.holoui.utils.file;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import lombok.Getter;
 
 import java.io.File;
 import java.util.List;
 import java.util.Map;
 
+@Getter
 public class FolderWatcher extends FileWatcher {
     private Map<File, FolderWatcher> watchers;
     private List<File> changed;
@@ -19,24 +21,23 @@ public class FolderWatcher extends FileWatcher {
 
     protected void readProperties() {
         if(watchers == null) {
-            watchers = Maps.newHashMap();
+            watchers = Maps.newConcurrentMap();
             changed = Lists.newArrayList();
             created = Lists.newArrayList();
             deleted = Lists.newArrayList();
         }
 
         if(file.isDirectory()) {
-            for(File i : file.listFiles()) {
-                if(!watchers.containsKey(i)) {
-                    watchers.put(i, new FolderWatcher(i));
+            File[] files = file.listFiles();
+            if(files != null) {
+                for (File f : files) {
+                    if (watchers.containsKey(f))
+                        continue;
+                    watchers.put(f, new FolderWatcher(f));
                 }
             }
 
-            for(File i : watchers.keySet()) {
-                if(!i.exists()) {
-                    watchers.remove(i);
-                }
-            }
+            watchers.values().removeIf(FileWatcher::wasDeleted);
         } else {
             super.readProperties();
         }
@@ -103,22 +104,6 @@ public class FolderWatcher extends FileWatcher {
         }
 
         return super.checkModified();
-    }
-
-    public Map<File, FolderWatcher> getWatchers() {
-        return watchers;
-    }
-
-    public List<File> getChanged() {
-        return changed;
-    }
-
-    public List<File> getCreated() {
-        return created;
-    }
-
-    public List<File> getDeleted() {
-        return deleted;
     }
 
     public void clear() {

@@ -69,7 +69,7 @@ public final class ConfigManager {
                         HoloUI.INSTANCE.getSessionManager().byId(name).forEach(s -> {
                             Player p = s.getPlayer();
                             p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§2Config \"" + name + "\" reloaded."));
-                            p.playSound(p, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, .5F, 1);
+                            p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, .5F, 1);
                         });
                         HoloUI.INSTANCE.getSessionManager().destroyAllType(name);
                         menuRegistry.put(name, d);
