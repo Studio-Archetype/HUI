@@ -45,6 +45,6 @@ public final class MathHelper {
 
     public static float getYawToLookAt(Vector origin, Vector target) {
         Vector v = target.clone().subtract(origin);
-        return (float)Math.toDegrees(Math.atan2(v.getZ(), v.getX()));
+        return (float) Math.toDegrees(Math.atan2(v.getZ(), v.getX()));
     }
 }

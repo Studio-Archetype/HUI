@@ -10,10 +10,12 @@ import java.util.List;
 
 public record AnimatedImageData(Either<String, List<String>> source, int speed) implements MenuIconData {
 
-    public MenuIconType getType() { return MenuIconType.ANIMATED_TEXT_IMAGE; }
-
     public static final Codec<AnimatedImageData> CODEC = RecordCodecBuilder.create(i -> i.group(
             new EitherCodec<>(Codec.STRING, Codec.STRING.listOf()).fieldOf("source").forGetter(AnimatedImageData::source),
             Codec.INT.fieldOf("speed").forGetter(AnimatedImageData::speed)
     ).apply(i, AnimatedImageData::new));
+
+    public MenuIconType getType() {
+        return MenuIconType.ANIMATED_TEXT_IMAGE;
+    }
 }

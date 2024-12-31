@@ -25,19 +25,19 @@ public class CollisionPlane {
     public boolean isLookingAt(Vector origin, Vector direction) {
         Vector offset = center.clone().subtract(origin);
         double proj = normal.dot(direction);
-        if(proj == 0)
+        if (proj == 0)
             return false;
         double distance = normal.dot(offset) / proj;
-        if(distance < 0.0F)
+        if (distance < 0.0F)
             return false;
         Vector intersect = origin.clone().add(direction.clone().multiply(distance)).subtract(center);
-        float distX = (float)Math.abs(right.dot(intersect));
-        float distY = (float)Math.abs(up.dot(intersect));
+        float distX = (float) Math.abs(right.dot(intersect));
+        float distY = (float) Math.abs(up.dot(intersect));
         return distX < width / 2 && distY < height / 2;
     }
 
     public void rotate(float pitch, float yaw) {
-        if(pitch != this.pitch || yaw != this.yaw) {
+        if (pitch != this.pitch || yaw != this.yaw) {
             this.pitch = pitch;
             this.yaw = yaw;
             this.up = UP.clone().rotateAroundX(Math.toRadians(pitch)).rotateAroundY(Math.toRadians(yaw));

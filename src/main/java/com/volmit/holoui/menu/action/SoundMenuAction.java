@@ -5,7 +5,9 @@ import com.volmit.holoui.menu.MenuSession;
 
 public class SoundMenuAction extends MenuAction<SoundActionData> {
 
-    public SoundMenuAction(SoundActionData data) { super(data); }
+    public SoundMenuAction(SoundActionData data) {
+        super(data);
+    }
 
     @Override
     public void execute(MenuSession session) {

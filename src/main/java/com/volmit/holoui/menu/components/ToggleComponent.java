@@ -1,13 +1,13 @@
 package com.volmit.holoui.menu.components;
 
 import com.google.common.collect.Lists;
-import me.clip.placeholderapi.PlaceholderAPI;
-import org.bukkit.Location;
 import com.volmit.holoui.config.MenuComponentData;
 import com.volmit.holoui.config.components.ToggleComponentData;
 import com.volmit.holoui.menu.MenuSession;
 import com.volmit.holoui.menu.action.MenuAction;
 import com.volmit.holoui.menu.icon.MenuIcon;
+import me.clip.placeholderapi.PlaceholderAPI;
+import org.bukkit.Location;
 
 import java.util.List;
 
@@ -35,7 +35,7 @@ public class ToggleComponent extends ClickableComponent<ToggleComponentData> {
 
     @Override
     public void onClick() {
-        if(state) {
+        if (state) {
             falseActions.forEach(a -> a.execute(session));
             changeIcon(falseIcon);
             state = false;

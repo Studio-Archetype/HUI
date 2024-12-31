@@ -10,6 +10,10 @@ public abstract class SimpleCommand extends Command {
 
     private static final List<SimpleCommand> REGISTRY = Lists.newArrayList();
 
+    protected SimpleCommand(String name, String description, String usageMessage, List<String> aliases) {
+        super(name, description, usageMessage, aliases);
+    }
+
     public static boolean isRegistered(String name) {
         return getCommand(name).isPresent();
     }
@@ -19,7 +23,7 @@ public abstract class SimpleCommand extends Command {
     }
 
     public static boolean register(SimpleCommand cmd) {
-        if(isRegistered(cmd.getName()))
+        if (isRegistered(cmd.getName()))
             return false;
         if (ServerUtils.getCommandMap().register("holoui", cmd)) {
             REGISTRY.add(cmd);
@@ -31,18 +35,14 @@ public abstract class SimpleCommand extends Command {
 
     public static boolean unregister(String name) {
         Optional<SimpleCommand> cmd = getCommand(name);
-        if(cmd.isEmpty()) {
+        if (cmd.isEmpty()) {
             return true;
-        } else if(cmd.get().unregister(ServerUtils.getCommandMap())) {
+        } else if (cmd.get().unregister(ServerUtils.getCommandMap())) {
             REGISTRY.remove(cmd.get());
             ServerUtils.syncCommands();
             return true;
         } else {
             return false;
         }
-    }
-
-    protected SimpleCommand(String name, String description, String usageMessage, List<String> aliases) {
-        super(name, description, usageMessage, aliases);
     }
 }

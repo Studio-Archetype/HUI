@@ -1,8 +1,8 @@
 package com.volmit.holoui.enums;
 
 import com.mojang.serialization.Codec;
-import lombok.AllArgsConstructor;
 import com.volmit.holoui.utils.codec.EnumCodec;
+import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public enum MenuActionCommandSource implements EnumCodec.Values {

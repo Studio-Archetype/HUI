@@ -25,6 +25,7 @@ public final class ServerUtils {
             Method method = server.getClass().getDeclaredMethod("syncCommands");
             method.setAccessible(true);
             method.invoke(server);
-        } catch (Throwable ignored) {}
+        } catch (Throwable ignored) {
+        }
     }
 }

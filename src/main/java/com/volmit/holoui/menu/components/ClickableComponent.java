@@ -1,12 +1,5 @@
 package com.volmit.holoui.menu.components;
 
-import org.bukkit.Color;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.util.Vector;
 import com.volmit.holoui.config.MenuComponentData;
 import com.volmit.holoui.config.components.ComponentData;
 import com.volmit.holoui.menu.MenuSession;
@@ -14,6 +7,13 @@ import com.volmit.holoui.utils.Events;
 import com.volmit.holoui.utils.ParticleUtils;
 import com.volmit.holoui.utils.math.CollisionPlane;
 import com.volmit.holoui.utils.math.MathHelper;
+import org.bukkit.Color;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.util.Vector;
 
 public abstract class ClickableComponent<T extends ComponentData> extends MenuComponent<T> {
 
@@ -35,8 +35,8 @@ public abstract class ClickableComponent<T extends ComponentData> extends MenuCo
     public void onOpen() {
         this.plane = currentIcon.createBoundingBox();
         click = Events.listen(PlayerInteractEvent.class, EventPriority.MONITOR, e -> {
-            if(session.getPlayer().equals(e.getPlayer()) && selected) {
-                if(e.getAction() == Action.LEFT_CLICK_AIR || e.getAction() == Action.LEFT_CLICK_BLOCK) {
+            if (session.getPlayer().equals(e.getPlayer()) && selected) {
+                if (e.getAction() == Action.LEFT_CLICK_AIR || e.getAction() == Action.LEFT_CLICK_BLOCK) {
                     onClick();
                     e.setCancelled(true);
                 }
@@ -49,10 +49,10 @@ public abstract class ClickableComponent<T extends ComponentData> extends MenuCo
         Location playerPos = session.getPlayer().getEyeLocation().clone();
         rotateToFace(playerPos);
         boolean isLookingAt = plane.isLookingAt(playerPos.toVector(), playerPos.getDirection());
-        if(isLookingAt && !selected) {
+        if (isLookingAt && !selected) {
             this.selected = true;
             currentIcon.move(plane.getNormal().clone().multiply(highlightMod));
-        } else if(!isLookingAt && selected) {
+        } else if (!isLookingAt && selected) {
             this.selected = false;
             currentIcon.teleport(location);
         }
@@ -72,19 +72,19 @@ public abstract class ClickableComponent<T extends ComponentData> extends MenuCo
     @Override
     public void adjustRotation(boolean byPlayer) {
         super.adjustRotation(byPlayer);
-        if(this.plane != null) {
+        if (this.plane != null) {
             this.plane.move(location);
         }
     }
 
     public void highlightHitbox(World w) {
-        if(plane == null)
+        if (plane == null)
             return;
         Vector downRight = plane.getCenter().clone().subtract(plane.getUp().clone().multiply(plane.getHeight() / 2)).add(plane.getRight().clone().multiply(plane.getWidth() / 2));
         Vector downLeft = plane.getCenter().clone().subtract(plane.getUp().clone().multiply(plane.getHeight() / 2)).subtract(plane.getRight().clone().multiply(plane.getWidth() / 2));
         Vector upRight = plane.getCenter().clone().add(plane.getUp().clone().multiply(plane.getHeight() / 2)).add(plane.getRight().clone().multiply(plane.getWidth() / 2));
         Vector upLeft = plane.getCenter().clone().add(plane.getUp().clone().multiply(plane.getHeight() / 2)).subtract(plane.getRight().clone().multiply(plane.getWidth() / 2));
-        for(float d = .1F; d <= 1; d += .1F) {
+        for (float d = .1F; d <= 1; d += .1F) {
             ParticleUtils.playParticle(w, MathHelper.interpolate(downRight, upRight, d), Color.BLUE);
             ParticleUtils.playParticle(w, MathHelper.interpolate(downLeft, upLeft, d), Color.BLUE);
             ParticleUtils.playParticle(w, MathHelper.interpolate(downLeft, downRight, d), Color.BLUE);
@@ -99,8 +99,8 @@ public abstract class ClickableComponent<T extends ComponentData> extends MenuCo
 
     private void rotateToFace(Location loc) {
         Vector rotation = MathHelper.getRotationFromDirection(MathHelper.unit(loc.toVector(), plane.getCenter()));
-        plane.rotate((float)rotation.getX(), (float)-rotation.getY());
-        if(selected)
+        plane.rotate((float) rotation.getX(), (float) -rotation.getY());
+        if (selected)
             currentIcon.teleport(location.clone().add(plane.getNormal()));
     }
 

@@ -1,6 +1,5 @@
 package com.volmit.holoui.config;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
@@ -8,6 +7,11 @@ import com.google.gson.JsonParser;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
+import com.volmit.holoui.HoloUI;
+import com.volmit.holoui.OpenCommand;
+import com.volmit.holoui.utils.SchedulerUtils;
+import com.volmit.holoui.utils.SimpleCommand;
+import com.volmit.holoui.utils.file.FolderWatcher;
 import lombok.Getter;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -17,16 +21,12 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import com.volmit.holoui.HoloUI;
-import com.volmit.holoui.OpenCommand;
-import com.volmit.holoui.utils.SchedulerUtils;
-import com.volmit.holoui.utils.SimpleCommand;
-import com.volmit.holoui.utils.file.FolderWatcher;
 
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -45,23 +45,23 @@ public final class ConfigManager {
 
     public ConfigManager(File configDir) {
         this.imageDir = new File(configDir, "images");
-        if(!imageDir.exists())
+        if (!imageDir.exists())
             imageDir.mkdirs();
         this.menuDir = new File(configDir, "menus");
-        if(!menuDir.exists())
+        if (!menuDir.exists())
             menuDir.mkdirs();
 
         menuDefinitionFolder = new FolderWatcher(menuDir);
         settings = new HuiSettings(configDir);
 
         menuDefinitionFolder.getWatchers().keySet().forEach(f -> {
-            if(f.getPath().contains("menus")) {
+            if (f.getPath().contains("menus")) {
                 registerMenu(f);
             }
         });
 
         SchedulerUtils.scheduleSyncTask(HoloUI.INSTANCE, 5L, () -> {
-            if(menuDefinitionFolder.checkModifiedFast()) {
+            if (menuDefinitionFolder.checkModifiedFast()) {
                 menuDefinitionFolder.getChanged().forEach(f -> {
                     String name = FilenameUtils.getBaseName(f.getName());
                     Optional<MenuDefinitionData> data = loadConfig(name, f);
@@ -80,7 +80,7 @@ public final class ConfigManager {
             settings.update();
         }, true);
         SchedulerUtils.scheduleSyncTask(HoloUI.INSTANCE, 20L, () -> {
-            if(menuDefinitionFolder.checkModified()) {
+            if (menuDefinitionFolder.checkModified()) {
                 menuDefinitionFolder.getCreated().forEach(this::registerMenu);
                 menuDefinitionFolder.getDeleted().forEach(this::unregisterMenu);
             }
@@ -92,8 +92,8 @@ public final class ConfigManager {
         Optional<MenuDefinitionData> data = loadConfig(name, f);
         data.ifPresent(d -> {
             menuRegistry.put(name, d);
-            if(!SimpleCommand.register(new OpenCommand(name)) && !SimpleCommand.isRegistered(name)) {
-                HoloUI.log(Level.WARNING,"Unable to register direct open command for \"/" + name + "\"!");
+            if (!SimpleCommand.register(new OpenCommand(name)) && !SimpleCommand.isRegistered(name)) {
+                HoloUI.log(Level.WARNING, "Unable to register direct open command for \"/" + name + "\"!");
             }
             HoloUI.log(Level.INFO, "New menu config \"%s\" detected and registered.", name);
         });
@@ -101,9 +101,9 @@ public final class ConfigManager {
 
     private void unregisterMenu(File f) {
         String name = FilenameUtils.getBaseName(f.getName());
-        if(menuRegistry.containsKey(name)) {
-            if(!SimpleCommand.unregister(name)) {
-                HoloUI.log(Level.WARNING,"Unable to unregister direct command for \"/" + name + "\"!");
+        if (menuRegistry.containsKey(name)) {
+            if (!SimpleCommand.unregister(name)) {
+                HoloUI.log(Level.WARNING, "Unable to unregister direct command for \"/" + name + "\"!");
             }
             HoloUI.INSTANCE.getSessionManager().destroyAllType(name);
             menuRegistry.remove(name);
@@ -129,7 +129,7 @@ public final class ConfigManager {
 
     public Pair<ImageFormat, BufferedImage> getImage(String relative) throws IOException {
         File f = new File(imageDir, relative);
-        if(!f.exists() || f.isDirectory())
+        if (!f.exists() || f.isDirectory())
             throw new FileNotFoundException();
         ImageFormat format = Imaging.guessFormat(f);
         return Pair.of(format, Imaging.getBufferedImage(f));
@@ -137,23 +137,23 @@ public final class ConfigManager {
 
     public List<BufferedImage> getImages(String relative) throws IOException {
         File f = new File(imageDir, relative);
-        if(!f.exists() || f.isDirectory())
+        if (!f.exists() || f.isDirectory())
             throw new FileNotFoundException();
         return Imaging.getAllBufferedImages(f);
     }
 
     private Optional<MenuDefinitionData> loadConfig(String menuName, File f) {
-        try(FileReader reader = new FileReader(f)) {
-            if(FileUtils.sizeOf(f) == 0) {
+        try (FileReader reader = new FileReader(f)) {
+            if (FileUtils.sizeOf(f) == 0) {
                 HoloUI.log(Level.WARNING, "Menu config \"%s.json\" is empty, ignoring.", menuName);
                 return Optional.empty();
             }
 
             DataResult<Pair<MenuDefinitionData, JsonElement>> result = JsonOps.INSTANCE.withDecoder(MenuDefinitionData.CODEC).apply(JsonParser.parseReader(reader));
-            if(result.error().isPresent())
+            if (result.error().isPresent())
                 HoloUI.log(Level.WARNING, "Failed to parse menu config \"%s.json\":\n\t%s", menuName, result.error().get().message());
             else {
-                if(result.result().isEmpty())
+                if (result.result().isEmpty())
                     HoloUI.log(Level.WARNING, "An unknown error occurred while parsing menu config \"%s.json\"! Skipping.", menuName);
                 else {
                     MenuDefinitionData data = result.result().get().getFirst();
@@ -161,7 +161,7 @@ public final class ConfigManager {
                     return Optional.of(data);
                 }
             }
-        } catch(IOException | JsonParseException ex) {
+        } catch (IOException | JsonParseException ex) {
             HoloUI.logExceptionStack(false, ex, "An error occurred while parsing menu config \"%s.json\":", menuName);
         }
         return Optional.empty();

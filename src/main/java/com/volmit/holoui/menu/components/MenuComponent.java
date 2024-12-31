@@ -1,8 +1,5 @@
 package com.volmit.holoui.menu.components;
 
-import lombok.Getter;
-import org.bukkit.Location;
-import org.bukkit.util.Vector;
 import com.volmit.holoui.config.MenuComponentData;
 import com.volmit.holoui.config.components.ButtonComponentData;
 import com.volmit.holoui.config.components.ComponentData;
@@ -14,6 +11,9 @@ import com.volmit.holoui.menu.special.BlockMenuSession;
 import com.volmit.holoui.menu.special.inventories.InventoryProgressComponent;
 import com.volmit.holoui.menu.special.inventories.InventorySlotComponent;
 import com.volmit.holoui.utils.math.MathHelper;
+import lombok.Getter;
+import org.bukkit.Location;
+import org.bukkit.util.Vector;
 
 public abstract class MenuComponent<T extends ComponentData> {
 
@@ -36,22 +36,35 @@ public abstract class MenuComponent<T extends ComponentData> {
         this.session = session;
         this.id = data.id();
         this.offset = data.offset().clone().multiply(new Vector(-1, 1, 1));
-        this.data = (T)data.data();
+        this.data = (T) data.data();
 
         this.location = session.getCenterPoint().clone().add(offset);
+    }
+
+    public static MenuComponent<?> getComponent(MenuSession session, MenuComponentData data) {
+        return switch (data.data()) {
+            case ButtonComponentData ignored -> new ButtonComponent(session, data);
+            case DecoComponentData ignored -> new DecoComponent(session, data);
+            case ToggleComponentData ignored -> new ToggleComponent(session, data);
+            case InventorySlotComponent.Data ignored -> new InventorySlotComponent(session, data);
+            case InventoryProgressComponent.Data ignored -> new InventoryProgressComponent(session, data);
+            case null, default -> null;
+        };
     }
 
     public void tick() {
         if (!open) return;
         onTick();
-        if(currentIcon != null)
+        if (currentIcon != null)
             currentIcon.tick();
     }
 
     protected abstract void onTick();
 
     protected abstract MenuIcon<?> createIcon();
+
     protected abstract void onOpen();
+
     protected abstract void onClose();
 
     public void open(boolean rotateByPlayer) {
@@ -64,17 +77,17 @@ public abstract class MenuComponent<T extends ComponentData> {
 
     public void close() {
         open = false;
-        if(this.currentIcon != null)
+        if (this.currentIcon != null)
             this.currentIcon.remove();
         onClose();
     }
 
     public void adjustRotation(boolean byPlayer) {
-        if(byPlayer)
+        if (byPlayer)
             rotateByPlayer();
         else
             rotateByCenter();
-        if(this.currentIcon != null)
+        if (this.currentIcon != null)
             this.currentIcon.teleport(location);
     }
 
@@ -83,23 +96,8 @@ public abstract class MenuComponent<T extends ComponentData> {
     }
 
     public void rotate(float yaw) {
-        if(this.currentIcon != null)
+        if (this.currentIcon != null)
             this.currentIcon.rotate(yaw);
-    }
-
-    public static MenuComponent<?> getComponent(MenuSession session, MenuComponentData data) {
-        if(data.data() instanceof ButtonComponentData)
-            return new ButtonComponent(session, data);
-        else if(data.data() instanceof DecoComponentData)
-            return new DecoComponent(session, data);
-        else if(data.data() instanceof ToggleComponentData)
-            return new ToggleComponent(session, data);
-        else if(data.data() instanceof InventorySlotComponent.Data)
-            return new InventorySlotComponent(session, data);
-        else if(data.data() instanceof InventoryProgressComponent.Data)
-            return new InventoryProgressComponent(session, data);
-        else
-            return null;
     }
 
     protected void rotateByPlayer() {
@@ -107,7 +105,7 @@ public abstract class MenuComponent<T extends ComponentData> {
     }
 
     protected void rotateByCenter() {
-        if(session instanceof BlockMenuSession)
+        if (session instanceof BlockMenuSession)
             MathHelper.rotateAroundPoint(this.location, session.getCenterPoint(), 0, session.getInitialY());
     }
 }

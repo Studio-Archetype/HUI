@@ -2,9 +2,9 @@ package com.volmit.holoui.config;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import org.bukkit.util.Vector;
 import com.volmit.holoui.config.components.ComponentData;
 import com.volmit.holoui.utils.codec.Codecs;
+import org.bukkit.util.Vector;
 
 public record MenuComponentData(String id, Vector offset, ComponentData data) {
     public static final Codec<MenuComponentData> CODEC = RecordCodecBuilder.create(i -> i.group(

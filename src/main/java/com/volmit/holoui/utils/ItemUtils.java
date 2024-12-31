@@ -32,22 +32,22 @@ public final class ItemUtils {
         }
 
         public Builder modelData(int data) {
-            if(meta == null)
+            if (meta == null)
                 return this;
             meta.setCustomModelData(data);
             return this;
         }
 
         public Builder damage(int damage) {
-            if(meta == null)
+            if (meta == null)
                 return this;
-            if(meta instanceof Damageable m)
+            if (meta instanceof Damageable m)
                 m.setDamage(damage);
             return this;
         }
 
         public ItemStack get() {
-            if(meta != null)
+            if (meta != null)
                 stack.setItemMeta(meta);
             return stack;
         }

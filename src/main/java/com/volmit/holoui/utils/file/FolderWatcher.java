@@ -20,16 +20,16 @@ public class FolderWatcher extends FileWatcher {
     }
 
     protected void readProperties() {
-        if(watchers == null) {
+        if (watchers == null) {
             watchers = Maps.newConcurrentMap();
             changed = Lists.newArrayList();
             created = Lists.newArrayList();
             deleted = Lists.newArrayList();
         }
 
-        if(file.isDirectory()) {
+        if (file.isDirectory()) {
             File[] files = file.listFiles();
-            if(files != null) {
+            if (files != null) {
                 for (File f : files) {
                     if (watchers.containsKey(f))
                         continue;
@@ -48,22 +48,22 @@ public class FolderWatcher extends FileWatcher {
         created.clear();
         deleted.clear();
 
-        if(file.isDirectory()) {
+        if (file.isDirectory()) {
             Map<File, FolderWatcher> w = Map.copyOf(watchers);
             readProperties();
 
-            for(File i : w.keySet()) {
-                if(!watchers.containsKey(i)) {
+            for (File i : w.keySet()) {
+                if (!watchers.containsKey(i)) {
                     deleted.add(i);
                 }
             }
 
-            for(File i : watchers.keySet()) {
-                if(!w.containsKey(i)) {
+            for (File i : watchers.keySet()) {
+                if (!w.containsKey(i)) {
                     created.add(i);
                 } else {
                     FolderWatcher fw = watchers.get(i);
-                    if(fw.checkModified()) {
+                    if (fw.checkModified()) {
                         changed.add(fw.file);
                     }
 
@@ -80,7 +80,7 @@ public class FolderWatcher extends FileWatcher {
     }
 
     public boolean checkModifiedFast() {
-        if(watchers == null || watchers.isEmpty()) {
+        if (watchers == null || watchers.isEmpty()) {
             return checkModified();
         }
 
@@ -88,10 +88,10 @@ public class FolderWatcher extends FileWatcher {
         created.clear();
         deleted.clear();
 
-        if(file.isDirectory()) {
-            for(File i : watchers.keySet()) {
+        if (file.isDirectory()) {
+            for (File i : watchers.keySet()) {
                 FolderWatcher fw = watchers.get(i);
-                if(fw.checkModifiedFast()) {
+                if (fw.checkModifiedFast()) {
                     changed.add(fw.file);
                 }
 

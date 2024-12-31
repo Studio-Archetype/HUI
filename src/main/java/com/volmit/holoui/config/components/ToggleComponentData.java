@@ -8,9 +8,9 @@ import com.volmit.holoui.enums.MenuComponentType;
 
 import java.util.List;
 
-public record ToggleComponentData(float highlightMod, String condition, String expectedValue, List<MenuActionData> trueActions, List<MenuActionData> falseActions, MenuIconData trueIcon, MenuIconData falseIcon) implements ComponentData {
-
-    public MenuComponentType getType() { return MenuComponentType.TOGGLE; }
+public record ToggleComponentData(float highlightMod, String condition, String expectedValue,
+                                  List<MenuActionData> trueActions, List<MenuActionData> falseActions,
+                                  MenuIconData trueIcon, MenuIconData falseIcon) implements ComponentData {
 
     public static final Codec<ToggleComponentData> CODEC = RecordCodecBuilder.create(i -> i.group(
             Codec.FLOAT.optionalFieldOf("hightlightModifier", 1.0F).forGetter(ToggleComponentData::highlightMod),
@@ -21,4 +21,8 @@ public record ToggleComponentData(float highlightMod, String condition, String e
             MenuIconData.CODEC.fieldOf("trueIcon").forGetter(ToggleComponentData::trueIcon),
             MenuIconData.CODEC.fieldOf("falseIcon").forGetter(ToggleComponentData::falseIcon)
     ).apply(i, ToggleComponentData::new));
+
+    public MenuComponentType getType() {
+        return MenuComponentType.TOGGLE;
+    }
 }

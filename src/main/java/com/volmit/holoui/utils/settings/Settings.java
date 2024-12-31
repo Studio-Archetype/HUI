@@ -2,10 +2,10 @@ package com.volmit.holoui.utils.settings;
 
 import com.google.common.collect.Maps;
 import com.google.gson.*;
-import lombok.RequiredArgsConstructor;
-import org.apache.commons.io.FileUtils;
 import com.volmit.holoui.HoloUI;
 import com.volmit.holoui.utils.file.FileWatcher;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.FileReader;
@@ -28,18 +28,18 @@ public abstract class Settings {
         this.file = file;
         registerFields();
 
-        if(!file.exists() || file.isDirectory()) {
+        if (!file.exists() || file.isDirectory()) {
             try {
                 HoloUI.log(Level.INFO, "Settings file missing, generating new default file.");
-                if(file.isDirectory())
+                if (file.isDirectory())
                     FileUtils.deleteQuietly(file);
                 else
                     file.getParentFile().mkdirs();
                 file.createNewFile();
                 writeJson();
-            } catch(IOException e) {
+            } catch (IOException e) {
                 HoloUI.log(Level.WARNING, "An error occurred while writing the settings default settings file:");
-                if(e.getMessage() != null)
+                if (e.getMessage() != null)
                     HoloUI.log(Level.WARNING, "\t%s: %s", e.getClass().getSimpleName(), e.getMessage());
                 else
                     HoloUI.log(Level.WARNING, "\t%s", e.getClass().getSimpleName());
@@ -51,7 +51,7 @@ public abstract class Settings {
     }
 
     public void update() {
-        if(fileWatcher.checkModified())
+        if (fileWatcher.checkModified())
             doReload(true);
     }
 
@@ -66,13 +66,13 @@ public abstract class Settings {
     }
 
     private void doReload(boolean triggerListeners) {
-        try(FileReader reader = new FileReader(file)) {
+        try (FileReader reader = new FileReader(file)) {
             JsonElement element = JsonParser.parseReader(reader);
             JsonObject obj = element.getAsJsonObject();
             fields.forEach((f, e) -> e.update(f, obj, triggerListeners));
-        } catch(IOException | JsonParseException e) {
+        } catch (IOException | JsonParseException e) {
             HoloUI.log(Level.WARNING, "An error occurred while reloading the settings file:");
-            if(e.getMessage() != null)
+            if (e.getMessage() != null)
                 HoloUI.log(Level.WARNING, "\t%s: %s", e.getClass().getSimpleName(), e.getMessage());
             else
                 HoloUI.log(Level.WARNING, "\t%s", e.getClass().getSimpleName());
@@ -80,13 +80,13 @@ public abstract class Settings {
     }
 
     private void writeJson() {
-        try(FileWriter writer = new FileWriter(file)) {
+        try (FileWriter writer = new FileWriter(file)) {
             JsonObject obj = new JsonObject();
             fields.forEach((name, field) -> field.serialize(name, obj));
             GSON.toJson(obj, writer);
-        } catch(IOException e) {
+        } catch (IOException e) {
             HoloUI.log(Level.WARNING, "An error occurred while writing the settings file:");
-            if(e.getMessage() != null)
+            if (e.getMessage() != null)
                 HoloUI.log(Level.WARNING, "\t%s: %s", e.getClass().getSimpleName(), e.getMessage());
             else
                 HoloUI.log(Level.WARNING, "\t%s", e.getClass().getSimpleName());
@@ -111,16 +111,16 @@ public abstract class Settings {
         }
 
         private void update(String key, JsonObject obj, boolean triggerListener) {
-            if(!obj.has(key))
+            if (!obj.has(key))
                 this.value = defaultValue;
             else
                 this.value = type.parse(key, obj);
-            if(triggerListener)
+            if (triggerListener)
                 onChange.accept(this.value);
         }
 
         private void setValue(V value) {
-            if(!value.equals(this.value))
+            if (!value.equals(this.value))
                 return;
             this.value = value;
             onChange.accept(this.value);

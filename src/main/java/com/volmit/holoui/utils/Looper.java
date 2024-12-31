@@ -14,6 +14,10 @@ public class Looper extends Thread {
         this.supplier = supplier;
     }
 
+    protected Looper() {
+        this.supplier = () -> Long.MAX_VALUE;
+    }
+
     public static Looper fixed(@NonNull Runnable runnable, long interval) {
         if (interval < 0) throw new IllegalArgumentException("interval cannot be negative");
         return new Looper(() -> {
@@ -25,10 +29,6 @@ public class Looper extends Thread {
             }
             return Math.max(System.currentTimeMillis() - time - interval, 0);
         });
-    }
-
-    protected Looper() {
-        this.supplier = () -> Long.MAX_VALUE;
     }
 
     protected long loop() {

@@ -13,14 +13,14 @@ public abstract class MenuAction<E extends MenuActionData> {
         this.data = data;
     }
 
-    public abstract void execute(MenuSession session);
-
     public static MenuAction<?> get(MenuActionData data) {
-        if(data instanceof CommandActionData d)
+        if (data instanceof CommandActionData d)
             return new CommandMenuAction(d);
-        else if(data instanceof SoundActionData d)
+        else if (data instanceof SoundActionData d)
             return new SoundMenuAction(d);
         else
             return null;
     }
+
+    public abstract void execute(MenuSession session);
 }

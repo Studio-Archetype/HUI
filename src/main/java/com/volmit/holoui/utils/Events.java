@@ -1,12 +1,12 @@
 package com.volmit.holoui.utils;
 
+import com.volmit.holoui.HoloUI;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.EventExecutor;
-import com.volmit.holoui.HoloUI;
 
 import java.util.function.Consumer;
 

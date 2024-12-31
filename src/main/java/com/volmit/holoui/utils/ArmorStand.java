@@ -8,6 +8,7 @@ import com.github.retrooper.packetevents.util.Vector3d;
 import com.github.retrooper.packetevents.util.Vector3f;
 import com.github.retrooper.packetevents.wrapper.PacketWrapper;
 import com.github.retrooper.packetevents.wrapper.play.server.*;
+import com.volmit.holoui.HoloUI;
 import lombok.Data;
 import lombok.NonNull;
 import lombok.experimental.Accessors;
@@ -17,7 +18,6 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Nullable;
-import com.volmit.holoui.HoloUI;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -32,21 +32,21 @@ public class ArmorStand {
     private final int id;
     @NonNull
     private final UUID uuid;
-
+    @NonNull
+    private final List<ArmorStand> passengers = new ArrayList<>();
+    @NonNull
+    private final Map<EquipmentSlot, ItemStack> equipment = new HashMap<>();
     @Nullable
     private Component displayName = null;
     private boolean invisible = false;
     private boolean customNameVisible = false;
-
     @NonNull
     private Vector3d location = new Vector3d();
     private float pitch = 0f, yaw = 0f, headYaw = 0f;
-
     private boolean small = false;
     private boolean basePlate = false;
     private boolean marker = false;
     private boolean showArms = false;
-
     @NonNull
     private Vector3f headPose = new Vector3f(0, 0, 0);
     @NonNull
@@ -59,12 +59,6 @@ public class ArmorStand {
     private Vector3f leftLegPose = new Vector3f(1, 0, 1);
     @NonNull
     private Vector3f rightLegPose = new Vector3f(1, 0, 1);
-
-    @NonNull
-    private final List<ArmorStand> passengers = new ArrayList<>();
-
-    @NonNull
-    private final Map<EquipmentSlot, ItemStack> equipment = new HashMap<>();
 
     public List<PacketWrapper<?>> spawn() {
         List<PacketWrapper<?>> packets = new ArrayList<>();
@@ -169,6 +163,39 @@ public class ArmorStand {
             this.armorStand = new ArmorStand(nextId(), UUID.randomUUID());
         }
 
+        public static ArmorStand nametagArmorStand(Component component, Location loc) {
+            return new Builder()
+                    .marker(true)
+                    .invisible(true).basePlate(false).zeroPose()
+                    .name(component, true).pos(loc).small(false)
+                    .build();
+        }
+
+        public static Builder itemArmorStand(ItemStack s, Location loc) {
+            return new Builder()
+                    .marker(true)
+                    .invisible(true).basePlate(false).zeroPose()
+                    .helmet(s)
+                    .pos(loc);
+        }
+
+        public static Builder tinyItemArmorStand(ItemStack s, Location loc) {
+            return new Builder()
+                    .marker(true).small(true)
+                    .invisible(true).basePlate(false).arms(true).zeroPose()
+                    .mainHand(s)
+                    .pos(loc);
+        }
+
+        private static int nextId() {
+            return NEXT_ID.getAndUpdate(i -> {
+                if (++i < 0) return i;
+                HoloUI.log(Level.SEVERE, "Entity IDs overflow");
+                HoloUI.log(Level.SEVERE, "Please restart your server!");
+                return Integer.MIN_VALUE;
+            });
+        }
+
         public Builder pos(Location loc) {
             armorStand.location(PacketUtils.vector3d(loc.toVector()))
                     .yaw(loc.getYaw())
@@ -249,9 +276,17 @@ public class ArmorStand {
             return this;
         }
 
-        public Builder name(String name) { return name(name, true); }
-        public Builder name(Component name) { return name(name, true); }
-        public Builder name(String name, boolean visible) { return name(Component.text(name), visible); }
+        public Builder name(String name) {
+            return name(name, true);
+        }
+
+        public Builder name(Component name) {
+            return name(name, true);
+        }
+
+        public Builder name(String name, boolean visible) {
+            return name(Component.text(name), visible);
+        }
 
         public Builder name(Component name, boolean visible) {
             armorStand.displayName(name);
@@ -259,12 +294,29 @@ public class ArmorStand {
             return this;
         }
 
-        public Builder helmet(ItemStack stack) { return equipment(EquipmentSlot.HEAD, stack); }
-        public Builder chestPlate(ItemStack stack) { return equipment(EquipmentSlot.CHEST, stack); }
-        public Builder leggings(ItemStack stack) { return equipment(EquipmentSlot.LEGS, stack); }
-        public Builder boots(ItemStack stack) { return equipment(EquipmentSlot.FEET, stack); }
-        public Builder mainHand(ItemStack stack) { return equipment(EquipmentSlot.HAND, stack); }
-        public Builder offHand(ItemStack stack) { return equipment(EquipmentSlot.OFF_HAND, stack); }
+        public Builder helmet(ItemStack stack) {
+            return equipment(EquipmentSlot.HEAD, stack);
+        }
+
+        public Builder chestPlate(ItemStack stack) {
+            return equipment(EquipmentSlot.CHEST, stack);
+        }
+
+        public Builder leggings(ItemStack stack) {
+            return equipment(EquipmentSlot.LEGS, stack);
+        }
+
+        public Builder boots(ItemStack stack) {
+            return equipment(EquipmentSlot.FEET, stack);
+        }
+
+        public Builder mainHand(ItemStack stack) {
+            return equipment(EquipmentSlot.HAND, stack);
+        }
+
+        public Builder offHand(ItemStack stack) {
+            return equipment(EquipmentSlot.OFF_HAND, stack);
+        }
 
         private Builder equipment(EquipmentSlot slot, ItemStack stack) {
             armorStand.equipment().put(slot, stack);
@@ -273,39 +325,6 @@ public class ArmorStand {
 
         public ArmorStand build() {
             return armorStand;
-        }
-
-        public static ArmorStand nametagArmorStand(Component component, Location loc) {
-            return new Builder()
-                    .marker(true)
-                    .invisible(true).basePlate(false).zeroPose()
-                    .name(component, true).pos(loc).small(false)
-                    .build();
-        }
-
-        public static Builder itemArmorStand(ItemStack s, Location loc) {
-            return new Builder()
-                    .marker(true)
-                    .invisible(true).basePlate(false).zeroPose()
-                    .helmet(s)
-                    .pos(loc);
-        }
-
-        public static Builder tinyItemArmorStand(ItemStack s, Location loc) {
-            return new Builder()
-                    .marker(true).small(true)
-                    .invisible(true).basePlate(false).arms(true).zeroPose()
-                    .mainHand(s)
-                    .pos(loc);
-        }
-
-        private static int nextId() {
-            return NEXT_ID.getAndUpdate(i -> {
-                if (++i < 0) return i;
-                HoloUI.log(Level.SEVERE, "Entity IDs overflow");
-                HoloUI.log(Level.SEVERE, "Please restart your server!");
-                return Integer.MIN_VALUE;
-            });
         }
     }
 }

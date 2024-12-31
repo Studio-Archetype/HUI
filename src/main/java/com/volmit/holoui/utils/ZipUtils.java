@@ -11,17 +11,17 @@ public final class ZipUtils {
 
     public static void unzipFile(File zipFile, File target) throws IOException {
         byte[] buffer = new byte[1024];
-        try(ZipInputStream zip = new ZipInputStream(new FileInputStream(zipFile))) {
+        try (ZipInputStream zip = new ZipInputStream(new FileInputStream(zipFile))) {
             ZipEntry entry;
-            while((entry = zip.getNextEntry()) != null) {
+            while ((entry = zip.getNextEntry()) != null) {
                 File newFile = zipSlipProtect(entry, target);
-                if(entry.isDirectory()) {
-                    if(!newFile.isDirectory() && !newFile.mkdirs())
+                if (entry.isDirectory()) {
+                    if (!newFile.isDirectory() && !newFile.mkdirs())
                         throw new IOException("Failed to create zip directory for entry \"" + newFile + "\"!");
                 } else {
-                    try(FileOutputStream out = new FileOutputStream(newFile)) {
+                    try (FileOutputStream out = new FileOutputStream(newFile)) {
                         int length;
-                        while((length = zip.read(buffer)) > 0)
+                        while ((length = zip.read(buffer)) > 0)
                             out.write(buffer, 0, length);
                     }
                 }

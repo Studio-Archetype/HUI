@@ -15,12 +15,12 @@ public final class WebUtils {
 
     public static JsonElement getJson(String url) throws IOException {
         HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
-        if(con.getResponseCode() != 200)
+        if (con.getResponseCode() != 200)
             throw new IOException("Failed to retrieve JSON data from \"" + url + "\": " + con.getResponseCode());
-        try(BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
             StringBuilder buffer = new StringBuilder();
             String line;
-            while((line = in.readLine()) != null)
+            while ((line = in.readLine()) != null)
                 buffer.append(line);
             return JsonParser.parseString(buffer.toString());
         }

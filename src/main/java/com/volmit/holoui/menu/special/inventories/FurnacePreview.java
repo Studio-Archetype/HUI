@@ -1,12 +1,12 @@
 package com.volmit.holoui.menu.special.inventories;
 
+import com.volmit.holoui.config.MenuComponentData;
+import com.volmit.holoui.config.components.DecoComponentData;
+import com.volmit.holoui.config.icon.TextIconData;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import org.bukkit.block.Container;
 import org.bukkit.inventory.FurnaceInventory;
-import com.volmit.holoui.config.MenuComponentData;
-import com.volmit.holoui.config.components.DecoComponentData;
-import com.volmit.holoui.config.icon.TextIconData;
 
 import java.util.List;
 
@@ -16,9 +16,9 @@ public class FurnacePreview implements InventoryPreviewMenu<FurnaceInventory> {
     public void supply(Container container, List<MenuComponentData> components) {
         FurnaceInventory inv = getInventory(container);
         components.add(component("cookProgress", 0, 0.65F, 0, new InventoryProgressComponent.Data(inv, i -> {
-                    FurnaceInventory furnace = (FurnaceInventory)i;
-                    return (double)furnace.getHolder().getCookTime() / (float)furnace.getHolder().getCookTimeTotal();
-                }, 40, Style.style(NamedTextColor.WHITE))));
+            FurnaceInventory furnace = (FurnaceInventory) i;
+            return (double) furnace.getHolder().getCookTime() / (float) furnace.getHolder().getCookTimeTotal();
+        }, 40, Style.style(NamedTextColor.WHITE))));
         components.add(component("input", -.8F, 0.25F, 0, new InventorySlotComponent.Data(inv, 0)));
         components.add(component("fuel", -.3F, 0.25F, 0, new InventorySlotComponent.Data(inv, 1)));
         components.add(component("progressArrow", .25F, 0.25F, 0, new DecoComponentData(new TextIconData("--->"))));

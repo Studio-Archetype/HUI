@@ -1,12 +1,12 @@
 package com.volmit.holoui.menu.special;
 
-import org.bukkit.Location;
-import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
 import com.volmit.holoui.config.HuiSettings;
 import com.volmit.holoui.config.MenuDefinitionData;
 import com.volmit.holoui.menu.MenuSession;
 import com.volmit.holoui.utils.math.MathHelper;
+import org.bukkit.Location;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 
 public class BlockMenuSession extends MenuSession {
 
@@ -36,7 +36,7 @@ public class BlockMenuSession extends MenuSession {
 
     @Override
     public void move(Location loc, boolean byPlayer) {
-        if(!HuiSettings.PREVIEW_FOLLOW_PLAYER.value())
+        if (!HuiSettings.PREVIEW_FOLLOW_PLAYER.value())
             this.centerPoint = block.getLocation().add(getOffset()).clone().subtract(-.5, -.5, -.5);
         else
             this.centerPoint = loc.add(getOffset());
@@ -45,7 +45,7 @@ public class BlockMenuSession extends MenuSession {
     }
 
     public void open() {
-        this.initialY = -(float)MathHelper.getRotationFromDirection(getPlayer().getEyeLocation().getDirection()).getY();
+        this.initialY = -(float) MathHelper.getRotationFromDirection(getPlayer().getEyeLocation().getDirection()).getY();
         getComponents().forEach(c -> c.open(false));
     }
 }

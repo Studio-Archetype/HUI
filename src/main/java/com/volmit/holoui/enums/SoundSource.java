@@ -1,10 +1,10 @@
 package com.volmit.holoui.enums;
 
 import com.mojang.serialization.Codec;
+import com.volmit.holoui.utils.codec.EnumCodec;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bukkit.SoundCategory;
-import com.volmit.holoui.utils.codec.EnumCodec;
 
 import java.util.Locale;
 
@@ -26,5 +26,7 @@ public enum SoundSource implements EnumCodec.Values {
 
     private final SoundCategory category;
 
-    public String getSerializedName() { return this.name().toLowerCase(Locale.ROOT); }
+    public String getSerializedName() {
+        return this.name().toLowerCase(Locale.ROOT);
+    }
 }

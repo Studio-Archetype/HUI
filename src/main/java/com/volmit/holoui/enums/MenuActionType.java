@@ -1,12 +1,12 @@
 package com.volmit.holoui.enums;
 
 import com.mojang.serialization.Codec;
-import lombok.AllArgsConstructor;
 import com.volmit.holoui.config.action.CommandActionData;
 import com.volmit.holoui.config.action.MenuActionData;
 import com.volmit.holoui.config.action.SoundActionData;
 import com.volmit.holoui.utils.codec.CodecDispatcherEnum;
 import com.volmit.holoui.utils.codec.EnumCodec;
+import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public enum MenuActionType implements EnumCodec.Values, CodecDispatcherEnum<MenuActionData> {
@@ -19,6 +19,11 @@ public enum MenuActionType implements EnumCodec.Values, CodecDispatcherEnum<Menu
     private final String value;
     private final Codec<? extends MenuActionData> codec;
 
-    public Codec<? extends MenuActionData> getCodec() { return codec; }
-    public String getSerializedName() { return value; }
+    public Codec<? extends MenuActionData> getCodec() {
+        return codec;
+    }
+
+    public String getSerializedName() {
+        return value;
+    }
 }

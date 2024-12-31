@@ -1,13 +1,13 @@
 package com.volmit.holoui.menu;
 
 import com.google.common.collect.Lists;
+import com.volmit.holoui.config.MenuDefinitionData;
+import com.volmit.holoui.menu.components.MenuComponent;
+import com.volmit.holoui.utils.math.MathHelper;
 import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
-import com.volmit.holoui.config.MenuDefinitionData;
-import com.volmit.holoui.menu.components.MenuComponent;
-import com.volmit.holoui.utils.math.MathHelper;
 
 import java.util.List;
 

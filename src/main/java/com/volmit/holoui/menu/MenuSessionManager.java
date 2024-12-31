@@ -1,6 +1,17 @@
 package com.volmit.holoui.menu;
 
+import com.volmit.holoui.HoloUI;
+import com.volmit.holoui.config.HuiSettings;
+import com.volmit.holoui.config.MenuDefinitionData;
+import com.volmit.holoui.menu.components.ClickableComponent;
+import com.volmit.holoui.menu.components.MenuComponent;
+import com.volmit.holoui.menu.special.BlockMenuSession;
+import com.volmit.holoui.menu.special.inventories.InventoryPreviewMenu;
+import com.volmit.holoui.utils.Events;
 import com.volmit.holoui.utils.Looper;
+import com.volmit.holoui.utils.ParticleUtils;
+import com.volmit.holoui.utils.SchedulerUtils;
+import com.volmit.holoui.utils.math.MathHelper;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -14,17 +25,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
-import com.volmit.holoui.HoloUI;
-import com.volmit.holoui.config.HuiSettings;
-import com.volmit.holoui.config.MenuDefinitionData;
-import com.volmit.holoui.menu.components.ClickableComponent;
-import com.volmit.holoui.menu.components.MenuComponent;
-import com.volmit.holoui.menu.special.BlockMenuSession;
-import com.volmit.holoui.menu.special.inventories.InventoryPreviewMenu;
-import com.volmit.holoui.utils.Events;
-import com.volmit.holoui.utils.ParticleUtils;
-import com.volmit.holoui.utils.SchedulerUtils;
-import com.volmit.holoui.utils.math.MathHelper;
 
 import java.util.List;
 import java.util.Optional;
@@ -42,7 +42,7 @@ public final class MenuSessionManager {
         looper = Looper.fixed(() -> {
             sessions.forEach(s -> s.getComponents().forEach(MenuComponent::tick));
             previews.removeIf(s -> {
-                if(!s.getPlayer().isSneaking() || !s.shouldRender(s.getPlayer().getTargetBlock(null, 10))) {
+                if (!s.getPlayer().isSneaking() || !s.shouldRender(s.getPlayer().getTargetBlock(null, 10))) {
                     s.close();
                     return true;
                 }
@@ -50,7 +50,7 @@ public final class MenuSessionManager {
             });
             previews.forEach(s -> {
                 Vector dir = s.getPlayer().getEyeLocation().getDirection();
-                s.rotate(-(float)MathHelper.getRotationFromDirection(dir).getY());
+                s.rotate(-(float) MathHelper.getRotationFromDirection(dir).getY());
                 s.move(s.getPlayer().getEyeLocation().clone().add(dir.multiply(2F)), false);
                 s.getComponents().forEach(MenuComponent::tick);
             });
@@ -84,7 +84,7 @@ public final class MenuSessionManager {
         Events.listen(PlayerQuitEvent.class, e -> {
             destroySession(e.getPlayer());
             Optional<BlockMenuSession> opt = previewByPlayer(e.getPlayer());
-            if(opt.isPresent()) {
+            if (opt.isPresent()) {
                 opt.get().close();
                 previews.remove(opt.get());
             }
@@ -100,7 +100,7 @@ public final class MenuSessionManager {
     }
 
     public void addPreviewSession(Player p, BlockMenuSession session) {
-        if(byPlayer(p).isPresent())
+        if (byPlayer(p).isPresent())
             return;
         previews.add(session);
         session.open();
@@ -108,7 +108,7 @@ public final class MenuSessionManager {
 
     public boolean destroySession(Player p) {
         Optional<MenuSession> session = byPlayer(p);
-        if(session.isEmpty())
+        if (session.isEmpty())
             return false;
 
         session.get().close();
@@ -126,7 +126,7 @@ public final class MenuSessionManager {
 
     public void destroyAllType(String id) {
         sessions.removeIf(s -> {
-            if(s.getId().equalsIgnoreCase(id)) {
+            if (s.getId().equalsIgnoreCase(id)) {
                 s.close();
                 return true;
             }
@@ -148,18 +148,18 @@ public final class MenuSessionManager {
     }
 
     public void controlHitboxDebug(boolean hitbox) {
-        if(hitbox && (debugHitbox == null || debugHitbox.isCancelled())) {
+        if (hitbox && (debugHitbox == null || debugHitbox.isCancelled())) {
             debugHitbox = SchedulerUtils.scheduleSyncTask(HoloUI.INSTANCE, 2L, () -> sessions.forEach(s -> s.getComponents().forEach(c -> {
-                if(c instanceof ClickableComponent<?> o)
+                if (c instanceof ClickableComponent<?> o)
                     o.highlightHitbox(s.getPlayer().getWorld());
             })), false);
-        } else if(!hitbox && (debugHitbox != null && !debugHitbox.isCancelled()))
+        } else if (!hitbox && (debugHitbox != null && !debugHitbox.isCancelled()))
             debugHitbox.cancel();
     }
 
     //TODO Fix anchor particle
     public void controlPositionDebug(boolean positionDebug) {
-        if(positionDebug && (debugPos == null || debugPos.isCancelled())) {
+        if (positionDebug && (debugPos == null || debugPos.isCancelled())) {
             debugPos = SchedulerUtils.scheduleSyncTask(HoloUI.INSTANCE, 2L, () -> {
                 sessions.forEach(s -> {
                     World w = s.getPlayer().getWorld();
@@ -172,7 +172,7 @@ public final class MenuSessionManager {
                     s.getComponents().forEach(c -> ParticleUtils.playParticle(w, c.getLocation().toVector(), Color.ORANGE));
                 });
             }, false);
-        } else if(!positionDebug && (debugPos != null && !debugPos.isCancelled()))
+        } else if (!positionDebug && (debugPos != null && !debugPos.isCancelled()))
             debugPos.cancel();
     }
 
@@ -184,15 +184,15 @@ public final class MenuSessionManager {
     private void managePreviewEvents(Player p) {
         Block b = p.getTargetBlock(null, 10);
         Optional<BlockMenuSession> session = previewByPlayer(p);
-        if(p.isSneaking() && session.isEmpty()) {
+        if (p.isSneaking() && session.isEmpty()) {
             createNewPreviewSession(b, p);
         }
     }
 
     private void createNewPreviewSession(Block b, Player p) {
-        if(b.getType() != Material.AIR && b.getState() instanceof Container) {
+        if (b.getType() != Material.AIR && b.getState() instanceof Container) {
             BlockMenuSession newSession = InventoryPreviewMenu.create(b, p);
-            if(newSession != null && newSession.shouldRender(b) && p.hasPermission("holoui.preview." + b.getType().getKey().getKey()))
+            if (newSession != null && newSession.shouldRender(b) && p.hasPermission("holoui.preview." + b.getType().getKey().getKey()))
                 addPreviewSession(p, newSession);
         }
     }

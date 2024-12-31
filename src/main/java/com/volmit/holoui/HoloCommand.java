@@ -2,15 +2,15 @@ package com.volmit.holoui;
 
 import co.aikar.commands.*;
 import co.aikar.commands.annotation.*;
+import com.volmit.holoui.config.HuiSettings;
+import com.volmit.holoui.config.MenuDefinitionData;
+import com.volmit.holoui.utils.SchedulerUtils;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import com.volmit.holoui.config.HuiSettings;
-import com.volmit.holoui.config.MenuDefinitionData;
-import com.volmit.holoui.utils.SchedulerUtils;
 
 import static com.volmit.holoui.HoloUI.INSTANCE;
 
@@ -44,7 +44,7 @@ public class HoloCommand extends BaseCommand {
     @Description("List all menus")
     @CommandPermission(ROOT_PERM + ".list")
     public void list(CommandSender sender) {
-        if(INSTANCE.getConfigManager().keys().isEmpty()) {
+        if (INSTANCE.getConfigManager().keys().isEmpty()) {
             sender.sendMessage(PREFIX + ChatColor.GRAY + "No menus are available.");
             return;
         }
@@ -70,14 +70,14 @@ public class HoloCommand extends BaseCommand {
     @CommandCompletion("@menu")
     @CommandPermission(ROOT_PERM + ".open")
     public void open(Player player, MenuDefinitionData ui) {
-        if(!player.hasPermission("holoui.open." + ui.getId())) {
+        if (!player.hasPermission("holoui.open." + ui.getId())) {
             player.sendMessage(PREFIX + ChatColor.RED + "You lack permission to open \"" + ui + "\".");
             return;
         }
 
         try {
             INSTANCE.getSessionManager().createNewSession(player, ui);
-        } catch(NullPointerException e) {
+        } catch (NullPointerException e) {
             HoloUI.logExceptionStack(true, e, "Null in session creation?");
         }
     }
@@ -86,7 +86,7 @@ public class HoloCommand extends BaseCommand {
     @Description("Close the current menu")
     @CommandPermission(ROOT_PERM + ".close")
     public void close(Player player) {
-        if(INSTANCE.getSessionManager().destroySession(player))
+        if (INSTANCE.getSessionManager().destroySession(player))
             player.sendMessage(PREFIX + ChatColor.GREEN + "Menu closed.");
         else
             player.sendMessage(PREFIX + ChatColor.RED + "No menu is currently open.");
@@ -96,7 +96,7 @@ public class HoloCommand extends BaseCommand {
     @Description("Builder server status")
     @CommandPermission(ROOT_PERM + ".server")
     public void serverStatus(CommandSender sender) {
-        if(INSTANCE.getBuilderServer().isServerRunning()) {
+        if (INSTANCE.getBuilderServer().isServerRunning()) {
             String host = HuiSettings.BUILDER_IP.value().equalsIgnoreCase("0.0.0.0") ? "localhost" : HuiSettings.BUILDER_IP.value();
             String url = host + ":" + HuiSettings.BUILDER_PORT.value();
             sender.spigot().sendMessage(new ComponentBuilder(PREFIX)
@@ -145,13 +145,13 @@ public class HoloCommand extends BaseCommand {
     @CommandPermission(ROOT_PERM + ".server.start")
     public void startServer(CommandSender sender) {
         BuilderServer server = INSTANCE.getBuilderServer();
-        if(server.isServerRunning()) {
+        if (server.isServerRunning()) {
             sender.sendMessage(PREFIX + ChatColor.RED + "Builder is already running.");
             return;
         }
         SchedulerUtils.runAsync(INSTANCE, () -> {
             sender.sendMessage(PREFIX + ChatColor.GREEN + "Starting builder...");
-            if(!server.prepareServer())
+            if (!server.prepareServer())
                 sender.sendMessage(PREFIX + ChatColor.RED + "An error occurred while setting up the builder! Check the logs for details.");
             server.startServer(HuiSettings.BUILDER_IP.value(), HuiSettings.BUILDER_PORT.value());
             serverStatus(sender);
@@ -162,7 +162,7 @@ public class HoloCommand extends BaseCommand {
     @Description("Stopps the builder server")
     @CommandPermission(ROOT_PERM + ".server.stop")
     public void stopServer(CommandSender sender) {
-        if(INSTANCE.getBuilderServer().stopServer())
+        if (INSTANCE.getBuilderServer().stopServer())
             sender.sendMessage(PREFIX + ChatColor.GREEN + "Builder has been stopped.");
         else
             sender.sendMessage(PREFIX + ChatColor.RED + "Builder is not running.");

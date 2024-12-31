@@ -2,9 +2,9 @@ package com.volmit.holoui.enums;
 
 import com.mojang.serialization.Codec;
 import com.volmit.holoui.config.icon.*;
-import lombok.AllArgsConstructor;
 import com.volmit.holoui.utils.codec.CodecDispatcherEnum;
 import com.volmit.holoui.utils.codec.EnumCodec;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
@@ -21,5 +21,7 @@ public enum MenuIconType implements EnumCodec.Values, CodecDispatcherEnum<MenuIc
     @Getter
     private final Codec<? extends MenuIconData> codec;
 
-    public String getSerializedName() { return value; }
+    public String getSerializedName() {
+        return value;
+    }
 }

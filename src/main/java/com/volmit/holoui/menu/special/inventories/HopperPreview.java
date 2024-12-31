@@ -1,9 +1,9 @@
 package com.volmit.holoui.menu.special.inventories;
 
+import com.volmit.holoui.config.MenuComponentData;
 import org.bukkit.block.Container;
 import org.bukkit.block.Hopper;
 import org.bukkit.inventory.Inventory;
-import com.volmit.holoui.config.MenuComponentData;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ public class HopperPreview implements InventoryPreviewMenu<Inventory> {
     @Override
     public void supply(Container b, List<MenuComponentData> components) {
         Inventory inv = getInventory(b);
-        for(int i = 0; i < 5; i++)
+        for (int i = 0; i < 5; i++)
             components.add(component("slot" + (i), X_START + (i * .5F), .25F, 0, new InventorySlotComponent.Data(inv, i)));
     }
 

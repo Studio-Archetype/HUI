@@ -33,7 +33,7 @@ public class SchedulerUtils {
 
         @Override
         public void run() {
-            if(currentIterations >= iterations) {
+            if (currentIterations >= iterations) {
                 onFinish.run();
                 cancel();
                 return;

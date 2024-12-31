@@ -1,11 +1,11 @@
 package com.volmit.holoui.menu.special.inventories;
 
 import com.google.common.collect.Lists;
+import com.volmit.holoui.config.MenuComponentData;
 import org.bukkit.block.Container;
 import org.bukkit.block.Dispenser;
 import org.bukkit.block.Dropper;
 import org.bukkit.inventory.Inventory;
-import com.volmit.holoui.config.MenuComponentData;
 
 import java.util.List;
 
@@ -28,7 +28,7 @@ public class DispenserMenu implements InventoryPreviewMenu<Inventory> {
 
     private List<MenuComponentData> getLine(Inventory inv, int startIndex, float yOffset) {
         List<MenuComponentData> line = Lists.newArrayList();
-        for(int i = 0; i < 3; i++)
+        for (int i = 0; i < 3; i++)
             line.add(component("slot" + (i + startIndex), X_START + (i * .5F), yOffset, 0, new InventorySlotComponent.Data(inv, i + startIndex)));
         return line;
     }

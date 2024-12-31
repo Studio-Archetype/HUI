@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.volmit.holoui.enums.MenuActionType;
 
 public interface MenuActionData {
-    MenuActionType getType();
     Codec<MenuActionData> CODEC = MenuActionType.CODEC.dispatch(MenuActionData::getType, MenuActionType::getCodec);
+
+    MenuActionType getType();
 }

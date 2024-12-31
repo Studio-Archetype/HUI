@@ -4,14 +4,14 @@ import com.github.zafarkhaja.semver.Version;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.volmit.holoui.utils.WebUtils;
+import com.volmit.holoui.utils.ZipUtils;
 import io.undertow.Handlers;
 import io.undertow.Undertow;
 import io.undertow.server.handlers.resource.PathResourceManager;
 import io.undertow.server.handlers.resource.ResourceHandler;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.scheduler.BukkitRunnable;
-import com.volmit.holoui.utils.WebUtils;
-import com.volmit.holoui.utils.ZipUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,30 +36,30 @@ public final class BuilderServer {
         try {
             JsonElement latestManifest = WebUtils.getJson(URL);
             HoloUI.log(Level.INFO, "Preparing Builder server...");
-            if(shouldRedownload(latestManifest)) {
+            if (shouldRedownload(latestManifest)) {
                 JsonArray assets = latestManifest.getAsJsonObject().getAsJsonArray("assets");
                 downloadServer(getZipUrl(assets));
             }
             HoloUI.log(Level.INFO, "Server ready!");
             return true;
-        } catch(IOException e) {
+        } catch (IOException e) {
             HoloUI.logExceptionStack(true, e, "Failed to setup builder server:");
             return false;
         }
     }
 
     private String getZipUrl(JsonArray assets) throws IOException {
-        for(JsonElement asset : assets) {
+        for (JsonElement asset : assets) {
             JsonObject entry = asset.getAsJsonObject();
-            if(entry.get("name").getAsString().equalsIgnoreCase(BUILT_NAME))
+            if (entry.get("name").getAsString().equalsIgnoreCase(BUILT_NAME))
                 return entry.get("browser_download_url").getAsString();
         }
         throw new IOException("Invalid release manifest: No server build available!");
     }
 
     private void prepareFolder() throws IOException {
-        if(serverDir.exists()) {
-            if(serverDir.isDirectory())
+        if (serverDir.exists()) {
+            if (serverDir.isDirectory())
                 FileUtils.deleteDirectory(serverDir);
             else
                 FileUtils.deleteQuietly(serverDir);
@@ -82,12 +82,12 @@ public final class BuilderServer {
 
     private boolean shouldRedownload(JsonElement fetchedMeta) throws IOException {
         Version remote = Version.valueOf(fetchedMeta.getAsJsonObject().get("tag_name").getAsString());
-        if(!versionFile.exists() || versionFile.isDirectory()) {
+        if (!versionFile.exists() || versionFile.isDirectory()) {
             this.version = remote.toString();
             return true;
         } else {
             Version local = Version.valueOf(FileUtils.readFileToString(versionFile, "UTF-8"));
-            if(remote.greaterThan(local)) {
+            if (remote.greaterThan(local)) {
                 HoloUI.log(Level.INFO, "Newer version found! [%s -> %s]", local, remote);
                 this.version = remote.toString();
                 return true;
@@ -103,7 +103,7 @@ public final class BuilderServer {
     }
 
     public boolean stopServer() {
-        if(isServerRunning()) {
+        if (isServerRunning()) {
             this.serverRunnable.cancel();
             this.serverRunnable = null;
             HoloUI.log(Level.INFO, "Server stopped.");
