@@ -11,20 +11,20 @@ import com.mojang.serialization.JsonOps;
 import lombok.Getter;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.apache.commons.imaging.ImageFormat;
+import org.apache.commons.imaging.Imaging;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import com.volmit.holoui.HoloUI;
 import com.volmit.holoui.OpenCommand;
-import com.volmit.holoui.enums.ImageFormat;
 import com.volmit.holoui.utils.SchedulerUtils;
 import com.volmit.holoui.utils.SimpleCommand;
 import com.volmit.holoui.utils.file.FolderWatcher;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
-import javax.imageio.stream.FileImageInputStream;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.List;
@@ -131,28 +131,15 @@ public final class ConfigManager {
         File f = new File(imageDir, relative);
         if(!f.exists() || f.isDirectory())
             throw new FileNotFoundException();
-        ImageFormat format = ImageFormat.getFormat(f);
-        ImageReader reader = format.getReader();
-        reader.setInput(new FileImageInputStream(f));
-        if(format == ImageFormat.WEBP) {
-            throw new IOException("WebP images are not supported due to Spigot's policy on native libraries.");
-        } else
-            return new Pair<>(format, reader.read(0));
+        ImageFormat format = Imaging.guessFormat(f);
+        return Pair.of(format, Imaging.getBufferedImage(f));
     }
 
-    public List<BufferedImage> getGifFrames(String relative) throws IOException {
+    public List<BufferedImage> getImages(String relative) throws IOException {
         File f = new File(imageDir, relative);
         if(!f.exists() || f.isDirectory())
             throw new FileNotFoundException();
-        if(!FilenameUtils.isExtension(f.getName(), "gif"))
-            throw new InvalidObjectException("Path given does not correspond to a gif.");
-
-        List<BufferedImage> frames = Lists.newArrayList();
-        ImageReader reader = ImageIO.getImageReadersByMIMEType("image/gif").next();
-        reader.setInput(ImageIO.createImageInputStream(f));
-        for(int i = 0; i < reader.getNumImages(true); i++)
-            frames.add(reader.read(i));
-        return frames;
+        return Imaging.getAllBufferedImages(f);
     }
 
     private Optional<MenuDefinitionData> loadConfig(String menuName, File f) {

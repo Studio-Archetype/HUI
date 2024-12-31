@@ -12,10 +12,12 @@ import java.util.Collections;
 public final class PacketUtils {
 
     public static void send(Player player, PacketWrapper<?> packet) {
+        if (player == null) return;
         send(player, Collections.singletonList(packet));
     }
 
     public static void send(Player player, Collection<PacketWrapper<?>> packets) {
+        if (player == null) return;
         send(Collections.singletonList(player), packets);
     }
 

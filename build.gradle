@@ -20,6 +20,12 @@ compileJava {
     options.encoding = 'UTF-8'
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+    toolchain.languageVersion = JavaLanguageVersion.of(21)
+}
+
 shadowJar {
     archiveClassifier = null
     dependencies {
@@ -69,6 +75,7 @@ dependencies {
     //Dynamically loaded
     compileOnly "io.undertow:undertow-core:$webServerVersion"
     compileOnly "com.github.zafarkhaja:java-semver:$semVerVersion"
+    compileOnly "org.apache.commons:commons-imaging:$commonsImaging"
 }
 
 processResources {
@@ -80,7 +87,8 @@ processResources {
                 'apiVersion': apiVersion,
                 'webServerVersion': webServerVersion,
                 'semVerVersion': semVerVersion,
-                'adventureVersion': adventureVersion
+                'adventureVersion': adventureVersion,
+                'commonsImaging': commonsImaging,
         )
     }
 }

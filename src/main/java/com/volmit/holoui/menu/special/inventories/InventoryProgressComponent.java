@@ -33,7 +33,7 @@ public class InventoryProgressComponent extends MenuComponent<InventoryProgressC
     }
 
     @Override
-    public void onTick() {
+    protected void onTick() {
         double progress = this.progress.apply(inventory);
         if(prevProg == progress)
             return;

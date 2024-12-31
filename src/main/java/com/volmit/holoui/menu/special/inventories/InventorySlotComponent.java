@@ -28,7 +28,7 @@ public class InventorySlotComponent extends MenuComponent<InventorySlotComponent
     }
 
     @Override
-    public void onTick() {
+    protected void onTick() {
         ItemStack stack = data.inventory().getItem(data.slotId());
         if(stack == null && currentStack != MISSING) {
             this.currentStack = MISSING;

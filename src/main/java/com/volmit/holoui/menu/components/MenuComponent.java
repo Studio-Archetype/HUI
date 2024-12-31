@@ -28,6 +28,9 @@ public abstract class MenuComponent<T extends ComponentData> {
     protected Location location;
     protected MenuIcon<?> currentIcon;
 
+    @Getter
+    protected boolean open = false;
+
     @SuppressWarnings("unchecked")
     public MenuComponent(MenuSession session, MenuComponentData data) {
         this.session = session;
@@ -39,12 +42,13 @@ public abstract class MenuComponent<T extends ComponentData> {
     }
 
     public void tick() {
+        if (!open) return;
         onTick();
         if(currentIcon != null)
             currentIcon.tick();
     }
 
-    public abstract void onTick();
+    protected abstract void onTick();
 
     protected abstract MenuIcon<?> createIcon();
     protected abstract void onOpen();
@@ -55,9 +59,11 @@ public abstract class MenuComponent<T extends ComponentData> {
         this.currentIcon = createIcon();
         this.currentIcon.spawn();
         onOpen();
+        open = true;
     }
 
     public void close() {
+        open = false;
         if(this.currentIcon != null)
             this.currentIcon.remove();
         onClose();

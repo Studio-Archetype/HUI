@@ -45,7 +45,7 @@ public abstract class ClickableComponent<T extends ComponentData> extends MenuCo
     }
 
     @Override
-    public void onTick() {
+    protected void onTick() {
         Location playerPos = session.getPlayer().getEyeLocation().clone();
         rotateToFace(playerPos);
         boolean isLookingAt = plane.isLookingAt(playerPos.toVector(), playerPos.getDirection());

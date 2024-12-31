@@ -1,5 +1,6 @@
 package com.volmit.holoui.menu;
 
+import com.volmit.holoui.utils.Looper;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -25,21 +26,20 @@ import com.volmit.holoui.utils.ParticleUtils;
 import com.volmit.holoui.utils.SchedulerUtils;
 import com.volmit.holoui.utils.math.MathHelper;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public final class MenuSessionManager {
 
-    private static final List<MenuSession> sessions = new ArrayList<>();
-    private static final List<BlockMenuSession> previews = new ArrayList<>();
+    private static final List<MenuSession> sessions = new CopyOnWriteArrayList<>();
+    private static final List<BlockMenuSession> previews = new CopyOnWriteArrayList<>();
 
+    private final Looper looper;
     private BukkitTask debugHitbox, debugPos;
 
     public MenuSessionManager() {
-        controlHitboxDebug(HuiSettings.DEBUG_HITBOX.value());
-        controlPositionDebug(HuiSettings.DEBUG_SPACING.value());
-        SchedulerUtils.scheduleSyncTask(HoloUI.INSTANCE, 1L, () -> {
+        looper = Looper.fixed(() -> {
             sessions.forEach(s -> s.getComponents().forEach(MenuComponent::tick));
             previews.removeIf(s -> {
                 if(!s.getPlayer().isSneaking() || !s.shouldRender(s.getPlayer().getTargetBlock(null, 10))) {
@@ -54,7 +54,11 @@ public final class MenuSessionManager {
                 s.move(s.getPlayer().getEyeLocation().clone().add(dir.multiply(2F)), false);
                 s.getComponents().forEach(MenuComponent::tick);
             });
-        }, false);
+        }, 50L);
+        looper.setName("HoloUI SessionManager");
+        looper.start();
+        controlHitboxDebug(HuiSettings.DEBUG_HITBOX.value());
+        controlPositionDebug(HuiSettings.DEBUG_SPACING.value());
         Events.listen(PlayerMoveEvent.class, EventPriority.HIGHEST, e -> sessions.forEach(s -> {
             if (!e.getPlayer().equals(s.getPlayer()) || e.getTo() == null)
                 return;
@@ -113,6 +117,7 @@ public final class MenuSessionManager {
     }
 
     public void destroyAll() {
+        looper.interrupt();
         previews.forEach(MenuSession::close);
         previews.clear();
         sessions.forEach(MenuSession::close);

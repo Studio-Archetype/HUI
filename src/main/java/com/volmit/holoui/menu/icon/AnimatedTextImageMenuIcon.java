@@ -37,9 +37,7 @@ public class AnimatedTextImageMenuIcon extends MenuIcon<AnimatedImageData> {
         passedTicks++;
         if(passedTicks >= data.speed()) {
             passedTicks = 0;
-            currentFrame++;
-            if(currentFrame >= frameComponents.size())
-                currentFrame = 0;
+            currentFrame = ++currentFrame % frameComponents.size();
             updateFrame();
         }
     }
@@ -65,7 +63,7 @@ public class AnimatedTextImageMenuIcon extends MenuIcon<AnimatedImageData> {
 
     private List<BufferedImage> getImages() throws IOException {
         if(data.source().left().isPresent())
-            return HoloUI.INSTANCE.getConfigManager().getGifFrames(data.source().left().get());
+            return HoloUI.INSTANCE.getConfigManager().getImages(data.source().left().get());
         else if(data.source().right().isPresent()) {
             List<BufferedImage> images = Lists.newArrayList();
             for(String s : data.source().right().get())
@@ -77,11 +75,16 @@ public class AnimatedTextImageMenuIcon extends MenuIcon<AnimatedImageData> {
 
     private void createComponents() throws MenuIconException {
         try {
+            int height = getImages()
+                    .stream()
+                    .mapToInt(BufferedImage::getHeight)
+                    .max()
+                    .orElse(0);
             getImages().forEach(i -> {
                 List<Component> lines = Lists.newArrayList();
                 for(int y = 0; y < i.getHeight(); y++) {
                     var component = Component.text();
-                    for(int x = 0; x < i.getWidth(); x++) {
+                    for (int x = 0; x < i.getWidth(); x++) {
                         int colour = i.getRGB(x, y);
                         if(((colour >> 24) & 0x0000FF) < 255)
                             component.append(Component.text(" ").decorate(TextDecoration.BOLD))
@@ -91,6 +94,17 @@ public class AnimatedTextImageMenuIcon extends MenuIcon<AnimatedImageData> {
                     }
                     lines.add(component.build());
                 }
+
+                var empty = Component.text();
+                for (int x = 0; x < i.getWidth(); x++) {
+                    empty.append(Component.text(" ")
+                                    .decorate(TextDecoration.BOLD))
+                            .append(Component.text(" "));
+                }
+                for (int y = 0; y < height - i.getHeight(); y++) {
+                    lines.add(empty.build());
+                }
+
                 frameComponents.add(lines);
             });
         } catch(IOException e) {

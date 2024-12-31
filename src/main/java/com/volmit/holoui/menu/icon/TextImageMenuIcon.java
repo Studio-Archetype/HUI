@@ -4,10 +4,11 @@ import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
+import org.apache.commons.imaging.ImageFormat;
+import org.apache.commons.imaging.ImageFormats;
 import org.bukkit.Location;
 import com.volmit.holoui.HoloUI;
 import com.volmit.holoui.config.icon.TextImageIconData;
-import com.volmit.holoui.enums.ImageFormat;
 import com.volmit.holoui.exceptions.MenuIconException;
 import com.volmit.holoui.menu.ArmorStandManager;
 import com.volmit.holoui.menu.MenuSession;
@@ -63,7 +64,7 @@ public class TextImageMenuIcon extends MenuIcon<TextImageIconData> {
                 var component = Component.text();
                 for(int x = 0; x < image.getWidth(); x++) {
                     int colour = image.getRGB(x, y);
-                    if(format != ImageFormat.JPEG && ((colour >> 24) & 0x0000FF) < 255)
+                    if(format != ImageFormats.JPEG && ((colour >> 24) & 0x0000FF) < 255)
                         component.append(Component.text(" ").decorate(TextDecoration.BOLD)).append(Component.text(" "));
                     else
                         component.append(TextUtils.textColor("█", colour & 0x00FFFFFF));
