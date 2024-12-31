@@ -8,7 +8,6 @@ import com.volmit.holoui.menu.components.MenuComponent;
 import com.volmit.holoui.menu.special.BlockMenuSession;
 import com.volmit.holoui.menu.special.inventories.InventoryPreviewMenu;
 import com.volmit.holoui.utils.Events;
-import com.volmit.holoui.utils.Looper;
 import com.volmit.holoui.utils.ParticleUtils;
 import com.volmit.holoui.utils.SchedulerUtils;
 import com.volmit.holoui.utils.math.MathHelper;
@@ -35,14 +34,15 @@ public final class MenuSessionManager {
     private static final List<MenuSession> sessions = new CopyOnWriteArrayList<>();
     private static final List<BlockMenuSession> previews = new CopyOnWriteArrayList<>();
 
-    private final Looper looper;
     private BukkitTask debugHitbox, debugPos;
 
     public MenuSessionManager() {
-        looper = Looper.fixed(() -> {
+        controlHitboxDebug(HuiSettings.DEBUG_HITBOX.value());
+        controlPositionDebug(HuiSettings.DEBUG_SPACING.value());
+        SchedulerUtils.scheduleSyncTask(HoloUI.INSTANCE, 1L, () -> {
             sessions.forEach(s -> s.getComponents().forEach(MenuComponent::tick));
             previews.removeIf(s -> {
-                if (!s.getPlayer().isSneaking() || !s.shouldRender(s.getPlayer().getTargetBlock(null, 10))) {
+                if(!s.getPlayer().isSneaking() || !s.shouldRender(s.getPlayer().getTargetBlock(null, 10))) {
                     s.close();
                     return true;
                 }
@@ -50,15 +50,11 @@ public final class MenuSessionManager {
             });
             previews.forEach(s -> {
                 Vector dir = s.getPlayer().getEyeLocation().getDirection();
-                s.rotate(-(float) MathHelper.getRotationFromDirection(dir).getY());
+                s.rotate(-(float)MathHelper.getRotationFromDirection(dir).getY());
                 s.move(s.getPlayer().getEyeLocation().clone().add(dir.multiply(2F)), false);
                 s.getComponents().forEach(MenuComponent::tick);
             });
-        }, 50L);
-        looper.setName("HoloUI SessionManager");
-        looper.start();
-        controlHitboxDebug(HuiSettings.DEBUG_HITBOX.value());
-        controlPositionDebug(HuiSettings.DEBUG_SPACING.value());
+        }, false);
         Events.listen(PlayerMoveEvent.class, EventPriority.HIGHEST, e -> sessions.forEach(s -> {
             if (!e.getPlayer().equals(s.getPlayer()) || e.getTo() == null)
                 return;
@@ -117,7 +113,6 @@ public final class MenuSessionManager {
     }
 
     public void destroyAll() {
-        looper.interrupt();
         previews.forEach(MenuSession::close);
         previews.clear();
         sessions.forEach(MenuSession::close);
