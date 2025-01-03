@@ -177,11 +177,13 @@ public final class MenuSessionManager {
     }
 
     private void managePreviewEvents(Player p) {
-        Block b = p.getTargetBlock(null, 10);
-        Optional<BlockMenuSession> session = previewByPlayer(p);
-        if (p.isSneaking() && session.isEmpty()) {
-            createNewPreviewSession(b, p);
-        }
+        try {
+            Block b = p.getTargetBlock(null, 10);
+            Optional<BlockMenuSession> session = previewByPlayer(p);
+            if (p.isSneaking() && session.isEmpty()) {
+                createNewPreviewSession(b, p);
+            }
+        } catch (IllegalStateException ignored) {}
     }
 
     private void createNewPreviewSession(Block b, Player p) {
