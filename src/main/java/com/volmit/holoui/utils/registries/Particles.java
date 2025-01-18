@@ -4,5 +4,5 @@ import org.bukkit.Particle;
 
 public class Particles {
 
-    public static Particle REDSTONE = RegistryUtil.find(Particle.class, RegistryUtil::findByField, "redstone", "dust");
+    public static Particle REDSTONE = RegistryUtil.find(Particle.class, "redstone", "dust");
 }
