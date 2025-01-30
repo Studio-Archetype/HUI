@@ -19,7 +19,7 @@ import java.util.logging.Level;
 
 public final class BuilderServer {
 
-    private static final String URL = "https://api.github.com/repos/Studio-Archetype/HUI-Builder/releases/latest";
+    private static final String URL = "https://api.github.com/repos/VolmitSoftware/HUI-Web-Editor/releases/latest";
     private static final String BUILT_NAME = "builder_static.zip";
 
     private final File serverDir, versionFile;
