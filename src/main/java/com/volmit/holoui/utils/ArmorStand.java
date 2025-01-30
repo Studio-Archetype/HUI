@@ -1,5 +1,7 @@
 package com.volmit.holoui.utils;
 
+import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.manager.server.ServerVersion;
 import com.github.retrooper.packetevents.protocol.entity.data.EntityData;
 import com.github.retrooper.packetevents.protocol.entity.data.EntityDataTypes;
 import com.github.retrooper.packetevents.protocol.entity.type.EntityTypes;
@@ -29,6 +31,7 @@ import static io.github.retrooper.packetevents.util.SpigotConversionUtil.fromBuk
 @Data
 @Accessors(fluent = true)
 public class ArmorStand {
+    private static final AtomicInteger dataIndex = new AtomicInteger();
     private final int id;
     @NonNull
     private final UUID uuid;
@@ -138,15 +141,33 @@ public class ArmorStand {
         mask = setBit(mask, 8, !basePlate);
         mask = setBit(mask, 16, marker);
 
-        metadata.add(new EntityData(15, EntityDataTypes.BYTE, mask));
-        metadata.add(new EntityData(16, EntityDataTypes.ROTATION, headPose));
-        metadata.add(new EntityData(17, EntityDataTypes.ROTATION, bodyPose));
-        metadata.add(new EntityData(18, EntityDataTypes.ROTATION, leftArmPose));
-        metadata.add(new EntityData(19, EntityDataTypes.ROTATION, rightArmPose));
-        metadata.add(new EntityData(20, EntityDataTypes.ROTATION, leftLegPose));
-        metadata.add(new EntityData(21, EntityDataTypes.ROTATION, rightLegPose));
+        int dataIndex = dataIndex();
+        metadata.add(new EntityData(dataIndex++, EntityDataTypes.BYTE, mask));
+        metadata.add(new EntityData(dataIndex++, EntityDataTypes.ROTATION, headPose));
+        metadata.add(new EntityData(dataIndex++, EntityDataTypes.ROTATION, bodyPose));
+        metadata.add(new EntityData(dataIndex++, EntityDataTypes.ROTATION, leftArmPose));
+        metadata.add(new EntityData(dataIndex++, EntityDataTypes.ROTATION, rightArmPose));
+        metadata.add(new EntityData(dataIndex++, EntityDataTypes.ROTATION, leftLegPose));
+        metadata.add(new EntityData(dataIndex, EntityDataTypes.ROTATION, rightLegPose));
 
         return new WrapperPlayServerEntityMetadata(id, metadata);
+    }
+
+    private static int dataIndex() {
+        return dataIndex.updateAndGet(i -> {
+            if (i != 0) return i;
+
+            ServerVersion serverVersion = PacketEvents.getAPI().getServerManager().getVersion();
+            if (serverVersion.isNewerThanOrEquals(ServerVersion.V_1_17))
+                return 15;
+            if (serverVersion.isNewerThanOrEquals(ServerVersion.V_1_15))
+                return 14;
+            if (serverVersion.isNewerThanOrEquals(ServerVersion.V_1_14))
+                return 13;
+            if (serverVersion.isNewerThanOrEquals(ServerVersion.V_1_10))
+                return 11;
+            return 10;
+        });
     }
 
     private byte setBit(byte b0, int i, boolean flag) {

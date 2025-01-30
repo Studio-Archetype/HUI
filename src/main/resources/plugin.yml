@@ -6,17 +6,6 @@ authors: [CrazyDev22]
 
 depend: [PlaceholderAPI]
 
-libraries:
-  - "net.kyori:adventure-api:${adventureVersion}"
-  - "net.kyori:adventure-key:${adventureVersion}"
-  - "net.kyori:adventure-nbt:${adventureVersion}"
-  - "net.kyori:examination-api:1.3.0"
-  - "net.kyori:examination-string:1.3.0"
-  - "net.kyori:adventure-text-minimessage:${adventureVersion}"
-  - "io.undertow:undertow-core:${webServerVersion}"
-  - "com.github.zafarkhaja:java-semver:${semVerVersion}"
-  - "org.apache.commons:commons-imaging:${commonsImaging}"
-
 softdepend:
   - ProtocolLib
   - ProtocolSupport

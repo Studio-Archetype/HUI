@@ -42,14 +42,18 @@ public abstract class MenuComponent<T extends ComponentData> {
     }
 
     public static MenuComponent<?> getComponent(MenuSession session, MenuComponentData data) {
-        return switch (data.data()) {
-            case ButtonComponentData ignored -> new ButtonComponent(session, data);
-            case DecoComponentData ignored -> new DecoComponent(session, data);
-            case ToggleComponentData ignored -> new ToggleComponent(session, data);
-            case InventorySlotComponent.Data ignored -> new InventorySlotComponent(session, data);
-            case InventoryProgressComponent.Data ignored -> new InventoryProgressComponent(session, data);
-            case null, default -> null;
-        };
+        if (data.data() instanceof ButtonComponentData) {
+            return new ButtonComponent(session, data);
+        } else if (data.data() instanceof DecoComponentData) {
+            return new DecoComponent(session, data);
+        } else if (data.data() instanceof ToggleComponentData) {
+            return new ToggleComponent(session, data);
+        } else if (data.data() instanceof InventoryProgressComponent) {
+            return new InventoryProgressComponent(session, data);
+        } else if (data.data() instanceof InventorySlotComponent) {
+            return new InventorySlotComponent(session, data);
+        }
+        return null;
     }
 
     public void tick() {
