@@ -3,7 +3,6 @@ package com.volmit.holoui.utils;
 import com.volmit.holoui.utils.registries.RegistryUtil;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.Registry;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;

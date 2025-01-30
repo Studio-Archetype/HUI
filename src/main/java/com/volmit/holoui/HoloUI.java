@@ -7,20 +7,12 @@ import com.volmit.holoui.menu.MenuSessionManager;
 import com.volmit.holoui.utils.TextUtils;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
 import io.github.slimjar.app.builder.ApplicationBuilder;
-import io.github.slimjar.injector.loader.Injectable;
 import lombok.Getter;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import javax.imageio.ImageIO;
 import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.logging.Level;
 
 @Getter
